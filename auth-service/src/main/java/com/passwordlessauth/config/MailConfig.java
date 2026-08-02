@@ -8,12 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-/**
- * Mail sender configuration, driven entirely by {@code spring.mail.*} properties
- * so it honours the active profile: local dev and docker point at MailHog
- * (no auth/TLS), while a real deployment can point at an authenticated SMTP
- * relay simply by setting MAIL_HOST/MAIL_USERNAME/MAIL_PASSWORD.
- */
 @Configuration
 public class MailConfig {
 

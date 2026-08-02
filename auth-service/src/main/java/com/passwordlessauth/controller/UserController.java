@@ -57,10 +57,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Face ID removed successfully"));
     }
 
-    /**
-     * Returns paginated login history for the authenticated user.
-     * Returns DTOs, not raw JPA entities.
-     */
     @GetMapping("/me/login-history")
     public ResponseEntity<ApiResponse<Page<LoginHistoryResponse>>> getLoginHistory(
             @AuthenticationPrincipal UserPrincipal userPrincipal,

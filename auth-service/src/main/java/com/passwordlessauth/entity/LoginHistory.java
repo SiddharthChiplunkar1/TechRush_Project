@@ -66,5 +66,5 @@ public class LoginHistory {
     private LocalDateTime timestamp;
 
     @Column
-    private String location;  // Geo-IP lookup result
+    private String location;
 }

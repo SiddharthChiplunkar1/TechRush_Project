@@ -53,10 +53,10 @@ public class User {
     private int failedLoginAttempts = 0;
 
     @Column(nullable = false)
-    private int tokenVersion = 0;  // Incremented on logout/step-up
+    private int tokenVersion = 0;
 
     @Column
-    private String googleId;       // Google OAuth sub claim
+    private String googleId;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

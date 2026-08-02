@@ -4,14 +4,160 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="" />
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Complete Faceid And auth-service">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/passwordlessauth/api_gateway/ApiGatewayApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/passwordlessauth/api_gateway/GatewayController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/test-classes/com/passwordlessauth/api_gateway/ApiGatewayApplicationTests.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/test-classes/com/passwordlessauth/api_gateway/GatewayControllerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/FaceVerifyResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/FaceVerifyResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/GoogleOAuthClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/GoogleOAuthClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/GoogleOAuthClientImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/GoogleOAuthClientImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/GoogleUserInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/GoogleUserInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/JwtConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/JwtConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/MailConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/AdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/dto/requests/TrustedDeviceLoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/dto/requests/TrustedDeviceLoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/dto/responses/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/dto/responses/ApiResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/Device.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/Device.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/LoginHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/LoginHistory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/RefreshToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/RefreshToken.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/AccountLockedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/AccountLockedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/GoogleAuthException.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/GoogleAuthException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/InvalidTokenException.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/InvalidTokenException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/TooManyRequestsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/TooManyRequestsException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/UserAlreadyExistsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/UserAlreadyExistsException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/DeviceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/DeviceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/LoginHistoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/LoginHistoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/OtpTokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/OtpTokenRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/RefreshTokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/repository/RefreshTokenRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/UserPrincipal.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/UserPrincipal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/AdminService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/AdminService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/DeviceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/DeviceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/LoginHistoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/LoginHistoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/OtpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/OtpService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/RiskEngineService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/RiskEngineService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/AuthServiceApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/FaceIdClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/FaceIdClientImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/FaceVerifyResult.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/GoogleOAuthClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/GoogleOAuthClientImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/GoogleUserInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/config/JwtConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/config/JwtFilter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/config/MailConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/controller/AdminController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/controller/AuthController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/controller/DeviceController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/controller/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/FaceEnrollRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/FaceLoginRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/GoogleLoginRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/OtpRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/OtpVerifyRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/RefreshTokenRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/RegisterRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/TrustedDeviceLoginRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/UpdateProfileRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/requests/UpdateUserRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/ApiResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/DeviceResponse$DeviceResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/DeviceResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/JwtResponse$JwtResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/JwtResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/LoginHistoryResponse$LoginHistoryResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/LoginHistoryResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/LoginResponse$LoginResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/LoginResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/RegisterResponse$RegisterResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/RegisterResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/UserResponse$UserResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/dto/responses/UserResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/entity/Device.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/entity/LoginHistory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/entity/OtpToken.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/entity/RefreshToken.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/entity/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/enums/AuthLevel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/enums/AuthMethod.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/enums/LoginStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/enums/RiskLevel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/enums/Role.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/AccountLockedException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/FaceVerificationException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/GlobalExceptionHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/GoogleAuthException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/InvalidOtpException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/InvalidTokenException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/JwtExpiredException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/TooManyRequestsException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/TrustedDeviceNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/UserAlreadyExistsException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/exception/UserNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/repository/DeviceRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/repository/LoginHistoryRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/repository/OtpTokenRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/repository/RefreshTokenRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/repository/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/security/SecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/security/UserPrincipal$UserPrincipalBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/security/UserPrincipal.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/AdminService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/AuthService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/DeviceService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/JwtService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/LoginHistoryService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/OtpService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/RiskEngineService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/util/DateTimeUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/AuthControllerSecurityTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/AuthControllerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/AuthServiceApplicationTests.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/JwtServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/OtpServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/RiskEngineServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/BankingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/BankingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/BankingServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/BankingServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/config/AppConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/config/AppConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/controller/BankingControllerPlaceholder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/BankingController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/BankingServiceApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/config/AppConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/controller/BankingControllerPlaceholder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/dto/AccountRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/entity/AccountEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/exception/ApiException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/repository/AccountRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/security/SecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/service/BankingService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/classes/com/passwordlessauth/banking_service/util/DateTimeUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/test-classes/com/passwordlessauth/banking_service/BankingControllerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/test-classes/com/passwordlessauth/banking_service/BankingServiceApplicationTests.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="86" />
+    <option name="cachedIndexableFilesCount" value="153" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -49,62 +195,65 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.8536240485763986" />
-      <entry key="MS500" value="4.966800852411843" />
-      <entry key="S2" value="11.052464056421728" />
-      <entry key="S5" value="14.193258393956057" />
-      <entry key="S10" value="16.3473973017661" />
-      <entry key="S30" value="27.922434353733664" />
-      <entry key="S60" value="52.30453422948908" />
-      <entry key="M2" value="92.08502767138448" />
-      <entry key="M5" value="149.20729458524715" />
-      <entry key="M10" value="203.33854583406736" />
-      <entry key="M15" value="244.75158516094663" />
-      <entry key="M30" value="319.49410788652017" />
-      <entry key="H1" value="379.4886712961902" />
-      <entry key="H2" value="418.0723735484376" />
-      <entry key="H4" value="440.02860796694927" />
-      <entry key="D1" value="459.8564825793434" />
-      <entry key="W1" value="463.40432327338283" />
+      <entry key="MS100" value="1.1917294861724428" />
+      <entry key="MS500" value="3.011920245349346" />
+      <entry key="S2" value="9.473236581446596" />
+      <entry key="S5" value="16.23673385956949" />
+      <entry key="S10" value="20.011312161673665" />
+      <entry key="S30" value="23.1787503546075" />
+      <entry key="S60" value="24.09128018478758" />
+      <entry key="M2" value="25.18484265816133" />
+      <entry key="M5" value="30.764806758223994" />
+      <entry key="M10" value="50.2412433610441" />
+      <entry key="M15" value="84.02131995700374" />
+      <entry key="M30" value="198.38568615361118" />
+      <entry key="H1" value="347.7355539382589" />
+      <entry key="H2" value="474.1027553148468" />
+      <entry key="H4" value="557.338899703233" />
+      <entry key="D1" value="639.8557009601949" />
+      <entry key="W1" value="655.3721910012904" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="1.875280132754088E-156" />
-      <entry key="S10" value="1.9228509331870626E-78" />
-      <entry key="S30" value="1.9707726485469965E-26" />
-      <entry key="S60" value="1.9849321328097564E-13" />
-      <entry key="M2" value="6.300368066199292E-7" />
-      <entry key="M5" value="0.005016018248142072" />
-      <entry key="M10" value="0.10015985227420404" />
-      <entry key="M15" value="0.2717308333443324" />
-      <entry key="M30" value="0.7371983606726791" />
-      <entry key="H1" value="1.214247320791976" />
-      <entry key="H2" value="1.558362786234068" />
-      <entry key="H4" value="1.7654250339874373" />
-      <entry key="D1" value="1.958844115498706" />
-      <entry key="W1" value="1.99406806629118" />
+      <entry key="S2" value="4.211657345269129E-85" />
+      <entry key="S5" value="1.7773837781932121E-34" />
+      <entry key="S10" value="1.3331855753019583E-17" />
+      <entry key="S30" value="2.371174606498775E-6" />
+      <entry key="S60" value="0.0015398618790678049" />
+      <entry key="M2" value="0.03924126066775839" />
+      <entry key="M5" value="0.2758796552042473" />
+      <entry key="M10" value="0.5715992505855602" />
+      <entry key="M15" value="0.8034174157334584" />
+      <entry key="M30" value="1.395558465557041" />
+      <entry key="H1" value="2.178049348060584" />
+      <entry key="H2" value="2.8892664176492957" />
+      <entry key="H4" value="3.381553723118044" />
+      <entry key="D1" value="3.886749174761508" />
+      <entry key="W1" value="3.983551167169368" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.7364996152504433" />
-      <entry key="MS500" value="4.902581119985186" />
-      <entry key="S2" value="11.017900666650506" />
-      <entry key="S5" value="14.175341896457494" />
-      <entry key="S10" value="16.335039106835215" />
-      <entry key="S30" value="27.9106618972384" />
-      <entry key="S60" value="52.29320754301908" />
-      <entry key="M2" value="92.07544268166258" />
-      <entry key="M5" value="149.20591223066145" />
-      <entry key="M10" value="203.43372202697063" />
-      <entry key="M15" value="245.01884188659898" />
-      <entry key="M30" value="320.22786988085943" />
-      <entry key="H1" value="380.7006688685424" />
-      <entry key="H2" value="419.6294317064521" />
-      <entry key="H4" value="441.7933282266419" />
-      <entry key="D1" value="461.8152012119236" />
-      <entry key="W1" value="465.39837320682335" />
+      <entry key="MS100" value="1.1106872447797826" />
+      <entry key="MS500" value="2.9679681874012576" />
+      <entry key="S2" value="9.438132502236076" />
+      <entry key="S5" value="16.212460930837985" />
+      <entry key="S10" value="19.996313439630697" />
+      <entry key="S30" value="23.172951948967484" />
+      <entry key="S60" value="24.089775890289378" />
+      <entry key="M2" value="25.222142074071684" />
+      <entry key="M5" value="31.03887958192229" />
+      <entry key="M10" value="50.81102287201525" />
+      <entry key="M15" value="84.8227288237033" />
+      <entry key="M30" value="199.77889351025757" />
+      <entry key="H1" value="349.91148170424674" />
+      <entry key="H2" value="476.9905371859465" />
+      <entry key="H4" value="560.7195669176161" />
+      <entry key="D1" value="643.7422780307577" />
+      <entry key="W1" value="659.3557169203748" />
     </decayedShown>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="AISelfReview" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -115,32 +264,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.AuthServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;backend&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/siddh/Programming/Java/TechRush_Project&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.AuthServiceApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "backend",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/siddh/Programming/Java/TechRush_Project/TechRush_Project",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.passwordlessauth.exception" />
@@ -176,5 +325,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

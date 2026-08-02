@@ -60,6 +60,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-banking:5432/bankingdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      JWT_SECRET: ${JWT_SECRET:-dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=}
     depends_on:
       - postgres-banking
 

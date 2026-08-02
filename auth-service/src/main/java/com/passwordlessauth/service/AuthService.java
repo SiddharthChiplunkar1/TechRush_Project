@@ -43,13 +43,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Main authentication orchestration service.
- *
- * Coordinates OTP generation, face verification, risk assessment, and JWT issuance.
- * All auth paths funnel through {@link #finalizeLogin} so that login-history
- * recording, failed-attempt tracking, and token generation stay consistent.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -96,8 +89,6 @@ public class AuthService {
                 .build();
     }
 
-    // ─── OTP Flow ────────────────────────────────────────────────────────────
-
     @Transactional
     public LoginResponse sendOtp(OtpRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -120,7 +111,6 @@ public class AuthService {
 
     @Transactional
     public JwtResponse verifyOtp(OtpVerifyRequest request, HttpServletRequest httpRequest) {
-        // loginId doubles as the email address (see OtpVerifyRequest javadoc)
         String email = request.getLoginId();
 
         User user = userRepository.findByEmail(email)
@@ -138,7 +128,6 @@ public class AuthService {
             throw ex;
         }
 
-        // First successful OTP login implicitly verifies the email
         if (!user.isEmailVerified()) {
             user.setEmailVerified(true);
         }
@@ -146,22 +135,6 @@ public class AuthService {
         return finalizeLogin(user, AuthMethod.OTP, AuthLevel.STRONG, risk, httpRequest, device);
     }
 
-    // ─── Trusted Device Login ────────────────────────────────────────────────
-
-    /**
-     * Allows a user to log in from a previously trusted device without OTP or Face ID.
-     *
-     * Security contract:
-     * - The device fingerprint (from {@code X-Device-Fingerprint} header or User-Agent)
-     *   must match a device that was explicitly trusted during a prior STRONG-auth session.
-     * - The resulting JWT carries {@code authLevel = WEAK}.
-     * - High-sensitivity operations (large transfers, etc.) will reject WEAK tokens with 403.
-     * - If the risk engine returns CRITICAL, the attempt is blocked regardless of device trust.
-     *
-     * @param request     the email of the user attempting to log in
-     * @param httpRequest the HTTP request — used to derive the device fingerprint
-     * @return a WEAK-level JWT pair
-     */
     @Transactional
     public JwtResponse trustedDeviceLogin(TrustedDeviceLoginRequest request, HttpServletRequest httpRequest) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -175,7 +148,6 @@ public class AuthService {
             throw new AccountLockedException("Login temporarily blocked due to high-risk activity.");
         }
 
-        // Verify the current device is actually trusted for this user
         boolean trusted = deviceService.isTrustedDevice(user, httpRequest);
         if (!trusted) {
             handleFailedLogin(user, AuthMethod.TRUSTED_DEVICE, risk, httpRequest, null,
@@ -186,11 +158,9 @@ public class AuthService {
 
         Device device = deviceService.resolveDevice(user, httpRequest);
 
-        // Trusted-device login always produces WEAK auth level
         return finalizeLogin(user, AuthMethod.TRUSTED_DEVICE, AuthLevel.WEAK, risk, httpRequest, device);
     }
 
-    // ─── FaceID Flow ─────────────────────────────────────────────────────────
 
     @Transactional
     public JwtResponse faceLogin(FaceLoginRequest request, HttpServletRequest httpRequest) {
@@ -220,8 +190,6 @@ public class AuthService {
         return finalizeLogin(user, AuthMethod.FACE_RECOGNITION, AuthLevel.STRONG, risk, httpRequest, device);
     }
 
-    // ─── Google OAuth Flow ───────────────────────────────────────────────────
-
     @Transactional
     public JwtResponse googleLogin(GoogleLoginRequest request, HttpServletRequest httpRequest) {
         // Server-to-server code exchange — client never handles the ID token directly
@@ -232,8 +200,6 @@ public class AuthService {
             throw new GoogleAuthException("Google account email is not verified.");
         }
 
-        // Match by Google subject first, then fall back to email so that a user who
-        // registered via OTP can link their Google account without a duplicate record.
         User user = userRepository.findByGoogleId(googleUser.googleId())
                 .or(() -> userRepository.findByEmail(googleUser.email()))
                 .orElseGet(() -> {
@@ -262,8 +228,6 @@ public class AuthService {
         return finalizeLogin(user, AuthMethod.GOOGLE_OAUTH, AuthLevel.STRONG, risk, httpRequest, device);
     }
 
-    // ─── Token Refresh ───────────────────────────────────────────────────────
-
     @Transactional
     public JwtResponse refreshToken(RefreshTokenRequest request) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken())
@@ -275,7 +239,6 @@ public class AuthService {
 
         User user = refreshToken.getUser();
 
-        // Rotation: revoke old token, issue a new one
         refreshToken.setRevoked(true);
         refreshToken.setRevokedAt(LocalDateTime.now());
         refreshToken.setRevokedReason("ROTATED");
@@ -284,15 +247,12 @@ public class AuthService {
         return generateTokensResponse(user, AuthLevel.STRONG, refreshToken.getDeviceId(), false);
     }
 
-    // ─── Logout ──────────────────────────────────────────────────────────────
-
     @Transactional
     public void logout(String currentUserId, String deviceId, boolean allDevices) {
         User user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (allDevices) {
-            // Increment tokenVersion — invalidates all outstanding access tokens
             user.setTokenVersion(user.getTokenVersion() + 1);
             userRepository.save(user);
             refreshTokenRepository.revokeAllUserTokens(user.getUserId(), "LOGOUT_ALL", LocalDateTime.now());
@@ -307,8 +267,6 @@ public class AuthService {
         loginHistoryService.recordLogin(
                 user, AuthMethod.OTP, LoginStatus.SUCCESS, RiskLevel.LOW, null, deviceId, "LOGOUT");
     }
-
-    // ─── Private helpers ─────────────────────────────────────────────────────
 
     private JwtResponse finalizeLogin(User user, AuthMethod method, AuthLevel authLevel,
                                       RiskLevel risk, HttpServletRequest request, Device device) {
@@ -344,7 +302,6 @@ public class AuthService {
     private void checkAccountLock(User user) {
         if (!user.isAccountNonLocked()) {
             if (user.getLockedUntil() != null && LocalDateTime.now().isAfter(user.getLockedUntil())) {
-                // Auto-unlock after lock duration
                 user.setAccountNonLocked(true);
                 user.setFailedLoginAttempts(0);
                 user.setLockedUntil(null);

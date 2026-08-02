@@ -28,13 +28,13 @@ public class Device {
     private User user;
 
     @Column(nullable = false)
-    private String fingerprint;  // Hashed device fingerprint
+    private String fingerprint;
 
     @Column
     private String deviceName;
 
     @Column
-    private String deviceType;   // MOBILE, DESKTOP, TABLET
+    private String deviceType;
 
     @Column
     private String browser;

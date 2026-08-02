@@ -44,7 +44,6 @@ public class UserService {
     public void enrollFaceId(String userId, FaceEnrollRequest request) {
         User user = getUser(userId);
         
-        // Delegate to FaceID client to extract and store embedding
         faceIdClient.enrollFace(userId, request.getFaceImage());
         
         user.setFaceEnrolled(true);
@@ -56,7 +55,6 @@ public class UserService {
         User user = getUser(userId);
         user.setFaceEnrolled(false);
         userRepository.save(user);
-        // Note: Real implementation might also tell FaceIdClient to delete embedding
     }
 
     private User getUser(String userId) {

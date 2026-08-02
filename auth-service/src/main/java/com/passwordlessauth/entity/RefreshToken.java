@@ -25,10 +25,10 @@ public class RefreshToken {
     private User user;
 
     @Column(nullable = false, unique = true)
-    private String token;       // The actual refresh token
+    private String token;
 
     @Column
-    private String deviceId;    // Associated device
+    private String deviceId;
 
     @Column(nullable = false)
     private boolean revoked = false;
@@ -43,5 +43,5 @@ public class RefreshToken {
     private LocalDateTime revokedAt;
 
     @Column
-    private String revokedReason;  // LOGOUT, DEVICE_REMOVED, SECURITY
+    private String revokedReason;
 }

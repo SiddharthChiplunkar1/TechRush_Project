@@ -13,20 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-/**
- * Global exception handler for the auth-service.
- *
- * Centralises error response shaping so controllers don't need try/catch blocks.
- * Every exception maps to a consistent ApiResponse format with an HTTP status.
- *
- * Security note: Generic exceptions are caught and logged server-side, but only
- * a safe message is returned to the client to prevent information leakage.
- */
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    // ─── Domain Exceptions ───────────────────────────────────────────────────
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -88,12 +78,6 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(ex.getMessage());
     }
 
-    // ─── Validation Exceptions ────────────────────────────────────────────────
-
-    /**
-     * Handles @Valid failures and returns all field-level errors in a structured map.
-     * This helps the frontend show per-field error messages without parsing a message string.
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
@@ -103,8 +87,11 @@ public class GlobalExceptionHandler {
         }
         return ApiResponse.error("Validation failed");
     }
-
-    // ─── Generic Fallback ─────────────────────────────────────────────────────
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<Void> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex) {
+        return ApiResponse.error("Malformed JSON request. Please check your request body format.");
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

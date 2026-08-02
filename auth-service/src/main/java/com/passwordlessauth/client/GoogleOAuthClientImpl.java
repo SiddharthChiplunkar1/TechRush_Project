@@ -23,23 +23,9 @@ import com.passwordlessauth.exception.GoogleAuthException;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Real implementation of {@link GoogleOAuthClient}.
- *
- * Flow:
- *  1. Exchange the authorization code for tokens at Google's token endpoint
- *     (https://oauth2.googleapis.com/token), using the confidential client secret.
- *  2. Verify the returned ID token's signature, issuer, audience, and expiry using
- *     Google's published certificates via {@link GoogleIdTokenVerifier}.
- *  3. Extract the verified subject (sub), email, and name claims.
- *
- * We deliberately do NOT trust an ID token or profile info supplied directly by the
- * client — only the code, which Google exchanges server-to-server, is trusted input.
- */
 @Slf4j
 @Service
 public class GoogleOAuthClientImpl implements GoogleOAuthClient {
-
     private static final String TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 
     @Value("${app.google.client-id}")
@@ -55,8 +41,6 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
         String idTokenString = requestIdToken(authorizationCode, redirectUri);
         return verifyIdToken(idTokenString);
     }
-
-    // ─── Step 1: Authorization code -> tokens ───────────────────────────────
 
     @SuppressWarnings("unchecked")
     private String requestIdToken(String authorizationCode, String redirectUri) {
@@ -88,8 +72,6 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
         }
         return (String) tokenResponse.get("id_token");
     }
-
-    // ─── Step 2: Verify the ID token ────────────────────────────────────────
 
     private GoogleUserInfo verifyIdToken(String idTokenString) {
         try {

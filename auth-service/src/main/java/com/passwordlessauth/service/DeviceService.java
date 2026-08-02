@@ -22,21 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Device recognition and trust management service.
- *
- * Device fingerprinting strategy:
- * - We cannot rely solely on IP address (changes on mobile, NAT, VPN).
- * - We use a combination of User-Agent + optional X-Device-Fingerprint header
- *   (set by the frontend using browser fingerprinting libraries like fingerprintjs).
- * - The raw fingerprint is SHA-256 hashed before storage — so the DB never
- *   contains raw device details, only their digest.
- *
- * Trust levels:
- * - New device (first seen) → UNTRUSTED, triggers MEDIUM risk
- * - User explicitly trusts a device → TRUSTED, enables WEAK auth on return
- * - Trusted device + clean history → WEAK auth level (no OTP required)
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -48,14 +33,6 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    // ─── Device Resolution ───────────────────────────────────────────────────
-
-    /**
-     * Resolves a device for a user: finds existing or creates a new one.
-     * Updates IP and last-used on every login.
-     *
-     * @return the Device entity (may be new or existing)
-     */
     @Transactional
     public Device resolveDevice(User user, HttpServletRequest request) {
         String fingerprint = computeFingerprint(request);
@@ -81,30 +58,17 @@ public class DeviceService {
                 });
     }
 
-    /**
-     * Returns true if the device is known and trusted for this user.
-     * Used to determine if WEAK auth level (trusted device login) is acceptable.
-     */
     public boolean isTrustedDevice(User user, HttpServletRequest request) {
         String fingerprint = computeFingerprint(request);
         return deviceRepository.existsByUserAndFingerprintAndTrustedTrue(user, fingerprint);
     }
 
-    // ─── Device Management ───────────────────────────────────────────────────
-
-    /**
-     * Gets all devices for a user as response DTOs.
-     */
     public List<DeviceResponse> getUserDevices(User user) {
         return deviceRepository.findAllByUser(user).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Marks a specific device as trusted.
-     * After trusting, the user can return from that device without OTP.
-     */
     @Transactional
     public DeviceResponse trustDevice(User user, String deviceId) {
         Device device = deviceRepository.findById(deviceId)
@@ -114,28 +78,16 @@ public class DeviceService {
         return toResponse(deviceRepository.save(device));
     }
 
-    /**
-     * Marks a device as untrusted and revokes all its refresh tokens.
-     * This effectively forces re-authentication on that device.
-     */
     @Transactional
     public void removeDevice(User user, String deviceId) {
         Device device = deviceRepository.findById(deviceId)
                 .filter(d -> d.getUser().getUserId().equals(user.getUserId()))
                 .orElseThrow(() -> new IllegalArgumentException("Device not found"));
-        // Revoke all refresh tokens for this device
         refreshTokenRepository.revokeAllDeviceTokens(deviceId);
         deviceRepository.delete(device);
         log.info("Device {} removed for user {}", deviceId, maskUserId(user.getUserId()));
     }
 
-    // ─── Fingerprinting ──────────────────────────────────────────────────────
-
-    /**
-     * Computes a SHA-256 fingerprint from the request.
-     * Prioritises the X-Device-Fingerprint header (set by frontend fingerprintjs).
-     * Falls back to User-Agent + Accept-Language for server-side fingerprinting.
-     */
     public String computeFingerprint(HttpServletRequest request) {
         String clientFingerprint = request.getHeader("X-Device-Fingerprint");
         String rawInput;
@@ -149,8 +101,6 @@ public class DeviceService {
         }
         return sha256(rawInput);
     }
-
-    // ─── Private helpers ─────────────────────────────────────────────────────
 
     private String sha256(String input) {
         try {

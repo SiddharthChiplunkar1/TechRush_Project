@@ -21,7 +21,6 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, message, data, LocalDateTime.now());
     }
 
-    /** Convenience factory for endpoints that return no data payload. */
     public static ApiResponse<Void> success(String message) {
         return new ApiResponse<>(true, message, null, LocalDateTime.now());
     }
