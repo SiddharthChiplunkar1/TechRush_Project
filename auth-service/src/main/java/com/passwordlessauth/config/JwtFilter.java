@@ -34,6 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/auth/login/otp/verify",
             "/api/auth/login/face",
             "/api/auth/login/google",
+            "/api/auth/login/trusted-device",
             "/api/auth/refresh"
     );
 

@@ -109,7 +109,7 @@ public class AuthService {
         return LoginResponse.builder().message("OTP sent to your email address.").build();
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = {com.passwordlessauth.exception.InvalidOtpException.class, com.passwordlessauth.exception.FaceVerificationException.class, com.passwordlessauth.exception.TrustedDeviceNotFoundException.class})
     public JwtResponse verifyOtp(OtpVerifyRequest request, HttpServletRequest httpRequest) {
         String email = request.getLoginId();
 
@@ -135,7 +135,7 @@ public class AuthService {
         return finalizeLogin(user, AuthMethod.OTP, AuthLevel.STRONG, risk, httpRequest, device);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = {com.passwordlessauth.exception.InvalidOtpException.class, com.passwordlessauth.exception.FaceVerificationException.class, com.passwordlessauth.exception.TrustedDeviceNotFoundException.class})
     public JwtResponse trustedDeviceLogin(TrustedDeviceLoginRequest request, HttpServletRequest httpRequest) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -162,7 +162,7 @@ public class AuthService {
     }
 
 
-    @Transactional
+    @Transactional(noRollbackFor = {com.passwordlessauth.exception.InvalidOtpException.class, com.passwordlessauth.exception.FaceVerificationException.class, com.passwordlessauth.exception.TrustedDeviceNotFoundException.class})
     public JwtResponse faceLogin(FaceLoginRequest request, HttpServletRequest httpRequest) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));

@@ -55,10 +55,11 @@ public class SecurityConfig {
                         // =======================
                         .requestMatchers(
                                 "/api/auth/register",
-                                "/api/auth/login/otp/request",     // Fixed endpoint
+                                "/api/auth/login/otp/request",
                                 "/api/auth/login/otp/verify",
                                 "/api/auth/login/face",
                                 "/api/auth/login/google",
+                                "/api/auth/login/trusted-device",
                                 "/api/auth/refresh"
                         ).permitAll()
 
