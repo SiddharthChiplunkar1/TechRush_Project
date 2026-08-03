@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Complete Faceid And auth-service">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/config/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/OtpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/OtpService.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="155" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+        <option value="Exception" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="integrate" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;SiddharthChiplunkar1&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/SiddharthChiplunkar1/TechRush_Project.git&quot;,
+    &quot;accountId&quot;: &quot;5700eff9-4627-4f21-8fb8-b9b5eab7b565&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.8282868703572732" />
+      <entry key="MS500" value="5.813627870891169" />
+      <entry key="S2" value="11.160640727373139" />
+      <entry key="S5" value="13.255955041157845" />
+      <entry key="S10" value="14.172279312645228" />
+      <entry key="S30" value="23.71177479234652" />
+      <entry key="S60" value="45.17184302858809" />
+      <entry key="M2" value="70.94499495559633" />
+      <entry key="M5" value="99.3776997037363" />
+      <entry key="M10" value="137.59834637914489" />
+      <entry key="M15" value="181.87027646368077" />
+      <entry key="M30" value="316.0137864558328" />
+      <entry key="H1" value="513.4861704661885" />
+      <entry key="H2" value="706.5447785883562" />
+      <entry key="H4" value="846.3023396941289" />
+      <entry key="D1" value="994.2523042474647" />
+      <entry key="W1" value="1023.0856978573953" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="4.2996890248640943E-172" />
+      <entry key="S10" value="2.0735691512134578E-86" />
+      <entry key="S30" value="2.7473005582003413E-29" />
+      <entry key="S60" value="5.2414697922670975E-15" />
+      <entry key="M2" value="7.239834039453844E-8" />
+      <entry key="M5" value="0.001403181785153808" />
+      <entry key="M10" value="0.040765125405051575" />
+      <entry key="M15" value="0.1381675308014542" />
+      <entry key="M30" value="0.5787358861680558" />
+      <entry key="H1" value="1.4026002242524815" />
+      <entry key="H2" value="2.318572519059269" />
+      <entry key="H4" value="3.0292341114731416" />
+      <entry key="D1" value="3.8161251257999265" />
+      <entry key="W1" value="3.9731292983967204" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.7161551348027047" />
+      <entry key="MS500" value="5.751097730882721" />
+      <entry key="S2" value="11.131131931896581" />
+      <entry key="S5" value="13.241901165591571" />
+      <entry key="S10" value="14.163988479855153" />
+      <entry key="S30" value="23.689972460950607" />
+      <entry key="S60" value="45.14134447572599" />
+      <entry key="M2" value="70.91864477930957" />
+      <entry key="M5" value="99.36420394846454" />
+      <entry key="M10" value="137.63002334933924" />
+      <entry key="M15" value="182.0013809594703" />
+      <entry key="M30" value="316.58750634305665" />
+      <entry key="H1" value="514.8851063956363" />
+      <entry key="H2" value="708.8609209193003" />
+      <entry key="H4" value="849.3301345845558" />
+      <entry key="D1" value="998.0681490177044" />
+      <entry key="W1" value="1027.0587859636335" />
+    </decayedShown>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="AISelfReview" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="3HLfO6171ttsKrCwutXJKGLyhOq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.AuthServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;working-backend&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/siddh/Programming/Java/TechRush_Project/TechRush_Project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.passwordlessauth.exception" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="AuthServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="passwordlessauth" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.passwordlessauth.AuthServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-63390994e64e-intellij.indexing.shared.core-IU-262.8665.337" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.8665.337" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="" />
+      <created>1785652239831</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1785652239831</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
