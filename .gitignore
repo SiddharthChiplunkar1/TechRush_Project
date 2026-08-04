@@ -21,3 +21,16 @@
 /auth-service/src/test/resources/application-test.properties
 /auth-service/target/test-classes/application-test.properties
 /auth-service/compile.log
+/.metadata/
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# Maven
+target/
+
+# IntelliJ
+.idea/
+*.iml

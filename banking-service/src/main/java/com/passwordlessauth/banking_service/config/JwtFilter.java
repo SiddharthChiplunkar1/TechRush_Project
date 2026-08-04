@@ -16,7 +16,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import com.passwordlessauth.banking_service.dto.BankingPrincipal;
+import com.passwordlessauth.banking_service.enums.AuthLevel;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -41,6 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
     );
 
     private final JwtConfig jwtConfig;
+    
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -85,13 +87,14 @@ public class JwtFilter extends OncePerRequestFilter {
             String userId = claims.get("userId", String.class);
             String email  = claims.getSubject();
             String role   = claims.get("role", String.class);
-
+            AuthLevel authLevel=AuthLevel.valueOf(claims.get("authLevel",String.class));
+            BankingPrincipal principal=new BankingPrincipal(userId,email,role,authLevel);
             var auth = new UsernamePasswordAuthenticationToken(
-                    email,
+                    principal,
                     null,
                     List.of(new SimpleGrantedAuthority("ROLE_" + role))
             );
-            auth.setDetails(userId);
+            
             SecurityContextHolder.getContext().setAuthentication(auth);
 
         } catch (ExpiredJwtException ex) {
