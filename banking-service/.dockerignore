@@ -1,8 +1,8 @@
-target
-.git
-.gitignore
-README.md
-HELP.md
+target/
+.mvn/
+.git/
+.idea/
+*.log
+*.md
+.env
 *.iml
-.idea
-.vscode

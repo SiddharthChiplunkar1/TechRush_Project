@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 
 class BankingServiceApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }
