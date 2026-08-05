@@ -17,4 +17,6 @@ public class JwtConfig {
     private String secret = "dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=";
     private String issuer = "TechRush";
     private String audience = "techrush-app";
+    
+    
 }
