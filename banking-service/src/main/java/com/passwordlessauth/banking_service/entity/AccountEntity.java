@@ -22,7 +22,7 @@ public class AccountEntity {
 	private String userId;
 	@Id
 	@GeneratedValue(strategy=GenerationType.UUID)
-	private long accountId;
+	private UUID accountId;
 	@Column(name="account_balance",precision=19,scale=2)
 	private BigDecimal balance;
 	@UpdateTimestamp
