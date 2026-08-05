@@ -54,7 +54,7 @@ services:
     build:
       context: ./banking-service
     ports:
-      - "8082:8080"
+      - "8082:8082"
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-banking:5432/bankingdb

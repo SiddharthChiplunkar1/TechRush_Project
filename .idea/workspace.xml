@@ -4,57 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Complete Faceid And auth-service">
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/JwtConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/JwtFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/controller/BankingController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BalanceResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BlockedTransfersResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransactionHistoryResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransferRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransferResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Account.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Transaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/enums/TransactionStatus.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/exceptions/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/AccountRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/TransactionRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/security/AuthenticatedUser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/service/TransactionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Fixed banking-service">
+      <change afterPath="$PROJECT_DIR$/banking-service/src/main/resources/application.dev.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/.dockerignore" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/.dockerignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/HELP.md" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/HELP.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/BankingController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/BankingServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/BankingServiceApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/config/AppConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/config/BankingProperties.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/config/JwtConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/config/JwtFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/dto/AccountRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/dto/BankingPrincipal.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/dto/TransferRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/dto/TransferResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/entity/AccountEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/entity/TransactionEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/enums/AuthLevel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/enums/TransactionStatus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/exception/ApiException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/repository/AccountRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/repository/TransactionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/security/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/service/BankingService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/service/BankingServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking_service/util/DateTimeUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/test/java/com/passwordlessauth/banking_service/BankingControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/banking-service/src/test/java/com/passwordlessauth/banking_service/BankingServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/test/java/com/passwordlessauth/banking_service/BankingServiceApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +20,7 @@
     </colors>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="164" />
+    <option name="cachedIndexableFilesCount" value="166" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -105,61 +58,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.5490585756587087" />
-      <entry key="MS500" value="2.530770980952555" />
-      <entry key="S2" value="2.8698905108392383" />
-      <entry key="S5" value="2.9468467816673334" />
-      <entry key="S10" value="2.988209734933922" />
-      <entry key="S30" value="6.256773117207473" />
-      <entry key="S60" value="16.922930849165695" />
-      <entry key="M2" value="36.6660203503427" />
-      <entry key="M5" value="102.18845703815599" />
-      <entry key="M10" value="195.1088246357413" />
-      <entry key="M15" value="262.32084169773594" />
-      <entry key="M30" value="413.09560507801046" />
-      <entry key="H1" value="681.9986312949408" />
-      <entry key="H2" value="1103.8005450834057" />
-      <entry key="H4" value="1548.5830765261187" />
-      <entry key="D1" value="2176.4935917598273" />
-      <entry key="W1" value="2319.8454943771117" />
+      <entry key="MS100" value="1.905970604638287" />
+      <entry key="MS500" value="5.985341773597249" />
+      <entry key="S2" value="13.394091614910993" />
+      <entry key="S5" value="16.874652344446794" />
+      <entry key="S10" value="18.340971253887396" />
+      <entry key="S30" value="19.56529006404817" />
+      <entry key="S60" value="22.282925804532077" />
+      <entry key="M2" value="34.486961678817835" />
+      <entry key="M5" value="90.47156450412889" />
+      <entry key="M10" value="183.10807234963613" />
+      <entry key="M15" value="254.60341157273925" />
+      <entry key="M30" value="414.5411300512217" />
+      <entry key="H1" value="689.8134605289403" />
+      <entry key="H2" value="1117.5265713442789" />
+      <entry key="H4" value="1569.8347046922777" />
+      <entry key="D1" value="2211.330118506834" />
+      <entry key="W1" value="2358.211341567594" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
       <entry key="S2" value="0.0" />
-      <entry key="S5" value="8.879570549739575E-178" />
-      <entry key="S10" value="3.3215431661287464E-89" />
-      <entry key="S30" value="4.630934061218958E-30" />
-      <entry key="S60" value="3.0264933990741674E-15" />
-      <entry key="M2" value="8.887730967475393E-8" />
-      <entry key="M5" value="0.0039830937647774975" />
-      <entry key="M10" value="0.17420457796887753" />
-      <entry key="M15" value="0.6569456796018514" />
-      <entry key="M30" value="2.6679946030958415" />
-      <entry key="H1" value="5.736912521167089" />
-      <entry key="H2" value="8.96085764499295" />
-      <entry key="H4" value="11.679334317637409" />
-      <entry key="D1" value="15.11613585996504" />
-      <entry key="W1" value="15.868741275667098" />
+      <entry key="S5" value="4.966684938597229E-192" />
+      <entry key="S10" value="2.4841466208789633E-96" />
+      <entry key="S30" value="1.9511067831183994E-32" />
+      <entry key="S60" value="1.9644724916820445E-16" />
+      <entry key="M2" value="2.2643523665130704E-8" />
+      <entry key="M5" value="0.00230505755772348" />
+      <entry key="M10" value="0.13252267262296144" />
+      <entry key="M15" value="0.547456826502449" />
+      <entry key="M30" value="2.435539369176288" />
+      <entry key="H1" value="5.4812969580485715" />
+      <entry key="H2" value="8.758951667445311" />
+      <entry key="H4" value="11.547005324981333" />
+      <entry key="D1" value="15.087455398383199" />
+      <entry key="W1" value="15.864436572540331" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.4254002419495089" />
-      <entry key="MS500" value="2.4881886054117666" />
-      <entry key="S2" value="2.857673621011506" />
-      <entry key="S5" value="2.9418166719050025" />
-      <entry key="S10" value="2.9856583520203595" />
-      <entry key="S30" value="6.2544019087082106" />
-      <entry key="S60" value="16.91889328499858" />
-      <entry key="M2" value="36.661343610336175" />
-      <entry key="M5" value="102.18729414300074" />
-      <entry key="M10" value="195.27762358138128" />
-      <entry key="M15" value="262.9721250805757" />
-      <entry key="M30" value="415.7575749747847" />
-      <entry key="H1" value="687.7298309417339" />
-      <entry key="H2" value="1112.7567721330067" />
-      <entry key="H4" value="1560.2592426507094" />
-      <entry key="D1" value="2191.609007969838" />
-      <entry key="W1" value="2335.71412670989" />
+      <entry key="MS100" value="1.7994502466658806" />
+      <entry key="MS500" value="5.92710413785202" />
+      <entry key="S2" value="13.360192675673414" />
+      <entry key="S5" value="16.85724409572665" />
+      <entry key="S10" value="18.331443777897892" />
+      <entry key="S30" value="19.561809851907473" />
+      <entry key="S60" value="22.280388513191948" />
+      <entry key="M2" value="34.483923070540555" />
+      <entry key="M5" value="90.46970841929537" />
+      <entry key="M10" value="183.23577147663164" />
+      <entry key="M15" value="255.14564419676705" />
+      <entry key="M30" value="416.9708997620019" />
+      <entry key="H1" value="695.2891596805421" />
+      <entry key="H2" value="1126.2809258428438" />
+      <entry key="H4" value="1581.3785419678366" />
+      <entry key="D1" value="2226.4168496201924" />
+      <entry key="W1" value="2374.0756683685604" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -174,42 +127,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.banking-service [clean].executor": "Run",
-    "Maven.banking-service [compile].executor": "Run",
-    "Maven.banking-service [validate].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found": "New/updated database configurations found",
-    "Notification.DoNotAsk-DatabaseConfigFileWatcher.found": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Spring Boot.AuthServiceApplication.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "banking-service",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/siddh/Programming/Java/TechRush_Project/TechRush_Project",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.jshint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.jshint": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.banking-service [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.banking-service [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.banking-service [validate].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;New/updated database configurations found&quot;,
+    &quot;Notification.DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.AuthServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/siddh/Programming/Java/TechRush_Project/TechRush_Project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.passwordlessauth.exception" />
@@ -218,11 +171,18 @@
       <recent name="C:\Users\siddh\Programming\Java\TechRush_Project\TechRush_Project\banking-service\src\main\java\com\passwordlessauth\banking\controller" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.AuthServiceApplication">
     <configuration name="AuthServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="passwordlessauth" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.passwordlessauth.AuthServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BankingServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="banking-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.passwordlessauth.banking.BankingServiceApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
