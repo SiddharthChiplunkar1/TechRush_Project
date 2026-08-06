@@ -35,3 +35,4 @@ target/
 .idea/
 *.iml
 /faceid-service/app/models/face_detection.onnx
+/faceid-service/app/models/face_recognition.onnx
