@@ -33,13 +33,13 @@ async function simulateSession(method, email, name) {
 const authService = {
   register(input) {
     return requestWithFallback(
-      () => api.post("/auth/register", input).then((r) => r.data),
+      () => api.post("/api/auth/register", input).then((r) => r.data),
       () => simulateSession("otp", input.email, input.name)
     );
   },
   requestOtp(email) {
     return requestWithFallback(
-      () => api.post("/auth/otp/request", { email }).then((r) => r.data),
+      () => api.post("/api/auth/login/otp/request", { email }).then((r) => r.data),
       async () => {
         await delay(600);
         return { sent: true, expiresIn: 60 };
@@ -48,7 +48,7 @@ const authService = {
   },
   verifyOtp(input) {
     return requestWithFallback(
-      () => api.post("/auth/otp/verify", input).then((r) => r.data),
+      () => api.post("/api/auth/login/otp/verify", input).then((r) => r.data),
       async () => {
         if (input.code.length !== 6) throw { message: "Enter all six digits" };
         return simulateSession("otp", input.email);
@@ -57,26 +57,26 @@ const authService = {
   },
   loginWithGoogle() {
     return requestWithFallback(
-      () => api.post("/auth/google").then((r) => r.data),
+      () => api.post("/api/auth/login/google").then((r) => r.data),
       () => simulateSession("google", "alex.morgan@gmail.com", "Alex Morgan")
     );
   },
   loginWithFace(imageDataUrl) {
     return requestWithFallback(
-      () => api.post("/auth/face/login", { image: imageDataUrl }).then((r) => r.data),
+      () => api.post("/api/auth/login/face", { image: imageDataUrl }).then((r) => r.data),
       () => simulateSession("face", "alex.morgan@securepass.ai", "Alex Morgan")
     );
   },
   async loginWithTrustedDevice() {
     const fp = await getDeviceFingerprint();
     return requestWithFallback(
-      () => api.post("/auth/device/login", { fingerprint: fp.visitorId }).then((r) => r.data),
+      () => api.post("/api/auth/device/login", { fingerprint: fp.visitorId }).then((r) => r.data),
       () => simulateSession("device", "alex.morgan@securepass.ai", "Alex Morgan")
     );
   },
   enrollFace(imageDataUrl) {
     return requestWithFallback(
-      () => api.post("/auth/face/enroll", { image: imageDataUrl }).then((r) => r.data),
+      () => api.post("/api/users/me/face-enroll", { image: imageDataUrl }).then((r) => r.data),
       async () => {
         await delay(1200);
         return { enrolled: true };
@@ -85,7 +85,7 @@ const authService = {
   },
   loginHistory() {
     return requestWithFallback(
-      () => api.get("/auth/history").then((r) => r.data),
+      () => api.get("/api/users/me/login-history").then((r) => r.data),
       async () => {
         await delay(500);
         const now = Date.now();
@@ -107,92 +107,92 @@ const authService = {
       }
     );
   },
-  trustedDevices() {
-    return requestWithFallback(
-      () => api.get("/devices").then((r) => r.data),
-      async () => {
-        const fp = await getDeviceFingerprint();
-        return [
-          {
-            id: "dev_current",
-            label: "This device",
-            fingerprint: fp.visitorId,
-            platform: fp.platform,
-            browser: fp.browser,
-            lastSeen: (/* @__PURE__ */ new Date()).toISOString(),
-            status: "current"
-          },
-          {
-            id: "dev_1",
-            label: "iPhone 15 Pro",
-            fingerprint: "a91f0c7d44b2",
-            platform: "iOS 18",
-            browser: "Safari",
-            lastSeen: new Date(Date.now() - 26 * 36e5).toISOString(),
-            status: "trusted"
-          },
-          {
-            id: "dev_2",
-            label: "Windows Workstation",
-            fingerprint: "77bc21ee90aa",
-            platform: "Windows 11",
-            browser: "Firefox",
-            lastSeen: new Date(Date.now() - 96 * 36e5).toISOString(),
-            status: "unknown"
-          }
-        ];
-      }
-    );
-  },
-  trustDevice(fingerprint) {
-    return requestWithFallback(
-      () => api.post("/devices/trust", { fingerprint }).then((r) => r.data),
-      async () => {
-        await delay(600);
-        return { trusted: true };
-      }
-    );
-  },
-  removeDevice(id) {
-    return requestWithFallback(
-      () => api.delete(`/devices/${id}`).then((r) => r.data),
-      async () => {
-        await delay(500);
-        return { removed: true };
-      }
-    );
-  },
-  analytics() {
-    return requestWithFallback(
-      () => api.get("/security/analytics").then((r) => r.data),
-      async () => {
-        await delay(450);
-        const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        return {
-          timeline: labels.map((label, i) => ({
-            label,
-            logins: 6 + i * 5 % 9,
-            blocked: i % 3 === 0 ? 1 : 0
-          })),
-          methods: [
-            { method: "Face ID", value: 46 },
-            { method: "Email OTP", value: 27 },
-            { method: "Google", value: 19 },
-            { method: "Device", value: 8 }
-          ]
-        };
-      }
-    );
-  },
-  logoutAllDevices() {
-    return requestWithFallback(
-      () => api.post("/auth/logout-all").then((r) => r.data),
-      async () => {
-        await delay(600);
-        return { revoked: 3 };
-      }
-    );
-  }
+  // trustedDevices() {
+  //   return requestWithFallback(
+  //     () => api.get("/api/devices").then((r) => r.data),
+  //     async () => {
+  //       const fp = await getDeviceFingerprint();
+  //       return [
+  //         {
+  //           id: "dev_current",
+  //           label: "This device",
+  //           fingerprint: fp.visitorId,
+  //           platform: fp.platform,
+  //           browser: fp.browser,
+  //           lastSeen: (/* @__PURE__ */ new Date()).toISOString(),
+  //           status: "current"
+  //         },
+  //         {
+  //           id: "dev_1",
+  //           label: "iPhone 15 Pro",
+  //           fingerprint: "a91f0c7d44b2",
+  //           platform: "iOS 18",
+  //           browser: "Safari",
+  //           lastSeen: new Date(Date.now() - 26 * 36e5).toISOString(),
+  //           status: "trusted"
+  //         },
+  //         {
+  //           id: "dev_2",
+  //           label: "Windows Workstation",
+  //           fingerprint: "77bc21ee90aa",
+  //           platform: "Windows 11",
+  //           browser: "Firefox",
+  //           lastSeen: new Date(Date.now() - 96 * 36e5).toISOString(),
+  //           status: "unknown"
+  //         }
+  //       ];
+  //     }
+  //   );
+  // },
+  // trustDevice(fingerprint) {
+  //   return requestWithFallback(
+  //     () => api.post("/api/devices/trust", { fingerprint }).then((r) => r.data),
+  //     async () => {
+  //       await delay(600);
+  //       return { trusted: true };
+  //     }
+  //   );
+  // },
+  // removeDevice(id) {
+  //   return requestWithFallback(
+  //     () => api.delete(`/api/devices/${id}`).then((r) => r.data),
+  //     async () => {
+  //       await delay(500);
+  //       return { removed: true };
+  //     }
+  //   );
+  // },
+  // analytics() {
+  //   return requestWithFallback(
+  //     () => api.get("/api/security/analytics").then((r) => r.data),
+  //     async () => {
+  //       await delay(450);
+  //       const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  //       return {
+  //         timeline: labels.map((label, i) => ({
+  //           label,
+  //           logins: 6 + i * 5 % 9,
+  //           blocked: i % 3 === 0 ? 1 : 0
+  //         })),
+  //         methods: [
+  //           { method: "Face ID", value: 46 },
+  //           { method: "Email OTP", value: 27 },
+  //           { method: "Google", value: 19 },
+  //           { method: "Device", value: 8 }
+  //         ]
+  //       };
+  //     }
+  //   );
+  // },
+  // logoutAllDevices() {
+  //   return requestWithFallback(
+  //     () => api.post("/api/auth/logout-all").then((r) => r.data),
+  //     async () => {
+  //       await delay(600);
+  //       return { revoked: 3 };
+  //     }
+  //   );
+  // }
 };
 export {
   authService

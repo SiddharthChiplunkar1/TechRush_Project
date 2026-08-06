@@ -78,7 +78,7 @@ function AuthProvider({ children }) {
       verifyOtp: (input) => run(() => authService.verifyOtp(input), "Identity verified"),
       loginWithGoogle: () => run(() => authService.loginWithGoogle(), "Signed in with Google"),
       loginWithFace: (image) => run(() => authService.loginWithFace(image), "Face matched"),
-      loginWithTrustedDevice: () => run(() => authService.loginWithTrustedDevice(), "Trusted device recognised"),
+     // loginWithTrustedDevice: () => run(() => authService.loginWithTrustedDevice(), "Trusted device recognised"),
       markFaceEnrolled: () => setUser((prev) => {
         if (!prev) return prev;
         const next = { ...prev, faceEnrolled: true, securityScore: Math.max(prev.securityScore, 96) };
