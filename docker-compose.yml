@@ -1,4 +1,5 @@
 services:
+  # Auth Database
   postgres-auth:
     image: postgres:16-alpine
     container_name: passwordless-postgres-auth
@@ -10,7 +11,13 @@ services:
       - "5432:5432"
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # Banking Database
   postgres-banking:
     image: postgres:16-alpine
     container_name: passwordless-postgres-banking
@@ -20,6 +27,29 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FaceID Database
+  postgres-faceid:
+    image: postgres:16-alpine
+    container_name: passwordless-postgres-faceid
+    environment:
+      POSTGRES_DB: faceid
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_faceid_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mailhog:
     image: mailhog/mailhog:latest
@@ -46,9 +76,10 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-your-google-client-id.apps.googleusercontent.com}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-your-google-client-secret}
     depends_on:
-      - postgres-auth
-      - mailhog
-      - faceid-service
+      postgres-auth:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
 
   banking-service:
     build:
@@ -62,7 +93,26 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       JWT_SECRET: ${JWT_SECRET:-dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=}
     depends_on:
-      - postgres-banking
+      postgres-banking:
+        condition: service_healthy
+
+  faceid-service:
+    build: ./faceid-service
+    container_name: faceid-service
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-faceid:5432/faceid
+      - JWT_SECRET=${JWT_SECRET:-dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=}
+      - DEBUG=true
+      - LOG_LEVEL=INFO
+    depends_on:
+      postgres-faceid:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./faceid-service:/app
 
   api-gateway:
     build:
@@ -76,10 +126,6 @@ services:
       - banking-service
       - faceid-service
 
-  faceid-service:
-    build:
-      context: ./faceid-service
-    ports:
-      - "8000:8000"
-    environment:
-      PYTHONUNBUFFERED: "1"
+volumes:
+  postgres_faceid_data:
+  insightface_cache:
