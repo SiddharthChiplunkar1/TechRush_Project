@@ -34,3 +34,4 @@ target/
 # IntelliJ
 .idea/
 *.iml
+/faceid-service/app/models/face_detection.onnx

@@ -1,22 +1,74 @@
 import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import face_routes
+from app.config.database import Base, engine
+from app.config.settings import settings
+from app.controller.face_controller import router as face_router
+from app.exceptions.handlers import setup_exception_handlers
 
-# Configure logging
+# -------------------------------------------------------------------
+# Logging
+# -------------------------------------------------------------------
+
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=getattr(logging, settings.log_level.upper()),
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
 )
+
+logger = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------
+# Database
+# -------------------------------------------------------------------
+
+Base.metadata.create_all(bind=engine)
+logger.info("Database initialized")
+
+
+# -------------------------------------------------------------------
+# Lifespan
+# -------------------------------------------------------------------
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("========================================")
+    logger.info("Starting FaceID Service")
+    logger.info("========================================")
+    logger.info(f"Database : {settings.database_url.split('@')[-1]}")
+    logger.info(f"Threshold: {settings.similarity_threshold}")
+    logger.info(f"Debug    : {settings.debug}")
+
+    yield
+
+    logger.info("Stopping FaceID Service")
+
+
+# -------------------------------------------------------------------
+# FastAPI
+# -------------------------------------------------------------------
 
 app = FastAPI(
-    title="TechRush FaceID Service",
-    description="Microservice for passwordless face recognition authentication",
-    version="1.0.0"
+    title="FaceID Service",
+    description="Face recognition service",
+    version="1.0.0",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
-# CORS middleware for local development
+# -------------------------------------------------------------------
+# Exception handlers
+# -------------------------------------------------------------------
+
+setup_exception_handlers(app)
+
+# -------------------------------------------------------------------
+# CORS
+# -------------------------------------------------------------------
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,10 +77,37 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(face_routes.router, prefix="/api/face", tags=["Face Authentication"])
+# -------------------------------------------------------------------
+# Routes
+# -------------------------------------------------------------------
 
-@app.get("/health", tags=["System"])
-def health_check():
-    """Simple health check endpoint."""
-    return {"status": "up"}
+app.include_router(face_router, prefix="/api/face")
+
+
+@app.get("/")
+async def root():
+    return {
+        "service": "faceid-service",
+        "version": "1.0.0",
+        "status": "running",
+        "docs": "/docs",
+        "health": "/health",
+    }
+    
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+# -------------------------------------------------------------------
+# Local development
+# -------------------------------------------------------------------
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=settings.debug,
+    )

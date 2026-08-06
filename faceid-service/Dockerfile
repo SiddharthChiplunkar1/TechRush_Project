@@ -1,40 +1,24 @@
-# Base image
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
-# Prevent Python from buffering stdout/stderr
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# Install system dependencies (only runtime libs, no build tools)
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install system dependencies required by OpenCV and dlib
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    pkg-config \
-    libopenblas-dev \
-    liblapack-dev \
-    libx11-dev \
-    libgtk-3-dev \
-    libboost-python-dev \
-    libboost-system-dev \
-    libboost-thread-dev \
-    libgl1 \
-    libglib2.0-0 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies
 COPY requirements.txt .
 
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
 COPY . .
 
-# FastAPI port
 EXPOSE 8000
 
-# Start server
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
