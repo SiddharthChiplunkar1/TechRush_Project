@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:bankingdb;MODE=PostgreSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+
+app:
+  jwt:
+    secret: dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=
+    issuer: TechRush
+    audience: techrush-app
+
+  banking:
+    step-up-threshold: 1000.00

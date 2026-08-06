@@ -5,7 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Minor Change in gitignore">
+      <change afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/controller/GatewayController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/api_gateway/ApiGatewayApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/api_gateway/GatewayController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/test/java/com/passwordlessauth/api_gateway/ApiGatewayApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/test/java/com/passwordlessauth/api_gateway/GatewayControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,61 +66,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.7622030876033465" />
-      <entry key="MS500" value="4.893419791306467" />
-      <entry key="S2" value="8.211102894172928" />
-      <entry key="S5" value="10.248832999106167" />
-      <entry key="S10" value="12.321649972316632" />
-      <entry key="S30" value="15.758167504406666" />
-      <entry key="S60" value="18.38210081340084" />
-      <entry key="M2" value="26.17327680942891" />
-      <entry key="M5" value="49.289437804142814" />
-      <entry key="M10" value="84.18423128769966" />
-      <entry key="M15" value="117.26956315485806" />
-      <entry key="M30" value="226.6296852575695" />
-      <entry key="H1" value="490.67619510514453" />
-      <entry key="H2" value="998.1430737568678" />
-      <entry key="H4" value="1654.7191410116552" />
-      <entry key="D1" value="2782.757144270568" />
-      <entry key="W1" value="3071.2414608406602" />
+      <entry key="MS100" value="1.1569910487323536" />
+      <entry key="MS500" value="2.7174574794542266" />
+      <entry key="S2" value="4.201807749617938" />
+      <entry key="S5" value="4.656053045685766" />
+      <entry key="S10" value="4.823605857897785" />
+      <entry key="S30" value="4.94046299104823" />
+      <entry key="S60" value="5.009478921574345" />
+      <entry key="M2" value="6.123144349561365" />
+      <entry key="M5" value="21.61759361975225" />
+      <entry key="M10" value="61.38338179522746" />
+      <entry key="M15" value="102.16023715312593" />
+      <entry key="M30" value="220.70392639535314" />
+      <entry key="H1" value="477.4534358232967" />
+      <entry key="H2" value="983.8176288670743" />
+      <entry key="H4" value="1673.3278253956098" />
+      <entry key="D1" value="2919.7298271341792" />
+      <entry key="W1" value="3247.8016851027323" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
       <entry key="S2" value="0.0" />
       <entry key="S5" value="0.0" />
-      <entry key="S10" value="1.4478327481539013E-187" />
-      <entry key="S30" value="5.4114330233786E-63" />
-      <entry key="S60" value="8.513531948465772E-32" />
-      <entry key="M2" value="3.83402482613201E-16" />
-      <entry key="M5" value="1.097715744331187E-6" />
-      <entry key="M10" value="0.001811201662145431" />
-      <entry key="M15" value="0.023373029133891547" />
-      <entry key="M30" value="0.39375681118692357" />
-      <entry key="H1" value="2.1963555335505034" />
-      <entry key="H2" value="6.034712896003264" />
-      <entry key="H4" value="10.646104942712382" />
-      <entry key="D1" value="17.90950999228868" />
-      <entry key="W1" value="19.684214853823367" />
+      <entry key="S10" value="4.416602019176554E-249" />
+      <entry key="S30" value="1.6908389538684028E-83" />
+      <entry key="S60" value="4.758879943937249E-42" />
+      <entry key="M2" value="2.866503061551545E-21" />
+      <entry key="M5" value="9.771672182710252E-9" />
+      <entry key="M10" value="1.7088592985368213E-4" />
+      <entry key="M15" value="0.004844043103778977" />
+      <entry key="M30" value="0.17925636214982818" />
+      <entry key="H1" value="1.4819238658045917" />
+      <entry key="H2" value="4.956992228254979" />
+      <entry key="H4" value="9.64876113823124" />
+      <entry key="D1" value="17.618293438598553" />
+      <entry key="W1" value="19.63816810016252" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.7155273089964285" />
-      <entry key="MS500" value="4.857376157786539" />
-      <entry key="S2" value="8.19392700709869" />
-      <entry key="S5" value="10.239731390039696" />
-      <entry key="S10" value="12.31596741495134" />
-      <entry key="S30" value="15.755667132042705" />
-      <entry key="S60" value="18.38052620548373" />
-      <entry key="M2" value="26.17185752028996" />
-      <entry key="M5" value="49.28804149958082" />
-      <entry key="M10" value="84.18463456971406" />
-      <entry key="M15" value="117.29147285770193" />
-      <entry key="M30" value="227.02147705446683" />
-      <entry key="H1" value="492.86955385657905" />
-      <entry key="H2" value="1004.1742092578735" />
-      <entry key="H4" value="1665.3621416289784" />
-      <entry key="D1" value="2800.665772543056" />
-      <entry key="W1" value="3090.925536665115" />
+      <entry key="MS100" value="1.0762610357383964" />
+      <entry key="MS500" value="2.6774584209441485" />
+      <entry key="S2" value="4.186565526733646" />
+      <entry key="S5" value="4.649322561490546" />
+      <entry key="S10" value="4.820124055682294" />
+      <entry key="S30" value="4.939275344693083" />
+      <entry key="S60" value="5.008877550415608" />
+      <entry key="M2" value="6.122748338390379" />
+      <entry key="M5" value="21.61678705867303" />
+      <entry key="M10" value="61.38229351847112" />
+      <entry key="M15" value="102.1636543223728" />
+      <entry key="M30" value="220.88142376041685" />
+      <entry key="H1" value="478.9327959117384" />
+      <entry key="H2" value="988.7713784843492" />
+      <entry key="H4" value="1682.973611828092" />
+      <entry key="D1" value="2937.347224973253" />
+      <entry key="W1" value="3267.4397104336203" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -128,42 +138,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Maven.banking-service [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.banking-service [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.banking-service [validate].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;New/updated database configurations found&quot;,
-    &quot;Notification.DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.AuthServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/siddh/Programming/Java/TechRush_Project/TechRush_Project&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.api-gateway [clean].executor": "Run",
+    "Maven.api-gateway [compile].executor": "Run",
+    "Maven.api-gateway [deploy].executor": "Run",
+    "Maven.api-gateway [package].executor": "Run",
+    "Maven.api-gateway [validate].executor": "Run",
+    "Maven.banking-service [clean].executor": "Run",
+    "Maven.banking-service [compile].executor": "Run",
+    "Maven.banking-service [validate].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found": "New/updated database configurations found",
+    "Notification.DoNotAsk-DatabaseConfigFileWatcher.found": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.AuthServiceApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "working-backend",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/siddh/Programming/Java/TechRush_Project/TechRush_Project",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.passwordlessauth.exception" />
@@ -173,7 +189,24 @@
       <recent name="C:\Users\siddh\Programming\Java\TechRush_Project\TechRush_Project\banking-service\src\main\java\com\passwordlessauth\banking\controller" />
     </key>
   </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="KtorApplicationConfigurationType" />
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
   <component name="RunManager" selected="Spring Boot.AuthServiceApplication">
+    <configuration name="ApiGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="api-gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.passwordlessauth.apigateway.ApiGatewayApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="AuthServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="passwordlessauth" />
