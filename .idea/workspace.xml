@@ -4,40 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Minor Changes and Fixed Port issue">
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/config/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/config/database.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/config/settings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/controller/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/controller/face_controller.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/exceptions/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/exceptions/handlers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/middleware/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/middleware/auth_middleware.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/models/face_embedding.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/models/face_recognition.onnx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/repository/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/repository/face_repository.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/schemas/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/schemas/request.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/schemas/response.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/services/liveness_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/services/onnx_face_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/services/recognition_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/utils/face_utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faceid-service/app/utils/image_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/app/api/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/app/api/face_routes.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/app/embeddings/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/app/models/schemas.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/app/services/face_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/services/face_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/faceid-service/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/requirements.txt" afterDir="false" />
-    </list>
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Minor Change in gitignore" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -49,7 +16,7 @@
     </colors>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="164" />
+    <option name="cachedIndexableFilesCount" value="3379" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -87,61 +54,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.7622030876033465" />
-      <entry key="MS500" value="4.893419791306467" />
-      <entry key="S2" value="8.211102894172928" />
-      <entry key="S5" value="10.248832999106167" />
-      <entry key="S10" value="12.321649972316632" />
-      <entry key="S30" value="15.758167504406666" />
-      <entry key="S60" value="18.38210081340084" />
-      <entry key="M2" value="26.17327680942891" />
-      <entry key="M5" value="49.289437804142814" />
-      <entry key="M10" value="84.18423128769966" />
-      <entry key="M15" value="117.26956315485806" />
-      <entry key="M30" value="226.6296852575695" />
-      <entry key="H1" value="490.67619510514453" />
-      <entry key="H2" value="998.1430737568678" />
-      <entry key="H4" value="1654.7191410116552" />
-      <entry key="D1" value="2782.757144270568" />
-      <entry key="W1" value="3071.2414608406602" />
+      <entry key="MS100" value="1.0000003614629134" />
+      <entry key="MS500" value="1.0874998696027591" />
+      <entry key="S2" value="4.240061290069667" />
+      <entry key="S5" value="13.665029691322593" />
+      <entry key="S10" value="29.223229036624492" />
+      <entry key="S30" value="61.85432966669285" />
+      <entry key="S60" value="78.86395812467244" />
+      <entry key="M2" value="93.30039310193418" />
+      <entry key="M5" value="114.86846689169539" />
+      <entry key="M10" value="151.01221357292386" />
+      <entry key="M15" value="189.6464561140858" />
+      <entry key="M30" value="306.1362720003762" />
+      <entry key="H1" value="560.1722132648988" />
+      <entry key="H2" value="1065.3683145894174" />
+      <entry key="H4" value="1760.6999988208897" />
+      <entry key="D1" value="3030.9141897225863" />
+      <entry key="W1" value="3367.240635259149" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
       <entry key="S2" value="0.0" />
       <entry key="S5" value="0.0" />
-      <entry key="S10" value="1.4478327481539013E-187" />
-      <entry key="S30" value="5.4114330233786E-63" />
-      <entry key="S60" value="8.513531948465772E-32" />
-      <entry key="M2" value="3.83402482613201E-16" />
-      <entry key="M5" value="1.097715744331187E-6" />
-      <entry key="M10" value="0.001811201662145431" />
-      <entry key="M15" value="0.023373029133891547" />
-      <entry key="M30" value="0.39375681118692357" />
-      <entry key="H1" value="2.1963555335505034" />
-      <entry key="H2" value="6.034712896003264" />
-      <entry key="H4" value="10.646104942712382" />
-      <entry key="D1" value="17.90950999228868" />
-      <entry key="W1" value="19.684214853823367" />
+      <entry key="S10" value="1.2231268011768825E-261" />
+      <entry key="S30" value="1.1021227907931762E-87" />
+      <entry key="S60" value="3.84209959051301E-44" />
+      <entry key="M2" value="2.575635157615339E-22" />
+      <entry key="M5" value="3.727191120700067E-9" />
+      <entry key="M10" value="1.0553893146995365E-4" />
+      <entry key="M15" value="0.0035130062592785057" />
+      <entry key="M30" value="0.15265465106148815" />
+      <entry key="H1" value="1.3675512895785176" />
+      <entry key="H2" value="4.7618652707079265" />
+      <entry key="H4" value="9.456947717643144" />
+      <entry key="D1" value="17.559429881914895" />
+      <entry key="W1" value="19.62878150055707" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.7155273089964285" />
-      <entry key="MS500" value="4.857376157786539" />
-      <entry key="S2" value="8.19392700709869" />
-      <entry key="S5" value="10.239731390039696" />
-      <entry key="S10" value="12.31596741495134" />
-      <entry key="S30" value="15.755667132042705" />
-      <entry key="S60" value="18.38052620548373" />
-      <entry key="M2" value="26.17185752028996" />
-      <entry key="M5" value="49.28804149958082" />
-      <entry key="M10" value="84.18463456971406" />
-      <entry key="M15" value="117.29147285770193" />
-      <entry key="M30" value="227.02147705446683" />
-      <entry key="H1" value="492.86955385657905" />
-      <entry key="H2" value="1004.1742092578735" />
-      <entry key="H4" value="1665.3621416289784" />
-      <entry key="D1" value="2800.665772543056" />
-      <entry key="W1" value="3090.925536665115" />
+      <entry key="MS100" value="1.257321982451007E-5" />
+      <entry key="MS500" value="0.16247602510152398" />
+      <entry key="S2" value="3.687268463281647" />
+      <entry key="S5" value="13.348072676250018" />
+      <entry key="S10" value="29.028250542026502" />
+      <entry key="S30" value="61.773080286815016" />
+      <entry key="S60" value="78.81963485323936" />
+      <entry key="M2" value="93.27648190633133" />
+      <entry key="M5" value="114.85782440793065" />
+      <entry key="M10" value="151.00617844863794" />
+      <entry key="M15" value="189.64530855678464" />
+      <entry key="M30" value="306.2855885722757" />
+      <entry key="H1" value="561.5364713680492" />
+      <entry key="H2" value="1070.1265993939314" />
+      <entry key="H4" value="1770.1537977484895" />
+      <entry key="D1" value="3048.4726880610797" />
+      <entry key="W1" value="3386.8692684947446" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -161,6 +128,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Maven.api-gateway [clean].executor": "Run",
+    "Maven.api-gateway [compile].executor": "Run",
+    "Maven.api-gateway [deploy].executor": "Run",
+    "Maven.api-gateway [package].executor": "Run",
+    "Maven.api-gateway [validate].executor": "Run",
     "Maven.banking-service [clean].executor": "Run",
     "Maven.banking-service [compile].executor": "Run",
     "Maven.banking-service [validate].executor": "Run",
@@ -177,7 +149,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.AuthServiceApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "test-faceid",
+    "git-widget-placeholder": "working-backend",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/siddh/Programming/Java/TechRush_Project/TechRush_Project",
     "node.js.detected.package.eslint": "true",
@@ -187,6 +159,7 @@
     "node.js.selected.package.jshint": "",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "run.configurations.included.in.services": "true",
     "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   },
   "keyToStringList": {
@@ -204,7 +177,24 @@
       <recent name="C:\Users\siddh\Programming\Java\TechRush_Project\TechRush_Project\banking-service\src\main\java\com\passwordlessauth\banking\controller" />
     </key>
   </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="KtorApplicationConfigurationType" />
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
   <component name="RunManager" selected="Spring Boot.AuthServiceApplication">
+    <configuration name="ApiGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="api-gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.passwordlessauth.apigateway.ApiGatewayApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="AuthServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="passwordlessauth" />
