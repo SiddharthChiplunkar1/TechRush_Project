@@ -34,5 +34,23 @@ target/
 # IntelliJ
 .idea/
 *.iml
-/faceid-service/app/models/face_detection.onnx
-/faceid-service/app/models/face_recognition.onnx
+# ONNX model files (too large for Git, store in S3/cloud storage)
+*.onnx
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Local databases
+*.db
+*.sqlite3
+
+# Secrets / env files
+.env
+auth-service/.env
+
+# Test artifacts
+faceid-service/test_payload.json
+faceid-service/test.db
+faceid-service/faceid.db
