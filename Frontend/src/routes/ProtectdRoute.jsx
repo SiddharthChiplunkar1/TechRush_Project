@@ -1,0 +1,14 @@
+import { Navigate } from "react-router-dom";
+import { storage } from "../utils/storage";
+
+const ProtectedRoute = ({ children }) => {
+  const token = storage.getAccessToken();
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+export default ProtectedRoute;
