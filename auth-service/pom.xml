@@ -20,7 +20,8 @@
     <description>TechRush Passwordless Authentication Service</description>
 
     <properties>
-        <java.version>21</java.version>
+        <!-- Aligned to project architecture: Java 17 -->
+        <java.version>17</java.version>
         <jjwt.version>0.12.6</jjwt.version>
         <mockito.version>5.18.0</mockito.version>
     </properties>
@@ -164,7 +165,7 @@
 
                 <configuration>
 
-                    <release>21</release>
+                    <release>17</release>
 
                     <annotationProcessorPaths>
 
