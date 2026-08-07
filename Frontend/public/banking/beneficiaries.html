@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Beneficiaries</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>body{font-family:Arial;padding:20px} input,button{padding:8px;margin:6px} .card{border:1px solid #ddd;padding:12px;margin:12px 0;border-radius:6px}</style>
+  </head>
+  <body>
+    <h1>Beneficiaries</h1>
+    <div class="card">
+      <input id="userId" placeholder="Your user id" />
+      <button onclick="load()">Load</button>
+      <pre id="list"></pre>
+    </div>
+    <div class="card">
+      <h3>Add Beneficiary</h3>
+      <input id="name" placeholder="Name" />
+      <input id="acct" placeholder="Account identifier (email)" />
+      <button onclick="add()">Add</button>
+      <pre id="addRes"></pre>
+    </div>
+    <script>
+      const API = (location.protocol + '//' + location.hostname + ':8080');
+      axios.defaults.baseURL = API; axios.defaults.withCredentials = true;
+      async function load(){ const u = document.getElementById('userId').value; try{ const r = await axios.get('/api/banking/beneficiaries', { params:{ userId: u }}); document.getElementById('list').innerText = JSON.stringify(r.data,null,2);}catch(e){document.getElementById('list').innerText = e.response?JSON.stringify(e.response.data):e.message} }
+      async function add(){ const n=document.getElementById('name').value; const a=document.getElementById('acct').value; try{ const r=await axios.post('/api/banking/beneficiaries', { name:n, accountIdentifier:a, favourite:false, id:document.getElementById('userId').value }); document.getElementById('addRes').innerText = JSON.stringify(r.data,null,2);}catch(e){document.getElementById('addRes').innerText = e.response?JSON.stringify(e.response.data):e.message } }
+    </script>
+  </body>
+</html>

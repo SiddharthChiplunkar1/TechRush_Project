@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Banking - Balance</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>body{font-family:Arial;padding:20px} .card{border:1px solid #ddd;padding:12px;margin:12px 0;border-radius:6px}</style>
+  </head>
+  <body>
+    <h1>Balance</h1>
+    <div class="card">
+      <h3>Your Account</h3>
+      <input id="userId" placeholder="Your user id (email)" />
+      <button onclick="getBalance()">Get Balance</button>
+      <pre id="out"></pre>
+    </div>
+    <script>
+      const API = (location.protocol + '//' + location.hostname + ':8080');
+      axios.defaults.baseURL = API; axios.defaults.withCredentials = true;
+      async function getBalance(){
+        const u = document.getElementById('userId').value;
+        try{ const r = await axios.get('/api/banking/balance', { params:{ userId: u }}); document.getElementById('out').innerText = JSON.stringify(r.data, null,2);}catch(e){document.getElementById('out').innerText = e.response ? JSON.stringify(e.response.data): e.message}
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Face Enrollment (Camera)</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>body{font-family:Arial;padding:20px} video{border:1px solid #ddd; width:320px; height:240px} .card{margin:12px 0}</style>
+  </head>
+  <body>
+    <h1>Face Enrollment</h1>
+    <div class="card">
+      <input id="userId" placeholder="User id (email)" />
+      <button onclick="startCamera()">Start Camera</button>
+      <button onclick="capture()">Capture & Enroll</button>
+      <button onclick="stopCamera()">Stop</button>
+    </div>
+    <div class="card">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" width="320" height="240" style="display:none"></canvas>
+    </div>
+    <pre id="status"></pre>
+    <script>
+      const API = (location.protocol + '//' + location.hostname + ':8080');
+      axios.defaults.baseURL = API; axios.defaults.withCredentials = true;
+      let stream;
+      async function startCamera(){ try{ stream = await navigator.mediaDevices.getUserMedia({ video:true }); document.getElementById('video').srcObject = stream; document.getElementById('status').innerText='Camera started'; }catch(e){document.getElementById('status').innerText='Camera error: '+e.message} }
+      function stopCamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); document.getElementById('video').srcObject=null; document.getElementById('status').innerText='Camera stopped'; } }
+      async function capture(){ const user = document.getElementById('userId').value; const video = document.getElementById('video'); const canvas = document.getElementById('canvas'); const ctx = canvas.getContext('2d'); ctx.drawImage(video,0,0,320,240); const data = canvas.toDataURL('image/jpeg'); const b64 = data.split(',')[1]; document.getElementById('status').innerText='Uploading...'; try{ const res = await axios.post('/api/face/enroll', { image_base64: b64 }, { headers: { 'Content-Type':'application/json', 'X-User-Id': user }}); document.getElementById('status').innerText='Enroll success: '+JSON.stringify(res.data);}catch(e){ document.getElementById('status').innerText='Enroll failed: '+(e.response?JSON.stringify(e.response.data):e.message);} }
+    </script>
+  </body>
+</html>
