@@ -36,12 +36,14 @@ public class FaceIdClientImpl implements FaceIdClient {
         String url = faceIdServiceUrl + "/api/face/enroll";
         Map<String, String> body = Map.of(
                 "userId", userId,
-                "imageBase64", imageBase64
+                "image_base64", imageBase64
         );
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            // Explicitly pass the target user id in a header to support server-to-server enrollment
+            headers.set("X-User-Id", userId);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
             restTemplate.postForEntity(url, request, Map.class);
             log.info("Face enrollment successful for user {}", maskId(userId));
@@ -60,12 +62,14 @@ public class FaceIdClientImpl implements FaceIdClient {
         String url = faceIdServiceUrl + "/api/face/verify";
         Map<String, String> body = Map.of(
                 "userId", userId,
-                "imageBase64", imageBase64
+                "image_base64", imageBase64
         );
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            // Ensure verification is performed against the intended user
+            headers.set("X-User-Id", userId);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 
             ResponseEntity<FaceVerifyResult> response =

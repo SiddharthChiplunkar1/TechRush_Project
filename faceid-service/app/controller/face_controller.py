@@ -1,14 +1,6 @@
-from typing import Any
+from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
-
-from app.config.database import get_db
-from app.exceptions.handlers import ErrorResponse
-from app.middleware.auth_middleware import get_current_user
-from typing import Any
-
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Header
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
@@ -17,7 +9,7 @@ from app.exceptions.handlers import ErrorResponse
 from app.middleware.auth_middleware import get_current_user
 from app.services.face_service import FaceService
 
-router = APIRouter(tags=["Face Authentication"])
+router = APIRouter(tags=["Face Authentication"]) 
 
 # --- Schemas ---
 
@@ -56,10 +48,12 @@ def get_face_service(
 )
 async def enroll(
     enroll_request: EnrollRequest,
+    user_id_header: Optional[str] = Header(None, alias="X-User-Id"),
     auth: dict = Depends(get_current_user),
     service: FaceService = Depends(get_face_service),
 ) -> EnrollResponse:
-    user_id = auth["user_id"]
+    # Prefer explicit header for server-to-server calls; otherwise use authenticated user
+    user_id = user_id_header if user_id_header else auth.get("user_id")
     result = service.enroll(
         user_id=user_id,
         image_base64=enroll_request.image_base64,
@@ -75,10 +69,11 @@ async def enroll(
 )
 async def verify(
     verify_request: VerifyRequest,
+    user_id_header: Optional[str] = Header(None, alias="X-User-Id"),
     auth: dict = Depends(get_current_user),
     service: FaceService = Depends(get_face_service),
 ) -> VerifyResponse:
-    user_id = auth["user_id"]
+    user_id = user_id_header if user_id_header else auth.get("user_id")
     result = service.verify(
         user_id=user_id,
         image_base64=verify_request.image_base64,
