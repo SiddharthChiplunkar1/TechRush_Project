@@ -1,8 +1,11 @@
 package com.passwordlessauth.controller;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import com.passwordlessauth.dto.requests.FaceLoginRequest;
 import com.passwordlessauth.dto.requests.GoogleLoginRequest;
@@ -35,6 +38,20 @@ public class AuthController {
 
     private final AuthService authService;
 
+    private ResponseEntity<ApiResponse<JwtResponse>> withRefreshCookie(JwtResponse jwt) {
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", jwt.getRefreshToken())
+                .httpOnly(true)
+                .path("/")
+                .maxAge(jwt.getExpiresIn() == null ? 7 * 24 * 3600 : 7 * 24 * 3600)
+                .sameSite("Lax")
+                .secure(false) // for dev; set to true in prod with HTTPS
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.ok().headers(headers).body(ApiResponse.success(jwt));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
             @Valid @RequestBody RegisterRequest request) {
@@ -51,35 +68,39 @@ public class AuthController {
     public ResponseEntity<ApiResponse<JwtResponse>> verifyOtp(
             @Valid @RequestBody OtpVerifyRequest request,
             HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(ApiResponse.success(authService.verifyOtp(request, httpRequest)));
+        JwtResponse jwt = authService.verifyOtp(request, httpRequest);
+        return withRefreshCookie(jwt);
     }
 
     @PostMapping("/login/face")
     public ResponseEntity<ApiResponse<JwtResponse>> faceLogin(
             @Valid @RequestBody FaceLoginRequest request,
             HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(ApiResponse.success(authService.faceLogin(request, httpRequest)));
+        JwtResponse jwt = authService.faceLogin(request, httpRequest);
+        return withRefreshCookie(jwt);
     }
 
     @PostMapping("/login/google")
     public ResponseEntity<ApiResponse<JwtResponse>> googleLogin(
             @Valid @RequestBody GoogleLoginRequest request,
             HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(ApiResponse.success(authService.googleLogin(request, httpRequest)));
+        JwtResponse jwt = authService.googleLogin(request, httpRequest);
+        return withRefreshCookie(jwt);
     }
 
     @PostMapping("/login/trusted-device")
     public ResponseEntity<ApiResponse<JwtResponse>> trustedDeviceLogin(
             @Valid @RequestBody TrustedDeviceLoginRequest request,
             HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(ApiResponse.success(
-                authService.trustedDeviceLogin(request, httpRequest)));
+        JwtResponse jwt = authService.trustedDeviceLogin(request, httpRequest);
+        return withRefreshCookie(jwt);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authService.refreshToken(request)));
+        JwtResponse jwt = authService.refreshToken(request);
+        return withRefreshCookie(jwt);
     }
 
     @PostMapping("/logout")
@@ -93,6 +114,18 @@ public class AuthController {
         }
         String deviceId = httpRequest.getHeader("X-Device-Id");
         authService.logout(principal.getUserId(), deviceId, allDevices);
-        return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));
+
+        // clear refresh cookie
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .secure(false)
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().headers(headers).body(ApiResponse.success("Logged out successfully"));
     }
 }
