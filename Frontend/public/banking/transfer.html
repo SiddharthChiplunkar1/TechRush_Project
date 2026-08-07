@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Banking - Transfer</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>body{font-family:Arial;padding:20px} input,button{padding:8px;margin:6px} .card{border:1px solid #ddd;padding:12px;margin:12px 0;border-radius:6px}</style>
+  </head>
+  <body>
+    <h1>Transfer Money</h1>
+    <div class="card">
+      <input id="fromUser" placeholder="From (your email)" />
+      <input id="toUser" placeholder="To (recipient email)" />
+      <input id="amount" placeholder="Amount" />
+      <input id="desc" placeholder="Description (optional)" />
+      <button onclick="initiate()">Initiate Transfer</button>
+      <pre id="res"></pre>
+    </div>
+    <script>
+      const API = (location.protocol + '//' + location.hostname + ':8080');
+      axios.defaults.baseURL = API; axios.defaults.withCredentials = true;
+      async function initiate(){
+        const from = document.getElementById('fromUser').value;
+        const to = document.getElementById('toUser').value;
+        const amount = document.getElementById('amount').value;
+        const desc = document.getElementById('desc').value;
+        try{
+          const r = await axios.post('/api/banking/transfer', { fromUserId: from, toUserId: to, amount: parseFloat(amount), description: desc });
+          document.getElementById('res').innerText = JSON.stringify(r.data, null,2);
+        }catch(e){document.getElementById('res').innerText = e.response ? JSON.stringify(e.response.data): e.message}
+      }
+    </script>
+  </body>
+</html>

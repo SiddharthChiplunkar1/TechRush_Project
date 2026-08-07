@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Notifications</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>body{font-family:Arial;padding:20px} .card{border:1px solid #ddd;padding:12px;margin:12px 0;border-radius:6px}</style>
+  </head>
+  <body>
+    <h1>Notifications</h1>
+    <div class="card">
+      <input id="userId" placeholder="User id" />
+      <button onclick="load()">Load</button>
+      <pre id="out"></pre>
+    </div>
+    <script>
+      const API = (location.protocol + '//' + location.hostname + ':8080');
+      axios.defaults.baseURL = API; axios.defaults.withCredentials = true;
+      async function load(){ const u=document.getElementById('userId').value; try{ const r=await axios.get('/api/notifications', { params:{ userId:u }}); document.getElementById('out').innerText = JSON.stringify(r.data,null,2);}catch(e){document.getElementById('out').innerText = e.response?JSON.stringify(e.response.data):e.message} }
+    </script>
+  </body>
+</html>

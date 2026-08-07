@@ -1,27 +1,43 @@
 package com.passwordlessauth.banking.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "accounts")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(name = "user_id", nullable = false, unique = true)
+    @Id
+    private String accountId;
+
+    @Column(nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "user_email", nullable = false)
-    private String userEmail;
+    @Column(nullable = false)
+    private BigDecimal balance;
 
     @Column(nullable = false)
-    private BigDecimal balance = BigDecimal.valueOf(10000.00);
+    private Instant createdAt;
+
+    public Account() {
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (accountId == null) accountId = UUID.randomUUID().toString();
+        if (createdAt == null) createdAt = Instant.now();
+        if (balance == null) balance = BigDecimal.ZERO;
+    }
+
+    // getters/setters
+    public String getAccountId() { return accountId; }
+    public void setAccountId(String accountId) { this.accountId = accountId; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public BigDecimal getBalance() { return balance; }
+    public void setBalance(BigDecimal balance) { this.balance = balance; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

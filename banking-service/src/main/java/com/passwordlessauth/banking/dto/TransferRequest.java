@@ -1,12 +1,19 @@
 package com.passwordlessauth.banking.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public record TransferRequest(
-        @NotBlank String payeeName,
-        @NotBlank String payeeAccount,
-        @NotNull @DecimalMin(value = "0.01") BigDecimal amount
-) {}
+public class TransferRequest {
+    private String fromUserId;
+    private String toUserId;
+    private BigDecimal amount;
+    private String description;
+
+    public String getFromUserId() { return fromUserId; }
+    public void setFromUserId(String fromUserId) { this.fromUserId = fromUserId; }
+    public String getToUserId() { return toUserId; }
+    public void setToUserId(String toUserId) { this.toUserId = toUserId; }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+}
