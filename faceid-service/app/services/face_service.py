@@ -1,76 +1,118 @@
 import logging
-from typing import Dict, Any
+import time
+from collections import defaultdict, deque
+from typing import Any, Dict, List
+
+import numpy as np
 from sqlalchemy.orm import Session
 
-from app.repository.face_repository import FaceRepository
-from app.services.matcher import OpenCVFaceMatcher
 from app.config.settings import settings
 from app.exceptions.handlers import (
-    UserNotEnrolledError,
     MatchFailedError,
-    DatabaseError
+    NoFaceDetectedError,
+    UserNotEnrolledError,
 )
+from app.repository.face_repository import FaceRepository
+from app.services.matcher import OpenCVFaceMatcher
+from app.utils.image_utils import decode_base64_image, validate_image_quality, compute_image_hash
 
 logger = logging.getLogger(__name__)
 
+
 class FaceService:
+    _attempts: dict[str, deque[float]] = defaultdict(deque)
+
     def __init__(self, db: Session):
         self.db = db
         self.repository = FaceRepository(db)
         self.matcher = OpenCVFaceMatcher()
 
     def enroll(self, user_id: str, image_base64: str) -> Dict[str, Any]:
-        """
-        Extracts face embedding and saves to DB.
-        """
-        # 1. Extract embedding using Mock OpenCV Matcher
-        # Will raise NoFaceDetectedError, MultipleFacesDetectedError, or InvalidImageError
-        embedding_str = self.matcher.extract_embedding(image_base64)
+        self._check_rate_limit(f"enroll:{user_id}", settings.max_enroll_attempts, settings.max_enroll_window_seconds)
+        image = self._decode_and_validate(image_base64)
+        quality_ok, quality_score = validate_image_quality(image)
+        if not quality_ok:
+            raise MatchFailedError("Image quality is too low")
 
-        # 2. Store in repository
+        embedding_str = self.matcher.extract_embedding(image_base64)
         saved = self.repository.enroll_face(user_id, embedding_str)
-        
+        logger.info("Face enrolled for user %s", self._mask(user_id))
         return {
             "success": True,
             "message": "Face enrolled successfully",
             "user_id": user_id,
             "embedding_id": saved.id,
+            "quality_score": quality_score,
         }
 
     def verify(self, user_id: str, image_base64: str) -> Dict[str, Any]:
-        """
-        Verifies face against user's saved embeddings.
-        """
-        # 1. Fetch user's stored embeddings
+        self._check_rate_limit(f"verify:{user_id}", settings.max_verify_attempts, settings.max_verify_window_seconds)
         embeddings = self.repository.get_user_embeddings(user_id)
         if not embeddings:
-            raise UserNotEnrolledError(f"User {user_id} has no enrolled face data.")
+            raise UserNotEnrolledError("No enrolled face data found")
 
-        # 2. Verify against the embeddings
-        # For simplicity, we check against all saved embeddings and see if any pass
+        image = self._decode_and_validate(image_base64)
+        quality_ok, _ = validate_image_quality(image)
+        if not quality_ok:
+            raise MatchFailedError("Face verification failed")
+
         best_similarity = 0.0
-        match = False
-        
         for record in embeddings:
             try:
-                # verify returns similarity float or raises MatchFailedError
-                similarity = self.matcher.verify(
-                    image_base64, 
-                    record.embedding, 
-                    threshold=settings.similarity_threshold
-                )
-                if similarity > best_similarity:
-                    best_similarity = similarity
-                    match = True
+                similarity = self.matcher.verify(image_base64, record.embedding, threshold=settings.verify_similarity_threshold)
+                best_similarity = max(best_similarity, similarity)
             except MatchFailedError:
-                pass # Try next embedding
-                
-        if not match:
-            raise MatchFailedError("Face did not match enrolled embeddings")
-            
+                continue
+
+        if best_similarity < settings.verify_similarity_threshold:
+            raise MatchFailedError("Face verification failed")
+
         return {
             "success": True,
-            "match": match,
+            "match": True,
             "similarity": best_similarity,
-            "message": "Face match successful",
+            "message": "Face verification successful",
         }
+
+    def verify_live(self, user_id: str, frames: List[str]) -> Dict[str, Any]:
+        self._check_rate_limit(f"live:{user_id}", settings.max_verify_attempts, settings.max_verify_window_seconds)
+        if len(frames) < 3:
+            raise MatchFailedError("Liveness verification requires multiple frames")
+
+        live_score = self._assess_liveness(frames)
+        if live_score is False:
+            raise MatchFailedError("Liveness verification failed")
+
+        result = self.verify(user_id=user_id, image_base64=frames[-1])
+        result.update({
+            "live": True,
+            "message": "Face and liveness verification successful",
+        })
+        return result
+
+    def _decode_and_validate(self, image_base64: str):
+        image = decode_base64_image(image_base64)
+        if image is None or image.size == 0:
+            raise NoFaceDetectedError("No face detected in the image")
+        if image.shape[0] * image.shape[1] * 3 > settings.max_image_bytes:
+            raise MatchFailedError("Image too large")
+        return image
+
+    def _assess_liveness(self, frames: List[str]) -> bool:
+        # Minimal signal: ensure the burst is not a replay of identical frames.
+        hashes = {compute_image_hash(decode_base64_image(frame)) for frame in frames}
+        return len(hashes) >= 2
+
+    def _check_rate_limit(self, key: str, max_attempts: int, window_seconds: int) -> None:
+        now = time.time()
+        attempts = self._attempts[key]
+        while attempts and now - attempts[0] > window_seconds:
+            attempts.popleft()
+        if len(attempts) >= max_attempts:
+            raise MatchFailedError("Too many attempts")
+        attempts.append(now)
+
+    def _mask(self, value: str) -> str:
+        if not value or len(value) <= 4:
+            return "***"
+        return "***" + value[-4:]

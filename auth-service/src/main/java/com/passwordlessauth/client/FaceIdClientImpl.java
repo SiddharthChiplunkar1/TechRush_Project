@@ -25,6 +25,9 @@ public class FaceIdClientImpl implements FaceIdClient {
     @Value("${app.faceid.url:http://localhost:8000}")
     private String faceIdServiceUrl;
 
+    @Value("${app.faceid.service-token:}")
+    private String faceIdServiceToken;
+
     private final RestTemplate restTemplate;
 
     public FaceIdClientImpl() {
@@ -42,7 +45,7 @@ public class FaceIdClientImpl implements FaceIdClient {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            // Explicitly pass the target user id in a header to support server-to-server enrollment
+            headers.set("X-Service-Token", faceIdServiceToken);
             headers.set("X-User-Id", userId);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
             restTemplate.postForEntity(url, request, Map.class);
@@ -68,7 +71,7 @@ public class FaceIdClientImpl implements FaceIdClient {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            // Ensure verification is performed against the intended user
+            headers.set("X-Service-Token", faceIdServiceToken);
             headers.set("X-User-Id", userId);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 

@@ -4,9 +4,71 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Minor Change in gitignore">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Build issues fixed">
+      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/client/RiskClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/CustomAuthenticationEntryPoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/RiskAssessmentRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/RiskAssessmentResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/enums/RiskLevel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/exceptions/UnauthorizedAccessException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/ApiGatewayApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/ApiGatewayApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/controller/GatewayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/controller/GatewayController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/FaceIdClientImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/client/FaceIdClientImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/OtpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/service/OtpService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/test/java/com/passwordlessauth/AuthControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/test/java/com/passwordlessauth/AuthControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/test/java/com/passwordlessauth/JwtServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/test/java/com/passwordlessauth/JwtServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/FaceIdClientImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/client/FaceIdClientImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/controller/AuthController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/JwtService.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/JwtService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/OtpService.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/service/OtpService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/AuthControllerSecurityTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/AuthControllerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/AuthServiceApplicationTests.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/JwtServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/OtpServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/test-classes/com/passwordlessauth/RiskEngineServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/client/NotificationClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/client/NotificationClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/JwtConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/JwtConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/SwaggerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/SwaggerConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/controller/BankingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/controller/BankingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/controller/BeneficiaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/controller/BeneficiaryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BalanceResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BalanceResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BeneficiaryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BeneficiaryDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BlockedTransfersResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/BlockedTransfersResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/ConfirmTransferRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/ConfirmTransferRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransactionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransactionDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransactionHistoryResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransactionHistoryResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransferRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransferRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransferResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/dto/TransferResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Account.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Account.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/BankTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/BankTransaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Beneficiary.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Beneficiary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/entity/Transaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/enums/TransactionStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/enums/TransactionStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/AccountRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/AccountRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/BeneficiaryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/BeneficiaryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/TransactionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/repository/TransactionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/security/AuthenticatedUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/security/AuthenticatedUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/service/BankingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/service/BankingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/test-classes/com/passwordlessauth/banking_service/BankingServiceApplicationTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/target/test-classes/com/passwordlessauth/banking_service/BankingServiceApplicationTests.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/app/config/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/config/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/app/controller/face_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/controller/face_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/app/middleware/auth_middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/middleware/auth_middleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/app/repository/face_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/repository/face_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/app/services/face_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/app/services/face_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/tests/test_auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/tests/test_auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faceid-service/tests/test_endpoints.py" beforeDir="false" afterPath="$PROJECT_DIR$/faceid-service/tests/test_endpoints.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,7 +76,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="306" />
+    <option name="cachedIndexableFilesCount" value="307" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -52,61 +114,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0364168533666889" />
-      <entry key="MS500" value="1.769947858722619" />
-      <entry key="S2" value="3.4619269521553155" />
-      <entry key="S5" value="5.004625839085448" />
-      <entry key="S10" value="9.54232864206429" />
-      <entry key="S30" value="22.985404219081214" />
-      <entry key="S60" value="30.414884718236966" />
-      <entry key="M2" value="38.89413558549098" />
-      <entry key="M5" value="76.21117301949847" />
-      <entry key="M10" value="137.05572292245517" />
-      <entry key="M15" value="188.94271420856816" />
-      <entry key="M30" value="323.01837648976476" />
-      <entry key="H1" value="585.1852014733718" />
-      <entry key="H2" value="1095.1148907183651" />
-      <entry key="H4" value="1803.8482498525543" />
-      <entry key="D1" value="3118.852335934096" />
-      <entry key="W1" value="3470.3720279629024" />
+      <entry key="MS100" value="1.8713792909044802" />
+      <entry key="MS500" value="3.3454363444237725" />
+      <entry key="S2" value="6.827858010505396" />
+      <entry key="S5" value="11.385587993524231" />
+      <entry key="S10" value="20.48835569531935" />
+      <entry key="S30" value="40.31883726513095" />
+      <entry key="S60" value="52.63606795722568" />
+      <entry key="M2" value="70.39506824019763" />
+      <entry key="M5" value="102.171648680559" />
+      <entry key="M10" value="122.94272481001715" />
+      <entry key="M15" value="133.69817853858152" />
+      <entry key="M30" value="176.81713135395285" />
+      <entry key="H1" value="343.55622885624655" />
+      <entry key="H2" value="789.0435248112389" />
+      <entry key="H4" value="1545.5769649101398" />
+      <entry key="D1" value="3222.6963319085485" />
+      <entry key="W1" value="3716.7983720120915" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="1.1621465940696922E-283" />
-      <entry key="S30" value="5.029133068404361E-95" />
-      <entry key="S60" value="8.207297759090684E-48" />
-      <entry key="M2" value="3.764437842310224E-24" />
-      <entry key="M5" value="6.87555843065688E-10" />
-      <entry key="M10" value="4.532896992027018E-5" />
-      <entry key="M15" value="0.001999805207970555" />
-      <entry key="M30" value="0.11517664575603105" />
-      <entry key="H1" value="1.187875202348295" />
-      <entry key="H2" value="4.438034765941889" />
-      <entry key="H4" value="9.129726894104522" />
-      <entry key="D1" value="17.4566757113171" />
-      <entry key="W1" value="19.61233111396436" />
+      <entry key="MS500" value="1.5757014456644752E-241" />
+      <entry key="S2" value="8.236740678336065E-61" />
+      <entry key="S5" value="1.350617589120118E-24" />
+      <entry key="S10" value="1.6325076622355627E-12" />
+      <entry key="S30" value="1.8662936438071948E-4" />
+      <entry key="S60" value="0.0193162335656445" />
+      <entry key="M2" value="0.19654209475517284" />
+      <entry key="M5" value="0.7906923228037437" />
+      <entry key="M10" value="1.26739571255772" />
+      <entry key="M15" value="1.5475417190141338" />
+      <entry key="M30" value="2.393624702249684" />
+      <entry key="H1" value="4.16744243494412" />
+      <entry key="H2" value="7.694806888771568" />
+      <entry key="H4" value="13.111440968700695" />
+      <entry key="D1" value="24.26106587754948" />
+      <entry key="W1" value="27.421123498150536" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9800352045515469" />
-      <entry key="MS500" value="1.7191446525697678" />
-      <entry key="S2" value="3.3731482517223084" />
-      <entry key="S5" value="4.939388412735217" />
-      <entry key="S10" value="9.482799181230282" />
-      <entry key="S30" value="22.94350148675073" />
-      <entry key="S60" value="30.388347657252506" />
-      <entry key="M2" value="38.87834654082115" />
-      <entry key="M5" value="76.20137418066507" />
-      <entry key="M10" value="137.048422849965" />
-      <entry key="M15" value="188.93865152399394" />
-      <entry key="M30" value="323.1291588020052" />
-      <entry key="H1" value="586.3692272504205" />
-      <entry key="H2" value="1099.5490800980303" />
-      <entry key="H4" value="1812.9746790543902" />
-      <entry key="D1" value="3136.308042056503" />
-      <entry key="W1" value="3489.9842047094016" />
+      <entry key="MS100" value="1.765477937399128" />
+      <entry key="MS500" value="3.2967580531820255" />
+      <entry key="S2" value="6.791761885538135" />
+      <entry key="S5" value="11.352432430059299" />
+      <entry key="S10" value="20.445569808596108" />
+      <entry key="S30" value="40.28414186909618" />
+      <entry key="S60" value="52.632081728199225" />
+      <entry key="M2" value="70.57581572334207" />
+      <entry key="M5" value="102.95274492160885" />
+      <entry key="M10" value="124.20415707625803" />
+      <entry key="M15" value="135.24120669402686" />
+      <entry key="M30" value="179.20729446670038" />
+      <entry key="H1" value="347.7202566370502" />
+      <entry key="H2" value="796.7347283014452" />
+      <entry key="H4" value="1558.6850742303761" />
+      <entry key="D1" value="3246.956294780256" />
+      <entry key="W1" value="3744.2193152473933" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -126,6 +188,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Maven.api-gateway [--version].executor": "Run",
     "Maven.api-gateway [clean].executor": "Run",
     "Maven.api-gateway [compile].executor": "Run",
     "Maven.api-gateway [deploy].executor": "Run",
@@ -134,6 +197,8 @@
     "Maven.banking-service [clean].executor": "Run",
     "Maven.banking-service [compile].executor": "Run",
     "Maven.banking-service [validate].executor": "Run",
+    "Maven.passwordlessauth [clean].executor": "Run",
+    "Maven.passwordlessauth [compile].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found": "New/updated database configurations found",
     "Notification.DoNotAsk-DatabaseConfigFileWatcher.found": "true",
@@ -147,7 +212,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.AuthServiceApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "backend",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/siddh/Programming/TechRush_Project",
     "node.js.detected.package.eslint": "true",
@@ -158,7 +223,8 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+    "settings.editor.selected.configurable": "MavenSettings",
+    "ts.external.directory.path": "C:\\Users\\siddh\\Programming\\TechRush_Project\\Frontend\\node_modules\\typescript\\lib"
   },
   "keyToStringList": {
     "DatabaseDriversLRU": [
@@ -174,6 +240,11 @@
       <recent name="C:\Users\siddh\Programming\Java\TechRush_Project\TechRush_Project\faceid-service\app" />
       <recent name="C:\Users\siddh\Programming\Java\TechRush_Project\TechRush_Project\banking-service\src\main\java\com\passwordlessauth\banking\controller" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn --version" />
+    </option>
   </component>
   <component name="RunDashboard">
     <option name="configurationTypes">
@@ -243,7 +314,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Minor Changes and Fixed Port issue" />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor Changes and Fixed Port issue" />
+    <MESSAGE value="Build issues fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Build issues fixed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

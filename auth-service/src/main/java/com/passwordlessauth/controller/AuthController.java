@@ -100,6 +100,9 @@ public class AuthController {
     public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request) {
         JwtResponse jwt = authService.refreshToken(request);
+        if (jwt == null) {
+            throw new IllegalStateException("Refresh token rotation returned no token");
+        }
         return withRefreshCookie(jwt);
     }
 

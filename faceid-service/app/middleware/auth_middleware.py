@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from fastapi import Depends, Request
+from fastapi import Depends, Header, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 
@@ -14,7 +14,7 @@ from app.exceptions.handlers import (
 
 logger = logging.getLogger(__name__)
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """
@@ -22,6 +22,9 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     Requires audience and issuer explicitly to match constraints.
     Returns decoded payload.
     """
+    if credentials is None:
+        return None
+
     token = credentials.credentials
     try:
         # Note: the secret is NOT base64-decoded as per requirements.
@@ -32,18 +35,14 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
             audience=settings.jwt_audience,
             issuer=settings.jwt_issuer,
         )
-    except jwt.ExpiredSignatureError as e:
-        logger.error(f"ExpiredSignatureError: {e}")
+    except jwt.ExpiredSignatureError:
+        logger.warning("Expired JWT rejected")
         raise ExpiredTokenException()
-    except jwt.JWTClaimsError as e:
-        # This occurs if audience or issuer mismatch, etc.
-        logger.error(f"JWTClaimsError: {e}")
-        raise InvalidAudienceException(detail=str(e))
-    except JWTError as e:
-        logger.error(f"JWTError: {e}")
+    except jwt.JWTClaimsError:
+        raise InvalidAudienceException()
+    except JWTError:
         raise InvalidTokenException()
-    except Exception as e:
-        logger.error(f"Unknown JWT decoding error: {e}")
+    except Exception:
         raise InvalidTokenException()
 
     aud_claim = payload.get("aud")
@@ -66,6 +65,9 @@ def get_current_user(request: Request, payload: dict = Depends(verify_token)):
     """
     Extracts user info from validated token and adds to request.state.
     """
+    if payload is None:
+        raise InvalidTokenException(detail="Missing authentication")
+
     user_id = payload.get("userId")
     if not user_id:
         logger.error("Token missing userId claim")
@@ -86,3 +88,16 @@ def get_current_user(request: Request, payload: dict = Depends(verify_token)):
         "role": role,
         "auth_level": auth_level
     }
+
+
+def verify_service_token(
+    x_service_token: Optional[str] = Header(None, alias="X-Service-Token")
+):
+    expected = settings.faceid_service_token.strip()
+    if not x_service_token:
+        return None
+    if not expected:
+        raise InvalidTokenException(detail="Service token not configured")
+    if x_service_token != expected:
+        raise InvalidTokenException(detail="Invalid service token")
+    return {"service": True}

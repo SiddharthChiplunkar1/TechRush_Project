@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -20,6 +21,12 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
 # -------------------------------------------------------------------
 # Database
 # -------------------------------------------------------------------
@@ -37,9 +44,8 @@ async def lifespan(app: FastAPI):
     logger.info("========================================")
     logger.info("Starting FaceID Service")
     logger.info("========================================")
-    logger.info(f"Database : {settings.database_url.split('@')[-1]}")
-    logger.info(f"Threshold: {settings.similarity_threshold}")
-    logger.info(f"Debug    : {settings.debug}")
+    logger.info("Threshold: %s", settings.similarity_threshold)
+    logger.info("Debug    : %s", settings.debug)
 
     yield
 
@@ -71,10 +77,10 @@ setup_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-User-Id", "X-Service-Token"],
 )
 
 # -------------------------------------------------------------------
