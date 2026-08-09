@@ -17,9 +17,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedFaceEnrollmentRouteImport } from './routes/_authenticated/face-enrollment'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedTrustedDevicesRouteImport } from './routes/_authenticated/trusted-devices'
 import { Route as LoginIndexRouteImport } from './routes/login.index'
-import { Route as LoginDeviceRouteImport } from './routes/login.device'
 import { Route as LoginFaceRouteImport } from './routes/login.face'
 import { Route as LoginGoogleRouteImport } from './routes/login.google'
 import { Route as LoginOtpRouteImport } from './routes/login.otp'
@@ -64,20 +62,9 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTrustedDevicesRoute =
-  AuthenticatedTrustedDevicesRouteImport.update({
-    id: '/trusted-devices',
-    path: '/trusted-devices',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginDeviceRoute = LoginDeviceRouteImport.update({
-  id: '/login/device',
-  path: '/login/device',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginFaceRoute = LoginFaceRouteImport.update({
@@ -104,8 +91,6 @@ export interface FileRoutesByFullPath {
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/trusted-devices': typeof AuthenticatedTrustedDevicesRoute
-  '/login/device': typeof LoginDeviceRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
@@ -119,8 +104,6 @@ export interface FileRoutesByTo {
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/trusted-devices': typeof AuthenticatedTrustedDevicesRoute
-  '/login/device': typeof LoginDeviceRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
@@ -136,8 +119,6 @@ export interface FileRoutesById {
   '/_authenticated/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/trusted-devices': typeof AuthenticatedTrustedDevicesRoute
-  '/login/device': typeof LoginDeviceRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
@@ -153,8 +134,6 @@ export interface FileRouteTypes {
     | '/face-enrollment'
     | '/profile'
     | '/settings'
-    | '/trusted-devices'
-    | '/login/device'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
@@ -168,8 +147,6 @@ export interface FileRouteTypes {
     | '/face-enrollment'
     | '/profile'
     | '/settings'
-    | '/trusted-devices'
-    | '/login/device'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
@@ -184,8 +161,6 @@ export interface FileRouteTypes {
     | '/_authenticated/face-enrollment'
     | '/_authenticated/profile'
     | '/_authenticated/settings'
-    | '/_authenticated/trusted-devices'
-    | '/login/device'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
@@ -197,7 +172,6 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   RegisterRoute: typeof RegisterRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
-  LoginDeviceRoute: typeof LoginDeviceRoute
   LoginFaceRoute: typeof LoginFaceRoute
   LoginGoogleRoute: typeof LoginGoogleRoute
   LoginOtpRoute: typeof LoginOtpRoute
@@ -262,25 +236,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/trusted-devices': {
-      id: '/_authenticated/trusted-devices'
-      path: '/trusted-devices'
-      fullPath: '/trusted-devices'
-      preLoaderRoute: typeof AuthenticatedTrustedDevicesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/login/': {
       id: '/login/'
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof LoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login/device': {
-      id: '/login/device'
-      path: '/login/device'
-      fullPath: '/login/device'
-      preLoaderRoute: typeof LoginDeviceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/face': {
@@ -312,7 +272,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFaceEnrollmentRoute: typeof AuthenticatedFaceEnrollmentRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedTrustedDevicesRoute: typeof AuthenticatedTrustedDevicesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -320,7 +279,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFaceEnrollmentRoute: AuthenticatedFaceEnrollmentRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedTrustedDevicesRoute: AuthenticatedTrustedDevicesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -331,7 +289,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   RegisterRoute: RegisterRoute,
   UnauthorizedRoute: UnauthorizedRoute,
-  LoginDeviceRoute: LoginDeviceRoute,
   LoginFaceRoute: LoginFaceRoute,
   LoginGoogleRoute: LoginGoogleRoute,
   LoginOtpRoute: LoginOtpRoute,

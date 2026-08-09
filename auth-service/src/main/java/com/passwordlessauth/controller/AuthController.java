@@ -42,7 +42,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("refresh_token", jwt.getRefreshToken())
                 .httpOnly(true)
                 .path("/")
-                .maxAge(jwt.getExpiresIn() == null ? 7 * 24 * 3600 : 7 * 24 * 3600)
+                .maxAge(7L * 24 * 3600)
                 .sameSite("Lax")
                 .secure(false) // for dev; set to true in prod with HTTPS
                 .build();
