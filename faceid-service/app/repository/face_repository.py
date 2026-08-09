@@ -22,6 +22,10 @@ class FaceRepository:
                 quality_score=1.0, # default mock quality
                 active=True
             )
+            self.db.query(FaceEmbedding).filter(
+                FaceEmbedding.user_id == user_id,
+                FaceEmbedding.active.is_(True),
+            ).update({"active": False}, synchronize_session=False)
             self.db.add(face_embed)
             self.db.commit()
             self.db.refresh(face_embed)
@@ -38,8 +42,14 @@ class FaceRepository:
         try:
             return self.db.query(FaceEmbedding).filter(
                 FaceEmbedding.user_id == user_id,
-                FaceEmbedding.active == True
+                FaceEmbedding.active.is_(True)
             ).all()
         except Exception as e:
             logger.error(f"Failed to retrieve embeddings for user {user_id}: {e}")
             raise DatabaseError("Could not retrieve face embeddings")
+
+    def count_active_embeddings(self, user_id: str) -> int:
+        return self.db.query(FaceEmbedding).filter(
+            FaceEmbedding.user_id == user_id,
+            FaceEmbedding.active.is_(True)
+        ).count()

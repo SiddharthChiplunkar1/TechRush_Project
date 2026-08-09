@@ -66,7 +66,7 @@ public class OtpService {
         token.setOtpHash(otpHash);
         token.setPurpose(purpose);
         token.setExpiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES));
-        otpTokenRepository.saveAndFlush(token);
+        otpTokenRepository.save(token);
 
         sendOtpEmail(user.getEmail(), otp, purpose);
         log.info("OTP sent to {} for purpose {}", maskEmail(user.getEmail()), purpose);
@@ -133,10 +133,8 @@ public class OtpService {
             helper.setText(buildEmailBody(otp, purpose), true);
             mailSender.send(message);
         } catch (Exception ex) {
-            log.error("Failed to send OTP email to {}: {}", maskEmail(email), ex.getMessage());
-            log.warn("SMTP failure. FALLBACK: The OTP for {} is: {}", maskEmail(email), otp);
-            // In a real production system, you might still throw an exception here if email is mandatory.
-            // For dev/testing without a local MailHog, we log it and proceed.
+            log.error("Failed to send OTP email to {}: {}", maskEmail(email), ex.getClass().getSimpleName());
+            // Never log or return the OTP itself. Delivery failures should not leak secrets.
         }
     }
 

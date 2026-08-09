@@ -3,7 +3,7 @@ package com.passwordlessauth.service;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
-import java.util.UUID;
+import java.security.SecureRandom;
 
 import javax.crypto.SecretKey;
 
@@ -30,18 +30,23 @@ public class JwtService {
     private static final String CLAIM_ROLE         = "role";
     private static final String CLAIM_AUTH_LEVEL   = "authLevel";
     private static final String CLAIM_TOKEN_VER    = "tokenVersion";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final JwtConfig jwtConfig;
     private final SecretKey signingKey;
 
     public JwtService(JwtConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
-        byte[] secretBytes = jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8);
-        if (secretBytes.length < 32) {
-            byte[] padded = new byte[32];
-            System.arraycopy(secretBytes, 0, padded, 0, secretBytes.length);
-            secretBytes = padded;
+        String secret = jwtConfig.getSecret();
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException("JWT secret must be configured");
         }
+
+        byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+        if (secretBytes.length < 32) {
+            throw new IllegalStateException("JWT secret must be at least 32 bytes");
+        }
+
         this.signingKey = Keys.hmacShaKeyFor(secretBytes);
     }
 
@@ -64,7 +69,9 @@ public class JwtService {
     }
 
     public String generateRefreshToken() {
-        return UUID.randomUUID().toString();
+        byte[] tokenBytes = new byte[32];
+        SECURE_RANDOM.nextBytes(tokenBytes);
+        return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
     }
 
     public Claims validateAndExtractClaims(String token) {

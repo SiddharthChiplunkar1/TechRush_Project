@@ -2,12 +2,18 @@ package com.passwordlessauth.banking.controller;
 
 import com.passwordlessauth.banking.dto.BeneficiaryDto;
 import com.passwordlessauth.banking.entity.Beneficiary;
+import com.passwordlessauth.banking.exceptions.NotFoundException;
 import com.passwordlessauth.banking.repository.BeneficiaryRepository;
+import com.passwordlessauth.banking.security.AuthenticatedUser;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/banking/beneficiaries")
@@ -15,46 +21,200 @@ public class BeneficiaryController {
 
     private final BeneficiaryRepository beneficiaryRepository;
 
-    public BeneficiaryController(BeneficiaryRepository beneficiaryRepository) {
+    public BeneficiaryController(
+            BeneficiaryRepository beneficiaryRepository
+    ) {
         this.beneficiaryRepository = beneficiaryRepository;
     }
 
+    /**
+     * Returns only beneficiaries belonging to the authenticated user.
+     *
+     * The user ID is obtained exclusively from the JWT principal.
+     */
     @GetMapping
-    public ResponseEntity<List<BeneficiaryDto>> list(@RequestParam("userId") String userId) {
-        List<Beneficiary> list = beneficiaryRepository.findByUserIdOrderByCreatedAtDesc(userId);
-        List<BeneficiaryDto> dtos = list.stream().map(b -> {
-            BeneficiaryDto d = new BeneficiaryDto();
-            d.setId(b.getId()); d.setName(b.getName()); d.setAccountIdentifier(b.getAccountIdentifier()); d.setFavourite(b.isFavourite());
-            return d;
-        }).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<List<BeneficiaryDto>> list(
+            @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+
+        AuthenticatedUser authenticatedUser =
+                requireAuthenticatedUser(user);
+
+        List<BeneficiaryDto> beneficiaries =
+                beneficiaryRepository
+                        .findByUserIdOrderByCreatedAtDesc(
+                                authenticatedUser.userId()
+                        )
+                        .stream()
+                        .map(this::toDto)
+                        .toList();
+
+        return ResponseEntity.ok(beneficiaries);
     }
 
+    /**
+     * Creates a beneficiary for the authenticated user.
+     *
+     * SECURITY:
+     * userId is NEVER accepted from the client.
+     */
     @PostMapping
-    public ResponseEntity<BeneficiaryDto> add(@RequestBody BeneficiaryDto dto) {
-        Beneficiary b = new Beneficiary();
-        b.setUserId(dto.getId() == null ? dto.getAccountIdentifier() : dto.getId()); // preserve if provided
-        // Expect client to pass userId in dto.accountIdentifier for simplicity — fix if needed
-        b.setName(dto.getName());
-        b.setAccountIdentifier(dto.getAccountIdentifier());
-        b.setFavourite(dto.isFavourite());
-        b = beneficiaryRepository.save(b);
-        dto.setId(b.getId());
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<BeneficiaryDto> add(
+            @Valid @RequestBody BeneficiaryDto dto,
+            @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+
+        AuthenticatedUser authenticatedUser =
+                requireAuthenticatedUser(user);
+
+        Beneficiary beneficiary =
+                Beneficiary.create(
+                        authenticatedUser.userId(),
+                        dto.getName(),
+                        dto.getAccountIdentifier(),
+                        dto.isFavourite()
+                );
+
+        Beneficiary saved =
+                beneficiaryRepository.save(beneficiary);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(toDto(saved));
     }
 
+    /**
+     * Deletes a beneficiary belonging to the authenticated user.
+     *
+     * SECURITY:
+     * A user cannot delete another user's beneficiary simply by
+     * changing the ID in the URL.
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        beneficiaryRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> delete(
+            @PathVariable String id,
+            @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+
+        AuthenticatedUser authenticatedUser =
+                requireAuthenticatedUser(user);
+
+        if (id == null || id.isBlank()) {
+            throw new NotFoundException(
+                    "Beneficiary not found"
+            );
+        }
+
+        Beneficiary beneficiary =
+                beneficiaryRepository
+                        .findByIdAndUserId(
+                                id,
+                                authenticatedUser.userId()
+                        )
+                        .orElseThrow(
+                                () -> new NotFoundException(
+                                        "Beneficiary not found"
+                                )
+                        );
+
+        beneficiaryRepository.delete(beneficiary);
+
+        return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Updates the favourite state of a beneficiary.
+     *
+     * Existing API contract is preserved:
+     *
+     * POST /{id}/favorite?fav=true
+     */
     @PostMapping("/{id}/favorite")
-    public ResponseEntity<Void> toggleFavorite(@PathVariable String id, @RequestParam boolean fav) {
-        beneficiaryRepository.findById(id).ifPresent(b -> {
-            b.setFavourite(fav);
-            beneficiaryRepository.save(b);
-        });
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> toggleFavorite(
+            @PathVariable String id,
+            @RequestParam("fav") boolean favourite,
+            @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+
+        AuthenticatedUser authenticatedUser =
+                requireAuthenticatedUser(user);
+
+        if (id == null || id.isBlank()) {
+            throw new NotFoundException(
+                    "Beneficiary not found"
+            );
+        }
+
+        Beneficiary beneficiary =
+                beneficiaryRepository
+                        .findByIdAndUserId(
+                                id,
+                                authenticatedUser.userId()
+                        )
+                        .orElseThrow(
+                                () -> new NotFoundException(
+                                        "Beneficiary not found"
+                                )
+                        );
+
+        beneficiary.setFavourite(favourite);
+
+        beneficiaryRepository.save(beneficiary);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Defensive authentication boundary.
+     *
+     * SecurityConfig should normally prevent unauthenticated access,
+     * but controllers should still avoid NullPointerException if a
+     * principal is unexpectedly missing.
+     */
+    private AuthenticatedUser requireAuthenticatedUser(
+            AuthenticatedUser user
+    ) {
+
+        if (user == null ||
+                user.userId() == null ||
+                user.userId().isBlank()) {
+
+            throw new NotFoundException(
+                    "Beneficiary not found"
+            );
+        }
+
+        return user;
+    }
+
+    /**
+     * Maps the persistence entity to the external DTO.
+     *
+     * Internal ownership information is intentionally not exposed.
+     */
+    private BeneficiaryDto toDto(
+            Beneficiary beneficiary
+    ) {
+
+        BeneficiaryDto dto =
+                new BeneficiaryDto();
+
+        dto.setId(
+                beneficiary.getId()
+        );
+
+        dto.setName(
+                beneficiary.getName()
+        );
+
+        dto.setAccountIdentifier(
+                beneficiary.getAccountIdentifier()
+        );
+
+        dto.setFavourite(
+                beneficiary.isFavourite()
+        );
+
+        return dto;
     }
 }

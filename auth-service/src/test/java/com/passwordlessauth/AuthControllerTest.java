@@ -1,33 +1,34 @@
 package com.passwordlessauth;
 
+import com.passwordlessauth.controller.AuthController;
 import com.passwordlessauth.dto.requests.OtpRequest;
+import com.passwordlessauth.dto.requests.RefreshTokenRequest;
 import com.passwordlessauth.dto.requests.RegisterRequest;
 import com.passwordlessauth.dto.responses.ApiResponse;
+import com.passwordlessauth.dto.responses.JwtResponse;
 import com.passwordlessauth.dto.responses.LoginResponse;
 import com.passwordlessauth.dto.responses.RegisterResponse;
-import com.passwordlessauth.controller.AuthController;
 import com.passwordlessauth.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Lightweight unit tests for AuthController.
- * Verifies that the controller delegates correctly to AuthService and
- * shapes the HTTP response properly — no Spring context required.
- */
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
-    @Mock  private AuthService authService;
-    @InjectMocks private AuthController controller;
+    @Mock
+    private AuthService authService;
+
+    @InjectMocks
+    private AuthController controller;
 
     @Test
     void register_delegatesToAuthService_returnsSuccessResponse() {
@@ -69,17 +70,21 @@ class AuthControllerTest {
 
     @Test
     void refreshToken_responseIsWrappedInApiResponse() {
-        // Verifies the ApiResponse wrapper is present even when authService returns null
-        // (null is handled gracefully — success=true, data=null is valid for some flows)
-        var req = new com.passwordlessauth.dto.requests.RefreshTokenRequest();
+        RefreshTokenRequest req = new RefreshTokenRequest();
         req.setRefreshToken("some-token");
 
-        when(authService.refreshToken(req)).thenReturn(null);
+        when(authService.refreshToken(req))
+                .thenReturn(JwtResponse.builder()
+                        .refreshToken("rotated-token")
+                        .accessToken("access-token")
+                        .expiresIn(900)
+                        .build());
 
-        ResponseEntity<ApiResponse<com.passwordlessauth.dto.responses.JwtResponse>> response =
-                controller.refreshToken(req);
+        ResponseEntity<ApiResponse<JwtResponse>> response = controller.refreshToken(req);
 
         assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody().isSuccess()).isTrue();
+        assertThat(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE))
+                .contains("refresh_token=");
     }
 }

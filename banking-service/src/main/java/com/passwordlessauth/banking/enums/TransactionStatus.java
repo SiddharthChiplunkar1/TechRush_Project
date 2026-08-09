@@ -1,7 +1,8 @@
 package com.passwordlessauth.banking.enums;
 
 public enum TransactionStatus {
+    PENDING,
     COMPLETED,
-    BLOCKED_STEP_UP_REQUIRED,
-    FAILED
+    FAILED,
+    BLOCKED_STEP_UP_REQUIRED
 }

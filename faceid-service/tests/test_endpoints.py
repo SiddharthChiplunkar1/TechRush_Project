@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from tests.test_auth import create_token
 from app.exceptions.handlers import MatchFailedError
+from tests.conftest import VALID_IMAGE_BASE64
 
 # Setup test database
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -29,6 +30,7 @@ def override_get_db():
 app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
+SERVICE_HEADERS = {"X-Service-Token": "test-faceid-service-token"}
 
 @pytest.fixture(autouse=True)
 def cleanup_db():
@@ -49,8 +51,8 @@ def test_enroll_success(mock_extract):
     
     response = client.post(
         "/api/face/enroll",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"image_base64": "dummy_image_data"}
+        headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
+        json={"image_base64": VALID_IMAGE_BASE64}
     )
     
     assert response.status_code == 200
@@ -70,8 +72,8 @@ def test_verify_success(mock_verify, mock_extract):
     
     client.post(
         "/api/face/enroll",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"image_base64": "dummy_image_data"}
+        headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
+        json={"image_base64": VALID_IMAGE_BASE64}
     )
     
     # Mock verify
@@ -80,8 +82,8 @@ def test_verify_success(mock_verify, mock_extract):
     # Test verify
     response = client.post(
         "/api/face/verify",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"image_base64": "dummy_image_data"}
+        headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
+        json={"image_base64": VALID_IMAGE_BASE64}
     )
     
     assert response.status_code == 200
@@ -96,8 +98,8 @@ def test_verify_not_enrolled():
     
     response = client.post(
         "/api/face/verify",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"image_base64": "dummy_image_data"}
+        headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
+        json={"image_base64": VALID_IMAGE_BASE64}
     )
     
     assert response.status_code == 404
@@ -113,8 +115,8 @@ def test_verify_failure(mock_verify, mock_extract):
     # Enroll
     client.post(
         "/api/face/enroll",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"image_base64": "dummy_image_data"}
+        headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
+        json={"image_base64": VALID_IMAGE_BASE64}
     )
     
     # Mock verify to throw MatchFailedError
@@ -122,8 +124,8 @@ def test_verify_failure(mock_verify, mock_extract):
     
     response = client.post(
         "/api/face/verify",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"image_base64": "dummy_image_data"}
+        headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
+        json={"image_base64": VALID_IMAGE_BASE64}
     )
     
     assert response.status_code == 401

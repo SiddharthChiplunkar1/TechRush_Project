@@ -1,16 +1,14 @@
 package com.passwordlessauth.banking.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BalanceResponse {
-    private String userId;
     private BigDecimal balance;
-
-    public BalanceResponse() {}
-    public BalanceResponse(String userId, BigDecimal balance) { this.userId = userId; this.balance = balance; }
-
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-    public BigDecimal getBalance() { return balance; }
-    public void setBalance(BigDecimal balance) { this.balance = balance; }
 }

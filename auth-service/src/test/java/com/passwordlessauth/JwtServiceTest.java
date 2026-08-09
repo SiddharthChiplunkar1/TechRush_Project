@@ -12,8 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.*;
 
 /**
@@ -118,11 +116,12 @@ class JwtServiceTest {
     }
 
     @Test
-    void generateRefreshToken_isValidUuid() {
+    void generateRefreshToken_isSecureRandomToken() {
         String rt = jwtService.generateRefreshToken();
-        // Should not throw
-        UUID uuid = UUID.fromString(rt);
-        assertThat(uuid).isNotNull();
+
+        assertThat(rt).isNotBlank();
+        assertThat(rt).doesNotContain("=");
+        assertThat(rt.length()).isGreaterThan(20);
     }
 
     @Test
