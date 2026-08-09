@@ -58,3 +58,6 @@ auth-service/.env
 faceid-service/test_payload.json
 faceid-service/test.db
 faceid-service/faceid.db
+/api-gateway/src/main/resources/
+/banking-service/src/main/resources/
+/auth-service/src/main/resources/
