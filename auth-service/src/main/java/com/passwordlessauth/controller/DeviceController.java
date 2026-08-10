@@ -1,5 +1,9 @@
 package com.passwordlessauth.controller;
 
+import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +16,6 @@ import com.passwordlessauth.exception.UserNotFoundException;
 import com.passwordlessauth.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/devices")
@@ -24,35 +27,64 @@ public class DeviceController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<DeviceResponse>>> getUserDevices(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        
-        var user = userRepository.findById(userPrincipal.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-                
-        return ResponseEntity.ok(ApiResponse.success(deviceService.getUserDevices(user)));
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        requireAuthenticated(principal);
+
+        var user = userRepository.findById(principal.getUserId())
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found"));
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        deviceService.getUserDevices(user)
+                )
+        );
     }
 
     @PostMapping("/{deviceId}/trust")
     public ResponseEntity<ApiResponse<DeviceResponse>> trustDevice(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable String deviceId) {
-            
-        var user = userRepository.findById(userPrincipal.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-                
-        return ResponseEntity.ok(ApiResponse.success(
-                deviceService.trustDevice(user, deviceId)));
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable @NotBlank String deviceId
+    ) {
+        requireAuthenticated(principal);
+
+        var user = userRepository.findById(principal.getUserId())
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found"));
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        deviceService.trustDevice(user, deviceId)
+                )
+        );
     }
 
     @DeleteMapping("/{deviceId}")
     public ResponseEntity<ApiResponse<Void>> removeDevice(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable String deviceId) {
-            
-        var user = userRepository.findById(userPrincipal.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-                
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable @NotBlank String deviceId
+    ) {
+        requireAuthenticated(principal);
+
+        var user = userRepository.findById(principal.getUserId())
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found"));
+
         deviceService.removeDevice(user, deviceId);
-        return ResponseEntity.ok(ApiResponse.success("Device removed successfully"));
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Device removed successfully"
+                )
+        );
+    }
+
+    private void requireAuthenticated(UserPrincipal principal) {
+        if (principal == null) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Authentication required"
+            );
+        }
     }
 }

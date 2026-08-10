@@ -1,185 +1,331 @@
 package com.passwordlessauth.controller;
 
+import java.time.Duration;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.passwordlessauth.dto.requests.FaceLoginRequest;
 import com.passwordlessauth.dto.requests.GoogleLoginRequest;
-import com.passwordlessauth.dto.requests.OtpRequest;
-import com.passwordlessauth.dto.requests.OtpVerifyRequest;
-import com.passwordlessauth.dto.requests.RefreshTokenRequest;
-import com.passwordlessauth.dto.requests.RegisterRequest;
-import com.passwordlessauth.dto.requests.RegistrationVerifyRequest;
 import com.passwordlessauth.dto.requests.IdentifyRequest;
 import com.passwordlessauth.dto.requests.LoginStepUpVerifyRequest;
+import com.passwordlessauth.dto.requests.OtpRequest;
+import com.passwordlessauth.dto.requests.OtpVerifyRequest;
+import com.passwordlessauth.dto.requests.RegisterRequest;
+import com.passwordlessauth.dto.requests.RegistrationVerifyRequest;
 import com.passwordlessauth.dto.requests.TrustedDeviceLoginRequest;
 import com.passwordlessauth.dto.responses.ApiResponse;
 import com.passwordlessauth.dto.responses.JwtResponse;
-import com.passwordlessauth.dto.responses.LoginResponse;
-import com.passwordlessauth.dto.responses.RegisterResponse;
-import com.passwordlessauth.dto.responses.IdentifyResponse;
 import com.passwordlessauth.security.UserPrincipal;
 import com.passwordlessauth.service.AuthService;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Cookie;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Authentication controller — handles every public auth flow plus
- * token refresh and logout.  No business logic lives here; it only
- * validates input, delegates to {@link AuthService}, and shapes the
- * HTTP response.
- */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+    private static final String REFRESH_COOKIE = "refresh_token";
+    private static final String DEVICE_ID_HEADER = "X-Device-Id";
+
     private final AuthService authService;
 
-    @Value("${app.security.refresh-cookie-secure:false}")
+    @Value("${app.security.refresh-cookie-secure}")
     private boolean refreshCookieSecure;
 
-    private ResponseEntity<ApiResponse<JwtResponse>> withRefreshCookie(JwtResponse jwt) {
-        if (jwt.getRefreshToken() == null) {
-            return ResponseEntity.ok(ApiResponse.success(jwt));
-        }
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", jwt.getRefreshToken())
-                .httpOnly(true)
-                .path("/api/auth")
-                .maxAge(7L * 24 * 3600)
-                .sameSite("Lax")
-                .secure(refreshCookieSecure)
-                .build();
-        // Never expose the refresh credential in JSON; it is cookie-only.
+    @Value("${app.jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
 
+    private ResponseEntity<ApiResponse<?>> withRefreshCookie(
+            JwtResponse jwt
+    ) {
+        if (jwt == null) {
+            throw new IllegalStateException(
+                    "Authentication did not return a session"
+            );
+        }
+
+        String refreshToken = jwt.getRefreshToken();
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity.ok(
+                    ApiResponse.success(jwt)
+            );
+        }
+
+        ResponseCookie cookie =
+                ResponseCookie
+                        .from(
+                                REFRESH_COOKIE,
+                                refreshToken
+                        )
+                        .httpOnly(true)
+                        .secure(refreshCookieSecure)
+                        .sameSite("Lax")
+                        .path("/api/auth")
+                        .maxAge(
+                                Duration.ofMillis(
+                                        refreshTokenExpiration
+                                )
+                        )
+                        .build();
+
+        /*
+         * JwtResponse must already prevent refreshToken from
+         * being serialized into JSON (@JsonIgnore).
+         */
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
-        return ResponseEntity.ok().headers(headers).body(ApiResponse.success(jwt));
+        headers.add(
+                HttpHeaders.SET_COOKIE,
+                cookie.toString()
+        );
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(ApiResponse.success(jwt));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponse>> register(
-            @Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authService.register(request)));
+    public ResponseEntity<ApiResponse<?>> register(
+            @Valid @RequestBody RegisterRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        authService.register(request)
+                )
+        );
     }
 
     @PostMapping("/register/verify")
-    public ResponseEntity<ApiResponse<JwtResponse>> verifyRegistration(
-            @Valid @RequestBody RegistrationVerifyRequest request, HttpServletRequest httpRequest) {
-        return withRefreshCookie(authService.verifyRegistration(request, httpRequest));
+    public ResponseEntity<ApiResponse<?>> verifyRegistration(
+            @Valid @RequestBody RegistrationVerifyRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return withRefreshCookie(
+                authService.verifyRegistration(
+                        request,
+                        httpRequest
+                )
+        );
     }
 
     @PostMapping("/identify")
-    public ResponseEntity<ApiResponse<IdentifyResponse>> identify(@Valid @RequestBody IdentifyRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authService.identify(request)));
+    public ResponseEntity<ApiResponse<?>> identify(
+            @Valid @RequestBody IdentifyRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        authService.identify(request)
+                )
+        );
     }
 
     @PostMapping("/continue")
-    public ResponseEntity<ApiResponse<LoginResponse>> continueWithEmail(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authService.continueWithEmail(request)));
+    public ResponseEntity<ApiResponse<?>> continueWithEmail(
+            @Valid @RequestBody RegisterRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        authService.continueWithEmail(request)
+                )
+        );
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<JwtResponse>> verifyEmailAuthentication(
-            @Valid @RequestBody RegistrationVerifyRequest request, HttpServletRequest httpRequest) {
-        return withRefreshCookie(authService.verifyEmailAuthentication(request, httpRequest));
+    public ResponseEntity<ApiResponse<?>> verifyEmailAuthentication(
+            @Valid @RequestBody RegistrationVerifyRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return withRefreshCookie(
+                authService.verifyEmailAuthentication(
+                        request,
+                        httpRequest
+                )
+        );
     }
 
     @PostMapping("/login/otp/request")
-    public ResponseEntity<ApiResponse<LoginResponse>> requestOtp(
-            @Valid @RequestBody OtpRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authService.sendOtp(request)));
+    public ResponseEntity<ApiResponse<?>> requestOtp(
+            @Valid @RequestBody OtpRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        authService.sendOtp(request)
+                )
+        );
     }
 
     @PostMapping("/login/otp/verify")
-    public ResponseEntity<ApiResponse<JwtResponse>> verifyOtp(
+    public ResponseEntity<ApiResponse<?>> verifyOtp(
             @Valid @RequestBody OtpVerifyRequest request,
-            HttpServletRequest httpRequest) {
-        JwtResponse jwt = authService.verifyOtp(request, httpRequest);
-        return withRefreshCookie(jwt);
+            HttpServletRequest httpRequest
+    ) {
+        return withRefreshCookie(
+                authService.verifyOtp(
+                        request,
+                        httpRequest
+                )
+        );
     }
 
     @PostMapping("/login/step-up/verify")
-    public ResponseEntity<ApiResponse<JwtResponse>> verifyLoginStepUp(
-            @Valid @RequestBody LoginStepUpVerifyRequest request, HttpServletRequest httpRequest) {
-        return withRefreshCookie(authService.verifyLoginStepUp(request, httpRequest));
+    public ResponseEntity<ApiResponse<?>> verifyLoginStepUp(
+            @Valid @RequestBody LoginStepUpVerifyRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return withRefreshCookie(
+                authService.verifyLoginStepUp(
+                        request,
+                        httpRequest
+                )
+        );
     }
 
     @PostMapping("/login/face")
-    public ResponseEntity<ApiResponse<JwtResponse>> faceLogin(
+    public ResponseEntity<ApiResponse<?>> faceLogin(
             @Valid @RequestBody FaceLoginRequest request,
-            HttpServletRequest httpRequest) {
-        JwtResponse jwt = authService.faceLogin(request, httpRequest);
-        return withRefreshCookie(jwt);
+            HttpServletRequest httpRequest
+    ) {
+        return withRefreshCookie(
+                authService.faceLogin(
+                        request,
+                        httpRequest
+                )
+        );
     }
 
     @PostMapping("/login/google")
-    public ResponseEntity<ApiResponse<JwtResponse>> googleLogin(
+    public ResponseEntity<ApiResponse<?>> googleLogin(
             @Valid @RequestBody GoogleLoginRequest request,
-            HttpServletRequest httpRequest) {
-        JwtResponse jwt = authService.googleLogin(request, httpRequest);
-        return withRefreshCookie(jwt);
+            HttpServletRequest httpRequest
+    ) {
+        return withRefreshCookie(
+                authService.googleLogin(
+                        request,
+                        httpRequest
+                )
+        );
     }
 
     @PostMapping("/login/trusted-device")
-    public ResponseEntity<ApiResponse<JwtResponse>> trustedDeviceLogin(
+    public ResponseEntity<ApiResponse<?>> trustedDeviceLogin(
             @Valid @RequestBody TrustedDeviceLoginRequest request,
-            HttpServletRequest httpRequest) {
-        JwtResponse jwt = authService.trustedDeviceLogin(request, httpRequest);
-        return withRefreshCookie(jwt);
+            HttpServletRequest httpRequest
+    ) {
+        return withRefreshCookie(
+                authService.trustedDeviceLogin(
+                        request,
+                        httpRequest
+                )
+        );
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(
-            HttpServletRequest httpRequest) {
-        String refresh = null;
-        if (httpRequest.getCookies() != null) {
-            for (Cookie cookie : httpRequest.getCookies()) {
-                if ("refresh_token".equals(cookie.getName())) refresh = cookie.getValue();
-            }
-        }
-        if (refresh == null || refresh.isBlank()) {
-            throw new com.passwordlessauth.exception.InvalidTokenException("Refresh session unavailable");
-        }
-        RefreshTokenRequest request = new RefreshTokenRequest();
-        JwtResponse jwt = authService.refreshToken(refresh);
-        if (jwt == null) {
-            throw new IllegalStateException("Refresh token rotation returned no token");
-        }
-        return withRefreshCookie(jwt);
+    public ResponseEntity<ApiResponse<?>> refreshToken(
+            HttpServletRequest request
+    ) {
+        String refreshToken =
+                extractRefreshCookie(request);
+
+        return withRefreshCookie(
+                authService.refreshToken(
+                        refreshToken
+                )
+        );
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(
+    public ResponseEntity<ApiResponse<?>> logout(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam(defaultValue = "false") boolean allDevices,
-            HttpServletRequest httpRequest) {
+            @RequestParam(defaultValue = "false")
+            boolean allDevices,
+            HttpServletRequest request
+    ) {
         if (principal == null) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("Authentication required"));
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(
+                            ApiResponse.error(
+                                    "Authentication required"
+                            )
+                    );
         }
-        String deviceId = httpRequest.getHeader("X-Device-Id");
-        authService.logout(principal.getUserId(), deviceId, allDevices);
 
-        // clear refresh cookie
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
-                .httpOnly(true)
-                .path("/api/auth")
-                .maxAge(0)
-                .sameSite("Lax")
-                .secure(refreshCookieSecure)
-                .build();
+        String deviceId =
+                request.getHeader(
+                        DEVICE_ID_HEADER
+                );
+
+        authService.logout(
+                principal.getUserId(),
+                deviceId,
+                allDevices
+        );
+
+        return clearRefreshCookie();
+    }
+
+    private String extractRefreshCookie(
+            HttpServletRequest request
+    ) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (REFRESH_COOKIE.equals(cookie.getName())) {
+
+                    String value = cookie.getValue();
+
+                    if (value != null
+                            && !value.isBlank()) {
+                        return value;
+                    }
+                }
+            }
+        }
+
+        throw new com.passwordlessauth.exception.InvalidTokenException(
+                "Refresh session unavailable"
+        );
+    }
+
+    private ResponseEntity<ApiResponse<?>> clearRefreshCookie() {
+
+        ResponseCookie cookie =
+                ResponseCookie
+                        .from(REFRESH_COOKIE, "")
+                        .httpOnly(true)
+                        .secure(refreshCookieSecure)
+                        .sameSite("Lax")
+                        .path("/api/auth")
+                        .maxAge(Duration.ZERO)
+                        .build();
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return ResponseEntity.ok().headers(headers).body(ApiResponse.success("Logged out successfully"));
+        headers.add(
+                HttpHeaders.SET_COOKIE,
+                cookie.toString()
+        );
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(
+                        ApiResponse.success(
+                                "Logged out successfully"
+                        )
+                );
     }
 }
