@@ -6,6 +6,7 @@ import java.util.Set;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.passwordlessauth.exception.JwtExpiredException;
@@ -28,6 +29,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
 
+    /*
+     * Only endpoints that genuinely do not require an access JWT
+     * belong here.
+     */
     private static final Set<String> PUBLIC_PATHS = Set.of(
             "/api/auth/register",
             "/api/auth/login/otp/request",
@@ -35,56 +40,123 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/auth/login/face",
             "/api/auth/login/google",
             "/api/auth/login/trusted-device",
-            "/api/auth/refresh"
+            "/api/auth/refresh",
+            "/actuator/health"
     );
 
     private final JwtService jwtService;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
+    protected boolean shouldNotFilter(
+            HttpServletRequest request
+    ) {
         String path = request.getRequestURI();
 
-        return PUBLIC_PATHS.contains(path)
-                || path.startsWith("/actuator")
-                || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs");
+        /*
+         * Do not blindly bypass every actuator endpoint.
+         */
+        if (PUBLIC_PATHS.contains(path)) {
+            return true;
+        }
+
+        /*
+         * Swagger should not be exposed in production.
+         *
+         * If you need Swagger locally, protect/enable it through
+         * a development profile rather than globally bypassing JWT.
+         */
+        return false;
     }
 
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        SecurityContextHolder.clearContext();
 
-        // No JWT? Continue. SecurityConfig will decide if endpoint is public.
-        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+        String authHeader =
+                request.getHeader("Authorization");
+
+        /*
+         * No Authorization header:
+         * continue as anonymous and let Spring Security decide
+         * whether the endpoint is public.
+         */
+        if (!StringUtils.hasText(authHeader)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(BEARER_PREFIX.length());
+        /*
+         * An Authorization header exists but isn't Bearer.
+         * Don't interpret it as authentication.
+         */
+        if (!authHeader.startsWith(BEARER_PREFIX)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token =
+                authHeader.substring(BEARER_PREFIX.length()).trim();
+
+        /*
+         * Empty Bearer token is invalid.
+         */
+        if (token.isEmpty()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
-            Claims claims = jwtService.validateAndExtractClaims(token);
+            Claims claims =
+                    jwtService.validateAndExtractClaims(token);
 
-            UserPrincipal principal = jwtService.extractPrincipal(claims);
+            UserPrincipal principal =
+                    jwtService.extractPrincipal(claims);
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             principal,
                             null,
-                            principal.getAuthorities());
+                            principal.getAuthorities()
+                    );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder
+                    .getContext()
+                    .setAuthentication(authentication);
 
-        } catch (JwtExpiredException e) {
-            log.warn("Expired JWT: {}", e.getMessage());
+        } catch (JwtExpiredException ex) {
+
+            log.warn(
+                    "Expired JWT rejected for {}",
+                    request.getRequestURI()
+            );
+
             SecurityContextHolder.clearContext();
-        } catch (JwtException e) {
-            log.warn("Invalid JWT: {}", e.getMessage());
+
+        } catch (JwtException ex) {
+
+            log.warn(
+                    "Invalid JWT rejected for {}",
+                    request.getRequestURI()
+            );
+
+            SecurityContextHolder.clearContext();
+
+        } catch (RuntimeException ex) {
+
+            /*
+             * Unexpected token parsing/claim failures must never
+             * accidentally result in an authenticated request.
+             */
+            log.error(
+                    "JWT authentication processing failed for {}",
+                    request.getRequestURI()
+            );
+
             SecurityContextHolder.clearContext();
         }
 
