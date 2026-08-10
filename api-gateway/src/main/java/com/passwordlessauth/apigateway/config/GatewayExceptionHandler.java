@@ -8,14 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.ResourceAccessException;
 
 @RestControllerAdvice
 public class GatewayExceptionHandler {
 
-    @ExceptionHandler(RestClientException.class)
-    public ResponseEntity<Map<String, Object>> handleUpstream(RestClientException ex) {
-        return build(HttpStatus.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", "The requested service is temporarily unavailable");
+    @ExceptionHandler(ResourceAccessException.class)
+    public ResponseEntity<Map<String, Object>> handleUpstream(ResourceAccessException ex) {
+        return build(HttpStatus.BAD_GATEWAY, "UPSTREAM_UNAVAILABLE", "The requested service is temporarily unavailable");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -21,10 +21,12 @@ public class NotificationClient {
 
     private final RestTemplate restTemplate;
     private final String notificationServiceUrl;
+    private final String internalServiceToken;
 
     public NotificationClient(
             RestTemplate restTemplate,
-            @Value("${auth.service.url:http://auth-service:8080}") String authServiceUrl
+            @Value("${auth.service.url:http://auth-service:8080}") String authServiceUrl,
+            @Value("${auth.service.internal-token:}") String internalServiceToken
     ) {
         this.restTemplate = Objects.requireNonNull(
                 restTemplate,
@@ -35,6 +37,7 @@ public class NotificationClient {
                 authServiceUrl,
                 "auth.service.url must not be null"
         ).replaceAll("/+$", "") + "/api/notifications";
+        this.internalServiceToken = internalServiceToken;
     }
 
     /**
@@ -63,6 +66,11 @@ public class NotificationClient {
         headers.setAccept(
                 java.util.List.of(MediaType.APPLICATION_JSON)
         );
+        if (internalServiceToken == null || internalServiceToken.isBlank()) {
+            log.error("Notification delivery disabled: internal service token is not configured");
+            return false;
+        }
+        headers.set("X-Internal-Service-Token", internalServiceToken);
 
         Map<String, String> body = Map.of(
                 "userId", userId,

@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final InternalServiceTokenFilter internalServiceTokenFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,6 +38,15 @@ public class SecurityConfig {
         http
                 // Disable CSRF since we're using JWT
                 .csrf(AbstractHttpConfigurer::disable)
+
+                .headers(headers -> headers
+                        .contentTypeOptions(contentTypeOptions -> {})
+                        .frameOptions(frame -> frame.deny())
+                        .referrerPolicy(referrer -> referrer.policy(
+                                org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)))
 
                 // Stateless session
                 .sessionManagement(session ->
@@ -50,13 +62,23 @@ public class SecurityConfig {
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
 
+                        // Infrastructure liveness/readiness only. Other actuator
+                        // endpoints remain unavailable unless explicitly added.
+                        .requestMatchers("/actuator/health")
+                        .permitAll()
+
                         // =======================
                         // PUBLIC AUTH ENDPOINTS
                         // =======================
                         .requestMatchers(
                                 "/api/auth/register",
+                                "/api/auth/register/verify",
+                                "/api/auth/identify",
+                                "/api/auth/continue",
+                                "/api/auth/verify",
                                 "/api/auth/login/otp/request",
                                 "/api/auth/login/otp/verify",
+                                "/api/auth/login/step-up/verify",
                                 "/api/auth/login/face",
                                 "/api/auth/login/google",
                                 "/api/auth/login/trusted-device",
@@ -80,7 +102,8 @@ public class SecurityConfig {
                 )
 
                 // JWT Filter
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(internalServiceTokenFilter, JwtFilter.class);
 
         return http.build();
     }
@@ -88,6 +111,19 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
+    }
+
+    /**
+     * This is a passwordless JWT service. Declaring a rejecting user-details
+     * service prevents Spring Boot from creating its generated development
+     * in-memory user while ensuring username/password authentication remains
+     * unavailable.
+     */
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            throw new UsernameNotFoundException("Password authentication is not supported");
+        };
     }
 
     @Bean
@@ -108,7 +144,7 @@ public class SecurityConfig {
                 "OPTIONS"
         ));
 
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "X-Device-Id"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 

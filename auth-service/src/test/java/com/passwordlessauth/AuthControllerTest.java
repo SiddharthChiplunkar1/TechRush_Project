@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,10 +71,10 @@ class AuthControllerTest {
 
     @Test
     void refreshToken_responseIsWrappedInApiResponse() {
-        RefreshTokenRequest req = new RefreshTokenRequest();
-        req.setRefreshToken("some-token");
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setCookies(new jakarta.servlet.http.Cookie("refresh_token", "some-token"));
 
-        when(authService.refreshToken(req))
+        when(authService.refreshToken("some-token"))
                 .thenReturn(JwtResponse.builder()
                         .refreshToken("rotated-token")
                         .accessToken("access-token")

@@ -87,7 +87,7 @@ function LoginPage() {
 
       <p className="mt-7 text-center text-sm text-muted-foreground">
         New to SecurePass AI?{" "}
-        <Link to="/register" className="font-semibold text-primary hover:underline">
+        <Link to="/login/otp" className="font-semibold text-primary hover:underline">
           Create an account
         </Link>
       </p>

@@ -82,6 +82,35 @@ public class OtpService {
         generateAndSendOtp(user, OTP_PURPOSE_VERIFICATION);
     }
 
+    /** Registration is intentionally not attached to a User until it is verified. */
+    @Transactional
+    public void generateAndSendRegistrationOtp(String email) {
+        generateAndSendOtp(null, email, OTP_PURPOSE_VERIFICATION);
+    }
+
+    @Transactional
+    public void generateAndSendLoginStepUpOtp(User user) {
+        generateAndSendOtp(user, "LOGIN_STEP_UP");
+    }
+
+    private void generateAndSendOtp(User user, String email, String purpose) {
+        LocalDateTime cooldownSince = LocalDateTime.now().minusSeconds(otpResendCooldownSeconds);
+        if (otpTokenRepository.existsRecentToken(email, purpose, cooldownSince)) {
+            throw new TooManyRequestsException("OTP already sent. Please wait " + otpResendCooldownSeconds + " seconds before requesting a new one.");
+        }
+        otpTokenRepository.invalidateAllForEmailAndPurpose(email, purpose);
+        String otp = generateSecureOtp();
+        OtpToken token = new OtpToken();
+        token.setUser(user);
+        token.setEmail(email);
+        token.setOtpHash(passwordEncoder.encode(otp));
+        token.setPurpose(purpose);
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES));
+        otpTokenRepository.save(token);
+        sendOtpEmail(email, otp, purpose);
+        log.info("OTP sent to {} for purpose {}", maskEmail(email), purpose);
+    }
+
     @Transactional(noRollbackFor = InvalidOtpException.class)
     public void verifyOtp(String email, String otpCode, String purpose) {
         OtpToken token = otpTokenRepository

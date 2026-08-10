@@ -1,0 +1,45 @@
+# Production override. Invoke with: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+# All values are injected by the deployment secret store; no development fallback is accepted here.
+services:
+  postgres-auth:
+    ports: !reset []
+    environment:
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:?AUTH_DB_PASSWORD is required}
+  postgres-banking:
+    ports: !reset []
+    environment:
+      POSTGRES_PASSWORD: ${BANKING_DB_PASSWORD:?BANKING_DB_PASSWORD is required}
+  postgres-faceid:
+    ports: !reset []
+    environment:
+      POSTGRES_PASSWORD: ${FACEID_DB_PASSWORD:?FACEID_DB_PASSWORD is required}
+  mailhog:
+    profiles: ["development-only"]
+  auth-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      SPRING_DATASOURCE_PASSWORD: ${AUTH_DB_PASSWORD:?AUTH_DB_PASSWORD is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?INTERNAL_SERVICE_TOKEN is required}
+      FACEID_SERVICE_TOKEN: ${FACEID_SERVICE_TOKEN:?FACEID_SERVICE_TOKEN is required}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?GOOGLE_CLIENT_SECRET is required}
+      REFRESH_COOKIE_SECURE: "true"
+  banking-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      SPRING_DATASOURCE_PASSWORD: ${BANKING_DB_PASSWORD:?BANKING_DB_PASSWORD is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?INTERNAL_SERVICE_TOKEN is required}
+  faceid-service:
+    ports: !reset []
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    volumes: !reset []
+    environment:
+      DATABASE_URL: postgresql://postgres:${FACEID_DB_PASSWORD:?FACEID_DB_PASSWORD is required}@postgres-faceid:5432/faceid
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      FACEID_SERVICE_TOKEN: ${FACEID_SERVICE_TOKEN:?FACEID_SERVICE_TOKEN is required}
+      DEBUG: "false"
+  api-gateway:
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      FACEID_SERVICE_TOKEN: ${FACEID_SERVICE_TOKEN:?FACEID_SERVICE_TOKEN is required}
