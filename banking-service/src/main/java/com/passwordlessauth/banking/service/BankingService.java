@@ -7,8 +7,10 @@ import com.passwordlessauth.banking.dto.ConfirmTransferRequest;
 import com.passwordlessauth.banking.dto.TransactionDto;
 import com.passwordlessauth.banking.dto.TransferRequest;
 import com.passwordlessauth.banking.dto.TransferResponse;
+import com.passwordlessauth.banking.entity.StepUpChallenge;
 import com.passwordlessauth.banking.entity.Account;
 import com.passwordlessauth.banking.entity.BankTransaction;
+import com.passwordlessauth.banking.enums.RequiredAuthStrength;
 import com.passwordlessauth.banking.enums.RiskLevel;
 import com.passwordlessauth.banking.enums.TransactionStatus;
 import com.passwordlessauth.banking.exceptions.FraudDetectedException;
@@ -40,6 +42,7 @@ public class BankingService {
     private final TransactionRepository transactionRepository;
     private final NotificationClient notificationClient;
     private final RiskClient riskClient;
+    private final StepUpChallengeService stepUpChallengeService;
 
     /**
      * Development-only configuration.
@@ -59,12 +62,14 @@ public class BankingService {
             AccountRepository accountRepository,
             TransactionRepository transactionRepository,
             NotificationClient notificationClient,
-            RiskClient riskClient
+            RiskClient riskClient,
+            StepUpChallengeService stepUpChallengeService
     ) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.notificationClient = notificationClient;
         this.riskClient = riskClient;
+        this.stepUpChallengeService = stepUpChallengeService;
     }
 
     /**
@@ -168,7 +173,7 @@ public class BankingService {
         if (riskLevel == null) {
             log.error(
                     "Risk assessment unavailable for transfer. userId={}",
-                    senderId
+                    maskUserId(senderId)
             );
 
             throw new FraudDetectedException(
@@ -193,29 +198,36 @@ public class BankingService {
         if (riskLevel == RiskLevel.HIGH
                 || riskLevel == RiskLevel.CRITICAL) {
 
-            transaction.setStatus(
+            transaction.transitionTo(
                     TransactionStatus.BLOCKED_STEP_UP_REQUIRED
             );
 
             log.warn(
                     "High-risk transfer requires step-up. userId={}",
-                    senderId
+                    maskUserId(senderId)
             );
 
-        } else {
-
-            transaction.setStatus(
-                    TransactionStatus.PENDING
-            );
         }
 
-        BankTransaction saved =
-                transactionRepository.save(transaction);
-
-        return new TransferResponse(
+        BankTransaction saved = transactionRepository.save(transaction);
+        TransferResponse response = new TransferResponse(
                 saved.getTransactionId(),
                 saved.getStatus()
         );
+
+        if (riskLevel == RiskLevel.HIGH
+                || riskLevel == RiskLevel.CRITICAL) {
+            StepUpChallenge challenge = stepUpChallengeService.createChallenge(
+                    senderId,
+                    saved.getTransactionId(),
+                    RequiredAuthStrength.STRONG
+            );
+            response.setStepUpChallengeId(challenge.getChallengeId());
+            response.setRequiredAuthStrength(challenge.getRequiredAuthStrength());
+            response.setStepUpRequired(true);
+        }
+
+        return response;
     }
 
     /**
@@ -285,24 +297,19 @@ public class BankingService {
         }
 
         /*
-         * HIGH / CRITICAL transactions require strong
-         * authentication before money can move.
-         */
-        if (transaction.getStatus()
-                == TransactionStatus.BLOCKED_STEP_UP_REQUIRED
-                && !authenticatedUser.isStrongAuth()) {
-
-            throw new FraudDetectedException(
-                    "Additional authentication is required"
-            );
-        }
-
-        /*
          * Cancellation does not move money.
          */
         if (!request.isConfirm()) {
 
-            transaction.setStatus(
+            if (transaction.getStatus()
+                    == TransactionStatus.BLOCKED_STEP_UP_REQUIRED) {
+                stepUpChallengeService.cancelChallengeIfPresent(
+                        transaction.getTransactionId(),
+                        userId
+                );
+            }
+
+            transaction.transitionTo(
                     TransactionStatus.FAILED
             );
 
@@ -310,12 +317,25 @@ public class BankingService {
 
             log.info(
                     "Transfer cancelled. userId={}",
-                    userId
+                    maskUserId(userId)
             );
 
             return new TransferResponse(
                     transaction.getTransactionId(),
                     transaction.getStatus()
+            );
+        }
+
+        /*
+         * HIGH / CRITICAL transactions require a separately recorded,
+         * transaction-bound step-up verification. The login JWT auth
+         * level alone is not sufficient to authorize the transfer.
+         */
+        if (transaction.getStatus()
+                == TransactionStatus.BLOCKED_STEP_UP_REQUIRED) {
+            stepUpChallengeService.consumeVerifiedChallenge(
+                    transaction.getTransactionId(),
+                    userId
             );
         }
 
@@ -357,7 +377,7 @@ public class BankingService {
         sourceAccount.debit(transaction.getAmount());
         destinationAccount.credit(transaction.getAmount());
 
-        transaction.setStatus(
+        transaction.transitionTo(
                 TransactionStatus.COMPLETED
         );
 
@@ -367,7 +387,7 @@ public class BankingService {
 
         log.info(
                 "Transfer completed. userId={}",
-                userId
+                maskUserId(userId)
         );
 
         /*
@@ -460,7 +480,7 @@ public class BankingService {
 
         log.info(
                 "Created development banking account for userId={}",
-                userId
+                maskUserId(userId)
         );
 
         return accountRepository.save(account);
@@ -626,6 +646,13 @@ public class BankingService {
         }
     }
 
+    private String maskUserId(String userId) {
+        if (userId == null || userId.length() <= 4) {
+            return "****";
+        }
+        return "****" + userId.substring(userId.length() - 4);
+    }
+
     private TransactionDto toDto(
             BankTransaction transaction
     ) {
@@ -635,14 +662,6 @@ public class BankingService {
 
         dto.setTransactionId(
                 transaction.getTransactionId()
-        );
-
-        dto.setFromAccountId(
-                transaction.getFromAccountId()
-        );
-
-        dto.setToAccountId(
-                transaction.getToAccountId()
         );
 
         dto.setAmount(
@@ -659,12 +678,6 @@ public class BankingService {
 
         dto.setDescription(
                 transaction.getDescription()
-        );
-
-        dto.setRiskLevel(
-                transaction.getRiskLevel() != null
-                        ? transaction.getRiskLevel().name()
-                        : null
         );
 
         return dto;

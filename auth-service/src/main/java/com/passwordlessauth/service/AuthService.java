@@ -1,6 +1,8 @@
 package com.passwordlessauth.service;
 
 import java.time.LocalDateTime;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,14 +18,20 @@ import com.passwordlessauth.dto.requests.OtpRequest;
 import com.passwordlessauth.dto.requests.OtpVerifyRequest;
 import com.passwordlessauth.dto.requests.RefreshTokenRequest;
 import com.passwordlessauth.dto.requests.RegisterRequest;
+import com.passwordlessauth.dto.requests.RegistrationVerifyRequest;
+import com.passwordlessauth.dto.requests.IdentifyRequest;
+import com.passwordlessauth.dto.requests.LoginStepUpVerifyRequest;
 import com.passwordlessauth.dto.requests.TrustedDeviceLoginRequest;
 import com.passwordlessauth.dto.responses.JwtResponse;
 import com.passwordlessauth.dto.responses.LoginResponse;
 import com.passwordlessauth.dto.responses.RegisterResponse;
 import com.passwordlessauth.dto.responses.UserResponse;
+import com.passwordlessauth.dto.responses.IdentifyResponse;
 import com.passwordlessauth.entity.Device;
 import com.passwordlessauth.entity.RefreshToken;
 import com.passwordlessauth.entity.User;
+import com.passwordlessauth.entity.PendingRegistration;
+import com.passwordlessauth.entity.PendingAuthentication;
 import com.passwordlessauth.enums.AuthLevel;
 import com.passwordlessauth.enums.AuthMethod;
 import com.passwordlessauth.enums.LoginStatus;
@@ -38,6 +46,8 @@ import com.passwordlessauth.exception.UserAlreadyExistsException;
 import com.passwordlessauth.exception.UserNotFoundException;
 import com.passwordlessauth.repository.RefreshTokenRepository;
 import com.passwordlessauth.repository.UserRepository;
+import com.passwordlessauth.repository.PendingRegistrationRepository;
+import com.passwordlessauth.repository.PendingAuthenticationRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +73,8 @@ public class AuthService {
     private final FaceIdClient faceIdClient;
     private final GoogleOAuthClient googleOAuthClient;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PendingRegistrationRepository pendingRegistrationRepository;
+    private final PendingAuthenticationRepository pendingAuthenticationRepository;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -70,27 +82,81 @@ public class AuthService {
             throw new UserAlreadyExistsException(request.getEmail());
         }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setRole(Role.USER);
-        user.setEmailVerified(false);
-        user = userRepository.save(user);
-
-        otpService.generateAndSendVerificationOtp(user);
-        log.info("User registered, verification OTP sent: {}", maskEmail(user.getEmail()));
+        PendingRegistration pending = new PendingRegistration();
+        pending.setEmail(request.getEmail().trim().toLowerCase());
+        pending.setFirstName(request.getFirstName());
+        pending.setLastName(request.getLastName());
+        pendingRegistrationRepository.save(pending);
+        otpService.generateAndSendRegistrationOtp(pending.getEmail());
+        log.info("Registration OTP sent: {}", maskEmail(pending.getEmail()));
 
         return RegisterResponse.builder()
-                .email(user.getEmail())
-                .message("Registration successful. Please verify your email with the OTP sent.")
+                .email(pending.getEmail())
+                .message("Please verify your email with the OTP sent.")
                 .build();
     }
 
     @Transactional
+    public JwtResponse verifyRegistration(RegistrationVerifyRequest request, HttpServletRequest httpRequest) {
+        String email = request.getEmail().trim().toLowerCase();
+        PendingRegistration pending = pendingRegistrationRepository.findById(email)
+                .orElseThrow(() -> new UserNotFoundException("Registration request not found. Please start again."));
+        otpService.verifyOtp(email, request.getOtp(), "EMAIL_VERIFICATION");
+        if (userRepository.existsByEmail(email)) {
+            throw new UserAlreadyExistsException(email);
+        }
+        User user = new User();
+        user.setEmail(email);
+        user.setFirstName(pending.getFirstName());
+        user.setLastName(pending.getLastName());
+        user.setRole(Role.USER);
+        user.setEmailVerified(true);
+        user = userRepository.save(user);
+        pendingRegistrationRepository.delete(pending);
+        Device device = deviceService.resolveDevice(user, httpRequest);
+        return finalizeLogin(user, AuthMethod.OTP, AuthLevel.STRONG,
+                riskEngineService.assessRisk(user, httpRequest), httpRequest, device);
+    }
+
+    public IdentifyResponse identify(IdentifyRequest request) {
+        return IdentifyResponse.builder()
+                // Do not reveal account state before an authentication challenge.
+                .nextStep("CONTINUE")
+                .build();
+    }
+
+    @Transactional
+    public LoginResponse continueWithEmail(RegisterRequest request) {
+        String email = request.getEmail().trim().toLowerCase();
+        if (userRepository.existsByEmail(email)) {
+            OtpRequest login = new OtpRequest();
+            login.setEmail(email);
+            return sendOtp(login);
+        }
+        register(request);
+        return LoginResponse.builder().message("If the email can be used, a verification code has been sent.").build();
+    }
+
+    @Transactional(noRollbackFor = {com.passwordlessauth.exception.InvalidOtpException.class})
+    public JwtResponse verifyEmailAuthentication(RegistrationVerifyRequest request, HttpServletRequest httpRequest) {
+        String email = request.getEmail().trim().toLowerCase();
+        if (userRepository.existsByEmail(email)) {
+            OtpVerifyRequest login = new OtpVerifyRequest();
+            login.setLoginId(email); login.setOtp(request.getOtp());
+            return verifyOtp(login, httpRequest);
+        }
+        return verifyRegistration(request, httpRequest);
+    }
+
+    @Transactional
     public LoginResponse sendOtp(OtpRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found. Please register first."));
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+
+        if (user == null) {
+            return LoginResponse.builder()
+                    .message("If the email is registered, an OTP has been sent.")
+                    .build();
+        }
 
         checkAccountLock(user);
 
@@ -100,7 +166,9 @@ public class AuthService {
         }
 
         otpService.generateAndSendLoginOtp(user);
-        return LoginResponse.builder().message("OTP sent to your email address.").build();
+        return LoginResponse.builder()
+                .message("If the email is registered, an OTP has been sent.")
+                .build();
     }
 
     @Transactional(noRollbackFor = {com.passwordlessauth.exception.InvalidOtpException.class, com.passwordlessauth.exception.FaceVerificationException.class, com.passwordlessauth.exception.TrustedDeviceNotFoundException.class})
@@ -126,7 +194,32 @@ public class AuthService {
             user.setEmailVerified(true);
         }
 
+        if (riskEngineService.requiresStepUp(risk)) {
+            return beginLoginStepUp(user, device);
+        }
         return finalizeLogin(user, AuthMethod.OTP, AuthLevel.STRONG, risk, httpRequest, device);
+    }
+
+    @Transactional(noRollbackFor = com.passwordlessauth.exception.InvalidOtpException.class)
+    public JwtResponse verifyLoginStepUp(LoginStepUpVerifyRequest request, HttpServletRequest httpRequest) {
+        PendingAuthentication pending = pendingAuthenticationRepository.findActive(
+                request.getChallengeId(), LocalDateTime.now())
+                .orElseThrow(() -> new com.passwordlessauth.exception.InvalidOtpException("Authentication challenge is invalid or expired."));
+        User user = pending.getUser();
+        try {
+            otpService.verifyOtp(user.getEmail(), request.getOtp(), "LOGIN_STEP_UP");
+        } catch (Exception ex) {
+            throw ex;
+        }
+        if (pendingAuthenticationRepository.consume(pending.getChallengeId(), LocalDateTime.now()) != 1) {
+            throw new com.passwordlessauth.exception.InvalidOtpException("Authentication challenge has already been used.");
+        }
+        Device device = deviceService.resolveDevice(user, httpRequest);
+        if (!device.getDeviceId().equals(pending.getDeviceId())) {
+            throw new com.passwordlessauth.exception.InvalidOtpException("Authentication challenge cannot be used from this device.");
+        }
+        return finalizeLogin(user, AuthMethod.OTP, AuthLevel.STRONG,
+                riskEngineService.assessRisk(user, httpRequest), httpRequest, device);
     }
 
     @Transactional(noRollbackFor = {com.passwordlessauth.exception.InvalidOtpException.class, com.passwordlessauth.exception.FaceVerificationException.class, com.passwordlessauth.exception.TrustedDeviceNotFoundException.class})
@@ -213,8 +306,8 @@ public class AuthService {
     }
 
     @Transactional
-    public JwtResponse refreshToken(RefreshTokenRequest request) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken())
+    public JwtResponse refreshToken(String rawToken) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(rawToken)
                 .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
 
         if (refreshToken.isRevoked() || refreshToken.getExpiresAt().isBefore(LocalDateTime.now())) {
@@ -309,11 +402,14 @@ public class AuthService {
 
         return JwtResponse.builder()
                 .accessToken(accessToken)
+                // JsonIgnore keeps this credential out of the response body; the controller
+                // uses it solely to set the HttpOnly refresh cookie.
                 .refreshToken(rt.getToken())
                 .tokenType("Bearer")
                 .expiresIn(jwtService.getAccessTokenExpirySeconds())
                 .isNewDevice(isNewDevice)
                 .authLevel(authLevel)
+                .authenticationState("AUTHENTICATED")
                 .user(UserResponse.builder()
                         .userId(user.getUserId())
                         .email(user.getEmail())
@@ -325,6 +421,24 @@ public class AuthService {
                         .createdAt(user.getCreatedAt())
                         .lastLoginAt(user.getLastLoginAt())
                         .build())
+                .build();
+    }
+
+    private JwtResponse beginLoginStepUp(User user, Device device) {
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        PendingAuthentication pending = new PendingAuthentication();
+        pending.setChallengeId(Base64.getUrlEncoder().withoutPadding().encodeToString(bytes));
+        pending.setUser(user);
+        pending.setDeviceId(device.getDeviceId());
+        pending.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        pendingAuthenticationRepository.save(pending);
+        otpService.generateAndSendLoginStepUpOtp(user);
+        return JwtResponse.builder()
+                .authenticationState("STEP_UP_REQUIRED")
+                .authenticationChallenge(pending.getChallengeId())
+                .requiredAuthenticationMethod("OTP")
+                .expiresIn(300)
                 .build();
     }
 

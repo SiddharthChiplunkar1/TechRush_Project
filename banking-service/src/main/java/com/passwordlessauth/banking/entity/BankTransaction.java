@@ -238,13 +238,19 @@ public class BankTransaction {
      * Keeping this method explicit prevents arbitrary Lombok-generated
      * setters for every field.
      */
-    public void setStatus(
+    public void transitionTo(
             TransactionStatus status
     ) {
 
         if (status == null) {
             throw new IllegalArgumentException(
                     "Transaction status must not be null"
+            );
+        }
+
+        if (!isValidTransition(this.status, status)) {
+            throw new IllegalStateException(
+                    "Invalid transaction state transition: " + this.status + " -> " + status
             );
         }
 
@@ -371,6 +377,25 @@ public class BankTransaction {
         }
 
         return amount;
+    }
+
+    private static boolean isValidTransition(
+            TransactionStatus current,
+            TransactionStatus next
+    ) {
+        if (current == null) {
+            return next == TransactionStatus.PENDING
+                    || next == TransactionStatus.BLOCKED_STEP_UP_REQUIRED;
+        }
+
+        return switch (current) {
+            case PENDING -> next == TransactionStatus.COMPLETED
+                    || next == TransactionStatus.FAILED
+                    || next == TransactionStatus.BLOCKED_STEP_UP_REQUIRED;
+            case BLOCKED_STEP_UP_REQUIRED -> next == TransactionStatus.COMPLETED
+                    || next == TransactionStatus.FAILED;
+            case COMPLETED, FAILED -> false;
+        };
     }
 
     private static String normalizeDescription(

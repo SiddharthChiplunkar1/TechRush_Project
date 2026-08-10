@@ -17,6 +17,8 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedFaceEnrollmentRouteImport } from './routes/_authenticated/face-enrollment'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
+import { Route as AuthenticatedTransferRouteImport } from './routes/_authenticated/transfer'
 import { Route as LoginIndexRouteImport } from './routes/login.index'
 import { Route as LoginFaceRouteImport } from './routes/login.face'
 import { Route as LoginGoogleRouteImport } from './routes/login.google'
@@ -62,6 +64,17 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTransactionsRoute =
+  AuthenticatedTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTransferRoute = AuthenticatedTransferRouteImport.update({
+  id: '/transfer',
+  path: '/transfer',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
@@ -91,6 +104,8 @@ export interface FileRoutesByFullPath {
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/transactions': typeof AuthenticatedTransactionsRoute
+  '/transfer': typeof AuthenticatedTransferRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
@@ -104,6 +119,8 @@ export interface FileRoutesByTo {
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/transactions': typeof AuthenticatedTransactionsRoute
+  '/transfer': typeof AuthenticatedTransferRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
@@ -119,6 +136,8 @@ export interface FileRoutesById {
   '/_authenticated/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
+  '/_authenticated/transfer': typeof AuthenticatedTransferRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
@@ -134,6 +153,8 @@ export interface FileRouteTypes {
     | '/face-enrollment'
     | '/profile'
     | '/settings'
+    | '/transactions'
+    | '/transfer'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
@@ -147,6 +168,8 @@ export interface FileRouteTypes {
     | '/face-enrollment'
     | '/profile'
     | '/settings'
+    | '/transactions'
+    | '/transfer'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
@@ -161,6 +184,8 @@ export interface FileRouteTypes {
     | '/_authenticated/face-enrollment'
     | '/_authenticated/profile'
     | '/_authenticated/settings'
+    | '/_authenticated/transactions'
+    | '/_authenticated/transfer'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
@@ -236,6 +261,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/transactions': {
+      id: '/_authenticated/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof AuthenticatedTransactionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/transfer': {
+      id: '/_authenticated/transfer'
+      path: '/transfer'
+      fullPath: '/transfer'
+      preLoaderRoute: typeof AuthenticatedTransferRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/login/': {
       id: '/login/'
       path: '/login'
@@ -272,6 +311,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFaceEnrollmentRoute: typeof AuthenticatedFaceEnrollmentRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedTransactionsRoute: typeof AuthenticatedTransactionsRoute
+  AuthenticatedTransferRoute: typeof AuthenticatedTransferRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -279,6 +320,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFaceEnrollmentRoute: AuthenticatedFaceEnrollmentRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedTransactionsRoute: AuthenticatedTransactionsRoute,
+  AuthenticatedTransferRoute: AuthenticatedTransferRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

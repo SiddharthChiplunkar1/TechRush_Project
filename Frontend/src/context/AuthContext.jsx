@@ -15,19 +15,16 @@ function AuthProvider({ children }) {
     const stored = tokenStorage.get();
     const storedUser = userStorage.get();
     if (stored && !tokenStorage.isExpired() && storedUser) {
-      setToken(stored);
-      setExpiresAt(tokenStorage.expiresAt());
-      setUser(storedUser);
-    } else if (stored) {
-      tokenStorage.clear();
+      setToken(stored); setExpiresAt(tokenStorage.expiresAt()); setUser(storedUser);
     }
     setIsHydrated(true);
   }, []);
   const persist = useCallback(
     (session) => {
-      tokenStorage.set(session.token, session.expiresIn);
+      const accessToken = session.accessToken ?? session.token;
+      tokenStorage.set(accessToken, session.expiresIn);
       userStorage.set(session.user);
-      setToken(session.token);
+      setToken(accessToken);
       setExpiresAt(tokenStorage.expiresAt());
       setUser(session.user);
     },
@@ -38,6 +35,10 @@ function AuthProvider({ children }) {
       setIsBusy(true);
       try {
         const session = await task();
+        if (session.authenticationState === "STEP_UP_REQUIRED") {
+          toast.info("Additional verification is required");
+          return session;
+        }
         persist(session);
         toast.success(successMessage);
         await router.navigate({ to: "/dashboard" });
@@ -54,6 +55,7 @@ function AuthProvider({ children }) {
   const logout = useCallback(
     (options) => {
       tokenStorage.clear();
+      userStorage.clear();
       setToken(null);
       setUser(null);
       setExpiresAt(null);
@@ -70,12 +72,24 @@ function AuthProvider({ children }) {
       isAuthenticated: Boolean(token && user),
       isHydrated,
       isBusy,
-      register: (input) => run(() => authService.register(input), `Welcome aboard, ${input.name}`),
+      identify: (email) => authService.identify(email),
+      continueEmail: (input) => authService.continueEmail(input),
+      register: async (input) => {
+        setIsBusy(true);
+        try {
+          const result = await authService.register(input);
+          toast.success("Verification code sent");
+          return result;
+        } finally { setIsBusy(false); }
+      },
       requestOtp: async (email) => {
         await authService.requestOtp(email);
         toast.success(`Code sent to ${email}`);
       },
       verifyOtp: (input) => run(() => authService.verifyOtp(input), "Identity verified"),
+      verifyRegistration: (input) => run(() => authService.verifyRegistration(input), "Account created and verified"),
+      verifyEmailAuthentication: (input) => run(() => authService.verifyEmailAuthentication(input), "Identity verified"),
+      verifyLoginStepUp: (input) => run(() => authService.verifyLoginStepUp(input), "Additional verification complete"),
       loginWithGoogle: () => run(() => authService.loginWithGoogle(), "Signed in with Google"),
       loginWithFace: (image) => run(() => authService.loginWithFace(image), "Face matched"),
      // loginWithTrustedDevice: () => run(() => authService.loginWithTrustedDevice(), "Trusted device recognised"),

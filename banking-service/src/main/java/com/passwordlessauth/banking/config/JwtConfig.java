@@ -36,7 +36,7 @@ public class JwtConfig {
     private final String jwtSecret;
 
     public JwtConfig(
-            @Value("${jwt.secret:}") String jwtSecret
+            @Value("${jwt.secret:${app.jwt.secret:}}") String jwtSecret
     ) {
         this.jwtSecret = jwtSecret;
     }
@@ -57,7 +57,9 @@ public class JwtConfig {
             );
         }
 
-        byte[] secretBytes = decodeSecret(jwtSecret);
+        // Keep the exact UTF-8 secret representation used by Auth and FaceID.
+        // Decoding only this service would derive a different HMAC key.
+        byte[] secretBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
 
         if (secretBytes.length < MIN_SECRET_BYTES) {
             throw new IllegalStateException(

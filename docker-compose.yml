@@ -69,6 +69,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       JWT_SECRET: ${JWT_SECRET:-dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-dev-internal-service-token-change-before-production}
       MAIL_HOST: mailhog
       MAIL_PORT: 1025
       MAIL_FROM: noreply@techrush.dev
@@ -96,6 +97,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       JWT_SECRET: ${JWT_SECRET:-dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-dev-internal-service-token-change-before-production}
     depends_on:
       postgres-banking:
         condition: service_healthy
@@ -127,9 +129,16 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_CLOUD_GATEWAY_MVC_ROUTES_0_URI: http://auth-service:8080
-      SPRING_CLOUD_GATEWAY_MVC_ROUTES_1_URI: http://banking-service:8082
-      SPRING_CLOUD_GATEWAY_MVC_ROUTES_2_URI: http://faceid-service:8000
+      # These must match the gateway.* properties in application.yml:
+      #   gateway.auth-url    → ${AUTH_SERVICE_URL:http://auth-service:8080}
+      #   gateway.banking-url → ${BANKING_SERVICE_URL:http://banking-service:8082}
+      #   gateway.face-url    → ${FACEID_SERVICE_URL:http://faceid-service:8000}
+      # The previous SPRING_CLOUD_GATEWAY_MVC_ROUTES_* variables were for Spring Cloud
+      # Gateway (a different library) and had no effect on this custom RestTemplate proxy.
+      AUTH_SERVICE_URL: http://auth-service:8080
+      BANKING_SERVICE_URL: http://banking-service:8082
+      FACEID_SERVICE_URL: http://faceid-service:8000
+      FACEID_SERVICE_TOKEN: ${FACEID_SERVICE_TOKEN:-dev-faceid-service-token}
     depends_on:
       - auth-service
       - banking-service

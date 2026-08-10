@@ -33,14 +33,14 @@ function DashboardPage() {
   const fingerprint = useDeviceFingerprint();
   const { formatted, remaining } = useSessionCountdown(expiresAt);
   const history = useQuery({ queryKey: ["login-history"], queryFn: authService.loginHistory });
-  const analytics = useQuery({ queryKey: ["analytics"], queryFn: authService.analytics });
+  const analytics = { data: null };
   return <AppShell title={`Welcome back, ${user?.name?.split(" ")[0] ?? "there"}`} subtitle="Your live identity posture">
       <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
         <div className="glass-panel gradient-border rounded-[2rem] p-7">
           <div className="flex flex-wrap items-center gap-2">
             <AuthBadge label={user ? methodLabels[user.authMethod] : "Session"} tone="primary" icon={ShieldCheck} />
             <AuthBadge label={`${user?.authLevel ?? "Basic"} level`} tone="accent" />
-            <AuthBadge label="JWT active" tone="success" icon={KeyRound} />
+            <AuthBadge label="Session protected" tone="success" icon={KeyRound} />
           </div>
           <h2 className="mt-5 text-2xl font-bold sm:text-3xl">{user?.name}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{user?.email}</p>

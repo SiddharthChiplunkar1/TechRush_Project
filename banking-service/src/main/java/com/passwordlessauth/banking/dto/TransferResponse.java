@@ -1,5 +1,6 @@
 package com.passwordlessauth.banking.dto;
 
+import com.passwordlessauth.banking.enums.RequiredAuthStrength;
 import com.passwordlessauth.banking.enums.TransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,4 +26,24 @@ public class TransferResponse {
      * Current state of the transfer.
      */
     private TransactionStatus status;
+
+    /**
+     * Present only when the transfer requires step-up.
+     */
+    private String stepUpChallengeId;
+
+    /**
+     * Strength required to complete the step-up challenge.
+     */
+    private RequiredAuthStrength requiredAuthStrength;
+
+    /**
+     * True when the transfer is waiting for step-up verification.
+     */
+    private boolean stepUpRequired;
+
+    public TransferResponse(String transferId, TransactionStatus status) {
+        this.transferId = transferId;
+        this.status = status;
+    }
 }

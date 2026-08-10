@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.passwordlessauth.dto.requests.FaceLoginRequest;
 import com.passwordlessauth.dto.requests.GoogleLoginRequest;
@@ -13,15 +14,20 @@ import com.passwordlessauth.dto.requests.OtpRequest;
 import com.passwordlessauth.dto.requests.OtpVerifyRequest;
 import com.passwordlessauth.dto.requests.RefreshTokenRequest;
 import com.passwordlessauth.dto.requests.RegisterRequest;
+import com.passwordlessauth.dto.requests.RegistrationVerifyRequest;
+import com.passwordlessauth.dto.requests.IdentifyRequest;
+import com.passwordlessauth.dto.requests.LoginStepUpVerifyRequest;
 import com.passwordlessauth.dto.requests.TrustedDeviceLoginRequest;
 import com.passwordlessauth.dto.responses.ApiResponse;
 import com.passwordlessauth.dto.responses.JwtResponse;
 import com.passwordlessauth.dto.responses.LoginResponse;
 import com.passwordlessauth.dto.responses.RegisterResponse;
+import com.passwordlessauth.dto.responses.IdentifyResponse;
 import com.passwordlessauth.security.UserPrincipal;
 import com.passwordlessauth.service.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -38,14 +44,21 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Value("${app.security.refresh-cookie-secure:false}")
+    private boolean refreshCookieSecure;
+
     private ResponseEntity<ApiResponse<JwtResponse>> withRefreshCookie(JwtResponse jwt) {
+        if (jwt.getRefreshToken() == null) {
+            return ResponseEntity.ok(ApiResponse.success(jwt));
+        }
         ResponseCookie cookie = ResponseCookie.from("refresh_token", jwt.getRefreshToken())
                 .httpOnly(true)
-                .path("/")
+                .path("/api/auth")
                 .maxAge(7L * 24 * 3600)
                 .sameSite("Lax")
-                .secure(false) // for dev; set to true in prod with HTTPS
+                .secure(refreshCookieSecure)
                 .build();
+        // Never expose the refresh credential in JSON; it is cookie-only.
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -56,6 +69,28 @@ public class AuthController {
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
             @Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(ApiResponse.success(authService.register(request)));
+    }
+
+    @PostMapping("/register/verify")
+    public ResponseEntity<ApiResponse<JwtResponse>> verifyRegistration(
+            @Valid @RequestBody RegistrationVerifyRequest request, HttpServletRequest httpRequest) {
+        return withRefreshCookie(authService.verifyRegistration(request, httpRequest));
+    }
+
+    @PostMapping("/identify")
+    public ResponseEntity<ApiResponse<IdentifyResponse>> identify(@Valid @RequestBody IdentifyRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(authService.identify(request)));
+    }
+
+    @PostMapping("/continue")
+    public ResponseEntity<ApiResponse<LoginResponse>> continueWithEmail(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(authService.continueWithEmail(request)));
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<ApiResponse<JwtResponse>> verifyEmailAuthentication(
+            @Valid @RequestBody RegistrationVerifyRequest request, HttpServletRequest httpRequest) {
+        return withRefreshCookie(authService.verifyEmailAuthentication(request, httpRequest));
     }
 
     @PostMapping("/login/otp/request")
@@ -70,6 +105,12 @@ public class AuthController {
             HttpServletRequest httpRequest) {
         JwtResponse jwt = authService.verifyOtp(request, httpRequest);
         return withRefreshCookie(jwt);
+    }
+
+    @PostMapping("/login/step-up/verify")
+    public ResponseEntity<ApiResponse<JwtResponse>> verifyLoginStepUp(
+            @Valid @RequestBody LoginStepUpVerifyRequest request, HttpServletRequest httpRequest) {
+        return withRefreshCookie(authService.verifyLoginStepUp(request, httpRequest));
     }
 
     @PostMapping("/login/face")
@@ -98,8 +139,18 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(
-            @Valid @RequestBody RefreshTokenRequest request) {
-        JwtResponse jwt = authService.refreshToken(request);
+            HttpServletRequest httpRequest) {
+        String refresh = null;
+        if (httpRequest.getCookies() != null) {
+            for (Cookie cookie : httpRequest.getCookies()) {
+                if ("refresh_token".equals(cookie.getName())) refresh = cookie.getValue();
+            }
+        }
+        if (refresh == null || refresh.isBlank()) {
+            throw new com.passwordlessauth.exception.InvalidTokenException("Refresh session unavailable");
+        }
+        RefreshTokenRequest request = new RefreshTokenRequest();
+        JwtResponse jwt = authService.refreshToken(refresh);
         if (jwt == null) {
             throw new IllegalStateException("Refresh token rotation returned no token");
         }
@@ -121,10 +172,10 @@ public class AuthController {
         // clear refresh cookie
         ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
-                .path("/")
+                .path("/api/auth")
                 .maxAge(0)
                 .sameSite("Lax")
-                .secure(false)
+                .secure(refreshCookieSecure)
                 .build();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());

@@ -19,24 +19,6 @@ public class TransactionDto {
     private String transactionId;
 
     /**
-     * Internal account identifier.
-     *
-     * TODO:
-     * Consider replacing this with a masked/user-friendly representation
-     * before exposing the API publicly.
-     */
-    private String fromAccountId;
-
-    /**
-     * Internal account identifier.
-     *
-     * TODO:
-     * Consider replacing this with a masked/user-friendly representation
-     * before exposing the API publicly.
-     */
-    private String toAccountId;
-
-    /**
      * Transaction amount.
      *
      * The service layer must ensure this is positive and that the
@@ -64,11 +46,4 @@ public class TransactionDto {
      */
     private String description;
 
-    /**
-     * Risk classification associated with the transaction.
-     *
-     * Expected values:
-     * LOW, MEDIUM, HIGH, CRITICAL
-     */
-    private String riskLevel;
 }

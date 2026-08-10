@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowRightLeft,
   LayoutDashboard,
   LogOut,
   Menu,
   MonitorSmartphone,
+  ReceiptText,
   ScanFace,
   Settings,
   ShieldCheck,
@@ -20,6 +22,8 @@ import { ThemeToggle } from "@/components/ui-kit/ThemeToggle";
 import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/transfer", label: "Transfer", icon: ArrowRightLeft },
+  { to: "/transactions", label: "Transactions", icon: ReceiptText },
   { to: "/profile", label: "Profile", icon: UserRound },
   { to: "/face-enrollment", label: "Face enrollment", icon: ScanFace },
   { to: "/trusted-devices", label: "Trusted devices", icon: MonitorSmartphone },
