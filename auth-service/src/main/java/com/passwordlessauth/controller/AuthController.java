@@ -24,7 +24,10 @@ import com.passwordlessauth.dto.requests.RegisterRequest;
 import com.passwordlessauth.dto.requests.RegistrationVerifyRequest;
 import com.passwordlessauth.dto.requests.TrustedDeviceLoginRequest;
 import com.passwordlessauth.dto.responses.ApiResponse;
+import com.passwordlessauth.dto.responses.IdentifyResponse;
 import com.passwordlessauth.dto.responses.JwtResponse;
+import com.passwordlessauth.dto.responses.LoginResponse;
+import com.passwordlessauth.dto.responses.RegisterResponse;
 import com.passwordlessauth.security.UserPrincipal;
 import com.passwordlessauth.service.AuthService;
 
@@ -46,7 +49,7 @@ public class AuthController {
     @Value("${app.jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    private ResponseEntity<ApiResponse<?>> withRefreshCookie(
+    private ResponseEntity<ApiResponse<JwtResponse>> withRefreshCookie(
             JwtResponse jwt
     ) {
         if (jwt == null) {
@@ -58,9 +61,7 @@ public class AuthController {
         String refreshToken = jwt.getRefreshToken();
 
         if (refreshToken == null || refreshToken.isBlank()) {
-            return ResponseEntity.ok(
-                    ApiResponse.success(jwt)
-            );
+            return ResponseEntity.ok(ApiResponse.success(jwt));
         }
 
         ResponseCookie cookie =
@@ -90,25 +91,20 @@ public class AuthController {
                 cookie.toString()
         );
 
-        return ResponseEntity
-                .ok()
+        return ResponseEntity.ok()
                 .headers(headers)
                 .body(ApiResponse.success(jwt));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<?>> register(
+    public ResponseEntity<ApiResponse<RegisterResponse>> register(
             @Valid @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        authService.register(request)
-                )
-        );
+        return ResponseEntity.ok(ApiResponse.success(authService.register(request)));
     }
 
     @PostMapping("/register/verify")
-    public ResponseEntity<ApiResponse<?>> verifyRegistration(
+    public ResponseEntity<ApiResponse<JwtResponse>> verifyRegistration(
             @Valid @RequestBody RegistrationVerifyRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -121,29 +117,21 @@ public class AuthController {
     }
 
     @PostMapping("/identify")
-    public ResponseEntity<ApiResponse<?>> identify(
+    public ResponseEntity<ApiResponse<IdentifyResponse>> identify(
             @Valid @RequestBody IdentifyRequest request
     ) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        authService.identify(request)
-                )
-        );
+        return ResponseEntity.ok(ApiResponse.success(authService.identify(request)));
     }
 
     @PostMapping("/continue")
-    public ResponseEntity<ApiResponse<?>> continueWithEmail(
+    public ResponseEntity<ApiResponse<LoginResponse>> continueWithEmail(
             @Valid @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        authService.continueWithEmail(request)
-                )
-        );
+        return ResponseEntity.ok(ApiResponse.success(authService.continueWithEmail(request)));
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<?>> verifyEmailAuthentication(
+    public ResponseEntity<ApiResponse<JwtResponse>> verifyEmailAuthentication(
             @Valid @RequestBody RegistrationVerifyRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -156,18 +144,14 @@ public class AuthController {
     }
 
     @PostMapping("/login/otp/request")
-    public ResponseEntity<ApiResponse<?>> requestOtp(
+    public ResponseEntity<ApiResponse<LoginResponse>> requestOtp(
             @Valid @RequestBody OtpRequest request
     ) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        authService.sendOtp(request)
-                )
-        );
+        return ResponseEntity.ok(ApiResponse.success(authService.sendOtp(request)));
     }
 
     @PostMapping("/login/otp/verify")
-    public ResponseEntity<ApiResponse<?>> verifyOtp(
+    public ResponseEntity<ApiResponse<JwtResponse>> verifyOtp(
             @Valid @RequestBody OtpVerifyRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -180,7 +164,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/step-up/verify")
-    public ResponseEntity<ApiResponse<?>> verifyLoginStepUp(
+    public ResponseEntity<ApiResponse<JwtResponse>> verifyLoginStepUp(
             @Valid @RequestBody LoginStepUpVerifyRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -193,7 +177,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/face")
-    public ResponseEntity<ApiResponse<?>> faceLogin(
+    public ResponseEntity<ApiResponse<JwtResponse>> faceLogin(
             @Valid @RequestBody FaceLoginRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -206,7 +190,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/google")
-    public ResponseEntity<ApiResponse<?>> googleLogin(
+    public ResponseEntity<ApiResponse<JwtResponse>> googleLogin(
             @Valid @RequestBody GoogleLoginRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -219,7 +203,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/trusted-device")
-    public ResponseEntity<ApiResponse<?>> trustedDeviceLogin(
+    public ResponseEntity<ApiResponse<JwtResponse>> trustedDeviceLogin(
             @Valid @RequestBody TrustedDeviceLoginRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -232,7 +216,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<?>> refreshToken(
+    public ResponseEntity<ApiResponse<JwtResponse>> refreshToken(
             HttpServletRequest request
     ) {
         String refreshToken =
@@ -246,7 +230,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<?>> logout(
+    public ResponseEntity<ApiResponse<Void>> logout(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(defaultValue = "false")
             boolean allDevices,
@@ -300,7 +284,7 @@ public class AuthController {
         );
     }
 
-    private ResponseEntity<ApiResponse<?>> clearRefreshCookie() {
+    private ResponseEntity<ApiResponse<Void>> clearRefreshCookie() {
 
         ResponseCookie cookie =
                 ResponseCookie
@@ -319,13 +303,8 @@ public class AuthController {
                 cookie.toString()
         );
 
-        return ResponseEntity
-                .ok()
+        return ResponseEntity.ok()
                 .headers(headers)
-                .body(
-                        ApiResponse.success(
-                                "Logged out successfully"
-                        )
-                );
+                .body(ApiResponse.success("Logged out successfully"));
     }
 }

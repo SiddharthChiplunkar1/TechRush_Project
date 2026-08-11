@@ -1,5 +1,6 @@
 package com.passwordlessauth.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -63,6 +64,9 @@ public class AuthService {
 
     @Value("${app.security.account-lock-duration-minutes:30}")
     private int lockDurationMinutes;
+
+    @Value("${app.jwt.refresh-token-expiration:604800000}")
+    private long refreshTokenExpiration;
 
     private final UserRepository userRepository;
     private final OtpService otpService;
@@ -397,7 +401,7 @@ public class AuthService {
         rt.setUser(user);
         rt.setToken(jwtService.generateRefreshToken());
         rt.setDeviceId(deviceId);
-        rt.setExpiresAt(LocalDateTime.now().plusDays(7));
+        rt.setExpiresAt(LocalDateTime.now().plus(Duration.ofMillis(refreshTokenExpiration)));
         refreshTokenRepository.save(rt);
 
         return JwtResponse.builder()
