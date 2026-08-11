@@ -1,113 +1,183 @@
-import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
-import { AnimatePresence, motion } from "framer-motion";
-import { Mail, ShieldCheck, UserRound } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { Mail, ShieldCheck } from "lucide-react";
+
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Button } from "@/components/ui-kit/Button";
 import { Input } from "@/components/ui-kit/Input";
 import { OtpInput } from "@/components/ui-kit/OtpInput";
 import { useAuth } from "@/context/AuthContext";
+import { bootstrapAuthSession } from "@/lib/authSession";
+import { tokenStorage } from "@/lib/tokenStorage";
+
 const Route = createFileRoute("/login/otp")({
+  beforeLoad: async () => {
+    await bootstrapAuthSession();
+    if (tokenStorage.get() && !tokenStorage.isExpired()) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
-      { title: "Email OTP login \u2014 SecurePass AI" },
-      { name: "description", content: "Request a single-use six digit code and verify your identity in seconds." },
-      { property: "og:title", content: "Email OTP login \u2014 SecurePass AI" },
-      { property: "og:description", content: "Single-use codes that expire in 60 seconds." }
-    ]
+      { title: "Email OTP login — SecurePass AI" },
+      { name: "description", content: "Request a six digit code and verify your identity in seconds." },
+      { property: "og:title", content: "Email OTP login — SecurePass AI" },
+      { property: "og:description", content: "Single-use codes that expire quickly." },
+    ],
   }),
-  component: OtpLoginPage
+  component: OtpLoginPage,
 });
+
 function OtpLoginPage() {
-  const { identify, continueEmail, verifyEmailAuthentication, verifyLoginStepUp, isBusy } = useAuth();
-  const [email, setEmail] = useState(null);
-  const [flow, setFlow] = useState(null);
-  const [registrationOtpSent, setRegistrationOtpSent] = useState(false);
-  const [stepUpChallenge, setStepUpChallenge] = useState(null);
+  const router = useRouter();
+  const {
+    pendingFlow,
+    requestLoginOtp,
+    verifyLoginOtp,
+    isBusy,
+    status,
+  } = useAuth();
+  const [stage, setStage] = useState(
+    pendingFlow?.type === "login" && pendingFlow.email ? "verify" : "request",
+  );
+  const [email, setEmail] = useState(pendingFlow?.email ?? "");
   const [code, setCode] = useState("");
-  const [seconds, setSeconds] = useState(60);
-  const [sending, setSending] = useState(false);
-  const { register, handleSubmit, formState, getValues } = useForm({ defaultValues: { email: "", firstName: "", lastName: "" } });
+
   useEffect(() => {
-    if (!email || seconds === 0) return;
-    const id = window.setInterval(() => setSeconds((value) => Math.max(0, value - 1)), 1e3);
-    return () => window.clearInterval(id);
-  }, [email, seconds]);
-  const continueWithEmail = async (value) => {
-    setSending(true);
-    try {
-      await identify(value.email);
-      await continueEmail(value);
-      setEmail(value.email);
-      setFlow("LOGIN");
-    } finally { setSending(false); }
-  };
-  return <AuthLayout
-    title={stepUpChallenge ? "Additional verification" : email ? "Enter your code" : "Continue with email"}
-    description={stepUpChallenge ? "Enter the separate verification code we sent to complete this sign-in." : email ? `We will send a single-use code to ${email}.` : "We will securely determine the appropriate sign-in or registration step."}
-  >
-      <AnimatePresence mode="wait">
-        {!email ? <motion.form
-    key="step-1"
-    initial={{ opacity: 0, x: -16 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: 16 }}
-    className="space-y-5"
-    onSubmit={handleSubmit((values) => void continueWithEmail(values))}
-  >
-            <Input
-    label="Email address"
-    type="email"
-    placeholder="you@company.com"
-    icon={<Mail className="size-4" />}
-    {...formState.errors.email?.message ? { error: formState.errors.email.message } : {}}
-    {...register("email", {
-      required: "Email is required",
-      pattern: { value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/, message: "Enter a valid email" }
-    })}
-  />
-            <Input label="First name (used if this is a new account)" icon={<UserRound className="size-4" />} {...register("firstName")} />
-            <Input label="Last name (used if this is a new account)" icon={<UserRound className="size-4" />} {...register("lastName")} />
-            <Button type="submit" fullWidth size="lg" loading={sending}>
-              Continue
-            </Button>
-          </motion.form> : <motion.div
-    key="step-2"
-    initial={{ opacity: 0, x: 16 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -16 }}
-    className="space-y-6"
-  >
-            <OtpInput value={code} onChange={setCode} disabled={isBusy} />
+    if (pendingFlow?.type === "registration") {
+      void router.navigate({ to: "/register/verify", replace: true });
+    }
+  }, [pendingFlow, router]);
+
+  useEffect(() => {
+    if (pendingFlow?.type === "step-up" && pendingFlow.challengeId) {
+      void router.navigate({ to: "/login/step-up", replace: true });
+    }
+  }, [pendingFlow, router]);
+
+  useEffect(() => {
+    if (pendingFlow?.type === "login" && pendingFlow.email) {
+      setEmail(pendingFlow.email);
+      setStage("verify");
+    }
+  }, [pendingFlow]);
+
+  const title = useMemo(
+    () => (stage === "verify" ? "Enter your code" : "Continue with email"),
+    [stage],
+  );
+
+  const description = useMemo(() => {
+    if (stage === "verify") {
+      return `We sent a single-use code to ${email || "your email"}.`;
+    }
+
+    return "We will send a one-time code to your inbox. No password required.";
+  }, [email, stage]);
+
+  return (
+    <AuthLayout title={title} description={description}>
+      {stage === "request" ? (
+        <form
+          className="space-y-5"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            await requestLoginOtp(email);
+            setCode("");
+            setStage("verify");
+          }}
+        >
+          <Input
+            label="Email address"
+            type="email"
+            placeholder="you@company.com"
+            icon={<Mail className="size-4" />}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            size="lg"
+            loading={isBusy}
+            disabled={!email.trim() || status === "INITIALIZING"}
+          >
+            Request code
+          </Button>
+        </form>
+      ) : (
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-glass-border bg-muted/30 p-4 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Verification email sent</p>
+            <p className="mt-1">{email || "Check your inbox for the latest code."}</p>
+          </div>
+
+          <OtpInput
+            value={code}
+            onChange={setCode}
+            disabled={isBusy}
+            onComplete={async (value) => {
+              if (value.length === 6) {
+                try {
+                  const result = await verifyLoginOtp({ email, code: value });
+                  if (result?.authenticationState === "STEP_UP_REQUIRED") {
+                    await router.navigate({ to: "/login/step-up", replace: true });
+                  }
+                } catch {
+                  setCode("");
+                }
+              }
+            }}
+          />
+
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Button
-    fullWidth
-    size="lg"
-    loading={isBusy}
-    disabled={code.length !== 6}
-    onClick={() => void (stepUpChallenge
-      ? verifyLoginStepUp({ challengeId: stepUpChallenge, code })
-      : verifyEmailAuthentication({ email, code })
-    ).then((result) => { if (result.authenticationState === "STEP_UP_REQUIRED") { setStepUpChallenge(result.authenticationChallenge); setCode(""); } }).catch(() => setCode(""))}
-  >
+              fullWidth
+              size="lg"
+              loading={isBusy}
+              disabled={code.length !== 6}
+              onClick={async () => {
+                try {
+                  const result = await verifyLoginOtp({ email, code });
+                  if (result?.authenticationState === "STEP_UP_REQUIRED") {
+                    await router.navigate({ to: "/login/step-up", replace: true });
+                  }
+                } catch {
+                  setCode("");
+                }
+              }}
+            >
               <ShieldCheck className="size-4" />
               Verify and continue
             </Button>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{seconds > 0 ? `Code expires in 00:${String(seconds).padStart(2, "0")}` : "Code expired"}</span>
-              <button
-    type="button"
-    disabled={seconds > 0 || sending}
-    onClick={() => void continueEmail({ email, firstName: getValues().firstName, lastName: getValues().lastName })}
-    className="font-semibold text-primary transition-opacity hover:underline disabled:opacity-40"
-  >
-                Resend OTP
-              </button>
-            </div>
-          </motion.div>}
-      </AnimatePresence>
-    </AuthLayout>;
+            <Button
+              fullWidth
+              size="lg"
+              variant="glass"
+              disabled={isBusy}
+              onClick={async () => {
+                await requestLoginOtp(email);
+                setCode("");
+              }}
+            >
+              Resend code
+            </Button>
+          </div>
+
+          <button
+            type="button"
+            className="text-sm font-semibold text-primary hover:underline"
+            onClick={() => setStage("request")}
+          >
+            Use a different email
+          </button>
+        </div>
+      )}
+    </AuthLayout>
+  );
 }
+
 export {
-  Route
+  Route,
 };

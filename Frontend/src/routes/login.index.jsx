@@ -1,8 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { KeyRound, MailCheck, MonitorSmartphone, ScanFace } from "lucide-react";
 import { AuthLayout } from "@/components/layout/AuthLayout";
+import { bootstrapAuthSession } from "@/lib/authSession";
+import { tokenStorage } from "@/lib/tokenStorage";
 const Route = createFileRoute("/login/")({
+  beforeLoad: async () => {
+    await bootstrapAuthSession();
+    if (tokenStorage.get() && !tokenStorage.isExpired()) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Sign in \u2014 SecurePass AI" },
@@ -87,7 +95,7 @@ function LoginPage() {
 
       <p className="mt-7 text-center text-sm text-muted-foreground">
         New to SecurePass AI?{" "}
-        <Link to="/login/otp" className="font-semibold text-primary hover:underline">
+        <Link to="/register" className="font-semibold text-primary hover:underline">
           Create an account
         </Link>
       </p>

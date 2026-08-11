@@ -14,6 +14,4 @@ function useSessionCountdown(expiresAt) {
   const seconds = String(remaining % 60).padStart(2, "0");
   return { remaining, formatted: `${minutes}:${seconds}` };
 }
-export {
-  useSessionCountdown
-};
+export { useSessionCountdown };

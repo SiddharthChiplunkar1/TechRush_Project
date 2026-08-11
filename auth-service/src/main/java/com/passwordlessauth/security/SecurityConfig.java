@@ -85,6 +85,10 @@ public class SecurityConfig {
                                 "/api/auth/refresh"
                         ).permitAll()
 
+                        // Service-token authentication is enforced by the filter.
+                        .requestMatchers("/internal/risk")
+                        .permitAll()
+
                         // Swagger (optional but recommended)
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -133,6 +137,7 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://localhost:4173",
                 "http://localhost:5173"
         ));
 
@@ -144,7 +149,13 @@ public class SecurityConfig {
                 "OPTIONS"
         ));
 
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "X-Device-Id"));
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "X-Requested-With",
+                "X-Device-Id",
+                "X-Device-Fingerprint"
+        ));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 

@@ -11,7 +11,10 @@ const tokenStorage = {
   },
   expiresAt: () => accessTokenExpiry,
   isExpired: () => accessTokenExpiry !== null && accessTokenExpiry <= Date.now(),
-  clear: () => { accessToken = null; accessTokenExpiry = null; }
+  clear: () => {
+    accessToken = null;
+    accessTokenExpiry = null;
+  },
 };
 
 // User profiles are not credentials, but keeping them in memory avoids
@@ -19,8 +22,12 @@ const tokenStorage = {
 let currentUser = null;
 const userStorage = {
   get: () => currentUser,
-  set: (user) => { currentUser = user; },
-  clear: () => { currentUser = null; }
+  set: (user) => {
+    currentUser = user;
+  },
+  clear: () => {
+    currentUser = null;
+  },
 };
 
 export { tokenStorage, userStorage };

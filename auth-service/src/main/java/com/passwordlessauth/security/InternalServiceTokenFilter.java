@@ -23,7 +23,8 @@ public class InternalServiceTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         return !("POST".equalsIgnoreCase(request.getMethod())
-                && "/api/notifications".equals(request.getServletPath()));
+                && ("/api/notifications".equals(request.getServletPath())
+                || "/internal/risk".equals(request.getServletPath())));
     }
 
     @Override

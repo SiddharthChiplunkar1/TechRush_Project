@@ -1,9 +1,17 @@
+import { useEffect } from "react";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Button } from "@/components/ui-kit/Button";
 import { useAuth } from "@/context/AuthContext";
+
+const GOOGLE_STATE_KEY = "techrush.auth.google-state";
+const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+
 const Route = createFileRoute("/login/google")({
   head: () => ({
     meta: [
@@ -15,8 +23,81 @@ const Route = createFileRoute("/login/google")({
   }),
   component: GoogleLoginPage
 });
+
+function getGoogleRedirectUri() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return `${window.location.origin}/login/google`;
+}
+
+function createOauthState() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 function GoogleLoginPage() {
   const { loginWithGoogle, isBusy } = useAuth();
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const returnedState = params.get("state");
+
+    if (!code) {
+      return;
+    }
+
+    window.history.replaceState({}, "", window.location.pathname);
+
+    const expectedState = window.sessionStorage.getItem(GOOGLE_STATE_KEY);
+    window.sessionStorage.removeItem(GOOGLE_STATE_KEY);
+
+    if (!expectedState || expectedState !== returnedState) {
+      toast.error("Google sign-in state could not be verified");
+      return;
+    }
+
+    void loginWithGoogle({
+      authorizationCode: code,
+      redirectUri: getGoogleRedirectUri(),
+    }).catch(() => void 0);
+  }, [loginWithGoogle]);
+
+  const startGoogleLogin = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (!googleClientId) {
+      toast.error("Google login is not configured for this frontend");
+      return;
+    }
+
+    const state = createOauthState();
+    window.sessionStorage.setItem(GOOGLE_STATE_KEY, state);
+
+    const params = new URLSearchParams({
+      client_id: googleClientId,
+      redirect_uri: getGoogleRedirectUri(),
+      response_type: "code",
+      scope: "openid email profile",
+      state,
+      prompt: "select_account",
+    });
+
+    window.location.assign(`${GOOGLE_AUTH_URL}?${params.toString()}`);
+  };
+
   return <AuthLayout title="Continue with Google" description="Use the identity provider you already trust.">
       <div className="flex flex-col items-center gap-8">
         <motion.div
@@ -32,7 +113,7 @@ function GoogleLoginPage() {
             <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.6-5.9l-7.6-5.9c-2 1.4-4.7 2.4-8 2.4-6.4 0-11.7-4.1-13.6-9.8l-7.8 6C6.5 42.6 14.6 48 24 48z" />
           </svg>
         </motion.div>
-        <Button fullWidth size="lg" loading={isBusy} onClick={() => void loginWithGoogle().catch(() => void 0)}>
+        <Button fullWidth size="lg" loading={isBusy} onClick={startGoogleLogin}>
           <ShieldCheck className="size-4" />
           Sign in with Google
         </Button>

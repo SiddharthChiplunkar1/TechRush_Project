@@ -13,6 +13,4 @@ function useDeviceFingerprint() {
   }, []);
   return fingerprint;
 }
-export {
-  useDeviceFingerprint
-};
+export { useDeviceFingerprint };

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { AnimatePresence, motion } from "framer-motion";
 import { Camera, Check, RefreshCw, ScanFace } from "lucide-react";
@@ -7,6 +7,14 @@ function FaceScanner({ onSubmit, submitLabel, busy = false, succeeded = false })
   const webcamRef = useRef(null);
   const [shot, setShot] = useState(null);
   const [cameraError, setCameraError] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      const stream = webcamRef.current?.stream;
+      stream?.getTracks().forEach((track) => track.stop());
+    };
+  }, []);
+
   const capture = useCallback(() => {
     const image = webcamRef.current?.getScreenshot();
     if (image) setShot(image);

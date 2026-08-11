@@ -15,7 +15,7 @@ async function getDeviceFingerprint() {
       platform: "server",
       browser: "server",
       screen: "-",
-      timezone: "UTC"
+      timezone: "UTC",
     };
   }
   let visitorId = "unavailable";
@@ -31,7 +31,7 @@ async function getDeviceFingerprint() {
     platform: navigator.platform || "Unknown",
     browser: detectBrowser(navigator.userAgent),
     screen: `${window.screen.width}\xD7${window.screen.height}`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
   return cached;
 }
@@ -43,6 +43,4 @@ function hash(value) {
   }
   return h;
 }
-export {
-  getDeviceFingerprint
-};
+export { getDeviceFingerprint };

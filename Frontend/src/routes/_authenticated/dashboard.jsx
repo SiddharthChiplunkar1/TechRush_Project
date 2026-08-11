@@ -33,6 +33,7 @@ function DashboardPage() {
   const fingerprint = useDeviceFingerprint();
   const { formatted, remaining } = useSessionCountdown(expiresAt);
   const history = useQuery({ queryKey: ["login-history"], queryFn: authService.loginHistory });
+  const loginHistory = history.data?.content ?? history.data ?? [];
   const analytics = { data: null };
   return <AppShell title={`Welcome back, ${user?.name?.split(" ")[0] ?? "there"}`} subtitle="Your live identity posture">
       <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
@@ -82,7 +83,7 @@ function DashboardPage() {
         <section className="glass-panel rounded-[2rem] p-6">
           <h3 className="text-base font-semibold">Authentication timeline</h3>
           <div className="mt-5">
-            {history.isLoading ? <div className="space-y-3"><CardSkeleton /><CardSkeleton /></div> : history.data && history.data.length > 0 ? <AuthTimeline events={history.data} /> : <EmptyState icon={ShieldCheck} title="No activity yet" description="Sign-in events will appear here as soon as they happen." />}
+            {history.isLoading ? <div className="space-y-3"><CardSkeleton /><CardSkeleton /></div> : loginHistory.length > 0 ? <AuthTimeline events={loginHistory} /> : <EmptyState icon={ShieldCheck} title="No activity yet" description="Sign-in events will appear here as soon as they happen." />}
           </div>
         </section>
         <div className="space-y-5">
