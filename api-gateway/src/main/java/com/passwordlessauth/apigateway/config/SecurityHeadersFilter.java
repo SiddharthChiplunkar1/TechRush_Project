@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /** Browser-facing API responses receive a conservative baseline header policy. */
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 public class SecurityHeadersFilter extends OncePerRequestFilter {
 
     @Override

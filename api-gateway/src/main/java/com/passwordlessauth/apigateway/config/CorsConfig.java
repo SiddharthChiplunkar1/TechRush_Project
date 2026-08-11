@@ -128,7 +128,8 @@ public class CorsConfig {
                     && (uri.getScheme().equalsIgnoreCase("http")
                     || uri.getScheme().equalsIgnoreCase("https"))
                     && uri.getHost() != null
-                    && uri.getPath().isEmpty()
+                    && uri.getUserInfo() == null
+                    && (uri.getPath() == null || uri.getPath().isEmpty())
                     && uri.getQuery() == null
                     && uri.getFragment() == null;
         } catch (IllegalArgumentException ex) {

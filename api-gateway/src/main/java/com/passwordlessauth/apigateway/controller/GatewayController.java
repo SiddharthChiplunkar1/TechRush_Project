@@ -4,10 +4,13 @@ import java.net.URI;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,18 +20,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import com.passwordlessauth.apigateway.config.GatewayProperties;
 import com.passwordlessauth.apigateway.config.RequestIdFilter;
 
 @RestController
 public class GatewayController {
 
+    private static final Logger log = LoggerFactory.getLogger(GatewayController.class);
+
     private static final String COOKIE = HttpHeaders.COOKIE;
     private static final String AUTHORIZATION = HttpHeaders.AUTHORIZATION;
     private static final String REQUEST_ID = RequestIdFilter.HEADER_NAME;
     private static final String SERVICE_TOKEN = "X-Service-Token";
+    private static final String REFRESH_TOKEN_COOKIE = "refresh_token";
 
     /*
      * Browser-controlled headers that must never be trusted or forwarded
@@ -168,6 +172,7 @@ public class GatewayController {
             HttpServletRequest request,
             String body
     ) {
+        long startedAt = System.nanoTime();
         URI upstream = buildUpstreamUri(baseUrl, request);
 
         HttpHeaders headers = buildRequestHeaders(
@@ -185,7 +190,9 @@ public class GatewayController {
                         String.class
                 );
 
-        return buildResponse(response, request);
+        ResponseEntity<String> proxied = buildResponse(response, request, service);
+        logAccess(request, service, upstream, proxied.getStatusCode().value(), startedAt);
+        return proxied;
     }
 
     private URI buildUpstreamUri(
@@ -194,19 +201,21 @@ public class GatewayController {
     ) {
         String requestPath = request.getRequestURI();
         String query = request.getQueryString();
+        StringBuilder upstream = new StringBuilder(baseUrl);
 
-        UriComponentsBuilder builder =
-                UriComponentsBuilder
-                        .fromUriString(baseUrl)
-                        .path(requestPath);
-
-        if (query != null && !query.isBlank()) {
-            builder.query(query);
+        if (upstream.length() > 0
+                && upstream.charAt(upstream.length() - 1) == '/'
+                && requestPath.startsWith("/")) {
+            upstream.setLength(upstream.length() - 1);
         }
 
-        return builder
-                .build(true)
-                .toUri();
+        upstream.append(requestPath);
+
+        if (query != null && !query.isBlank()) {
+            upstream.append('?').append(query);
+        }
+
+        return URI.create(upstream.toString());
     }
 
     private HttpHeaders buildRequestHeaders(
@@ -243,27 +252,14 @@ public class GatewayController {
         }
 
         /*
-         * Authorization is intentionally preserved.
-         * Banking/Auth/FaceID validate it themselves.
-         */
-        copyHeader(
-                request,
-                AUTHORIZATION,
-                headers
-        );
-
-        /*
-         * Refresh cookies are ONLY forwarded to Auth.
-         *
-         * Banking and FaceID must never receive the user's
-         * refresh-token cookie.
+         * Only the refresh_token cookie is forwarded to Auth.
+         * Other browser cookies are intentionally stripped.
          */
         if (service == Service.AUTH) {
-            copyHeader(
-                    request,
-                    COOKIE,
-                    headers
-            );
+            String refreshCookie = extractRefreshTokenCookie(request);
+            if (refreshCookie != null) {
+                headers.add(COOKIE, refreshCookie);
+            }
         }
 
         /*
@@ -334,23 +330,47 @@ public class GatewayController {
         }
     }
 
+    private String extractRefreshTokenCookie(HttpServletRequest request) {
+        String cookieHeader = request.getHeader(COOKIE);
+        if (cookieHeader == null || cookieHeader.isBlank()) {
+            return null;
+        }
+
+        for (String cookie : cookieHeader.split(";")) {
+            String trimmed = cookie.trim();
+            if (trimmed.startsWith(REFRESH_TOKEN_COOKIE + "=")) {
+                return trimmed;
+            }
+        }
+
+        return null;
+    }
+
     private ResponseEntity<String> buildResponse(
             ResponseEntity<String> response,
-            HttpServletRequest request
+            HttpServletRequest request,
+            Service service
     ) {
         HttpHeaders safeHeaders =
                 new HttpHeaders();
 
         response.getHeaders().forEach(
                 (name, values) -> {
-                    if (ALLOWED_RESPONSE_HEADERS.contains(
+                    if (!ALLOWED_RESPONSE_HEADERS.contains(
                             name.toLowerCase(Locale.ROOT)
                     )) {
-                        safeHeaders.put(
-                                name,
-                                List.copyOf(values)
-                        );
+                        return;
                     }
+
+                    if ("set-cookie".equalsIgnoreCase(name)
+                            && service != Service.AUTH) {
+                        return;
+                    }
+
+                    safeHeaders.put(
+                            name,
+                            List.copyOf(values)
+                    );
                 }
         );
 
@@ -360,9 +380,7 @@ public class GatewayController {
                 );
 
         if (requestId != null
-                && !requestId.isBlank()
-                && !safeHeaders.containsKey(REQUEST_ID)) {
-
+                && !requestId.isBlank()) {
             safeHeaders.set(
                     REQUEST_ID,
                     requestId
@@ -373,6 +391,29 @@ public class GatewayController {
                 .status(response.getStatusCode())
                 .headers(safeHeaders)
                 .body(response.getBody());
+    }
+
+    private void logAccess(
+            HttpServletRequest request,
+            Service service,
+            URI upstream,
+            int status,
+            long startedAt
+    ) {
+        long durationMs = (System.nanoTime() - startedAt) / 1_000_000L;
+        String requestId = Optional.ofNullable(
+                (String) request.getAttribute(REQUEST_ID)
+        ).orElse("-");
+
+        log.info(
+                "requestId={} method={} path={} upstream={} status={} latencyMs={}",
+                requestId,
+                request.getMethod(),
+                request.getRequestURI(),
+                service.name().toLowerCase(Locale.ROOT) + ":" + upstream.getHost(),
+                status,
+                durationMs
+        );
     }
 
     private enum Service {
