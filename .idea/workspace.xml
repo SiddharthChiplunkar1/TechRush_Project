@@ -4,24 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Backend Fixes">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/CorsConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/GatewayExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/GatewayExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/GatewayHttpConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/GatewayHttpConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/GatewayProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/GatewayProperties.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/RequestIdFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/RequestIdFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/SecurityHeadersFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/SecurityHeadersFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/controller/GatewayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/controller/GatewayController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/test/java/com/passwordlessauth/apigateway/GatewayControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/test/java/com/passwordlessauth/apigateway/GatewayControllerTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Fixed Api-Gateway Service" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="507" />
+    <option name="cachedIndexableFilesCount" value="508" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -59,61 +49,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.000000000152168" />
-      <entry key="MS500" value="1.0284588479137464" />
-      <entry key="S2" value="2.3641280514410314" />
-      <entry key="S5" value="7.0881657642483145" />
-      <entry key="S10" value="14.825770434147818" />
-      <entry key="S30" value="28.198915155758243" />
-      <entry key="S60" value="36.35525047363746" />
-      <entry key="M2" value="48.2955390748267" />
-      <entry key="M5" value="79.03089354409238" />
-      <entry key="M10" value="126.80059758020927" />
-      <entry key="M15" value="161.05375343955671" />
-      <entry key="M30" value="234.62429111986555" />
-      <entry key="H1" value="406.55684699963945" />
-      <entry key="H2" value="844.0770861518837" />
-      <entry key="H4" value="1603.0649877365554" />
-      <entry key="D1" value="3332.655796127889" />
-      <entry key="W1" value="3850.1723535442225" />
+      <entry key="MS100" value="1.5379518753569443" />
+      <entry key="MS500" value="2.708629507251782" />
+      <entry key="S2" value="4.408805190046959" />
+      <entry key="S5" value="8.91941251503367" />
+      <entry key="S10" value="16.583060526014606" />
+      <entry key="S30" value="30.397126182231727" />
+      <entry key="S60" value="38.836075900898784" />
+      <entry key="M2" value="50.95022725730791" />
+      <entry key="M5" value="81.8049688521776" />
+      <entry key="M10" value="129.61950431805005" />
+      <entry key="M15" value="163.90045786423897" />
+      <entry key="M30" value="237.51267340611213" />
+      <entry key="H1" value="409.46018597984573" />
+      <entry key="H2" value="846.9767794512054" />
+      <entry key="H4" value="1605.9697512180253" />
+      <entry key="D1" value="3335.622800445658" />
+      <entry key="W1" value="3853.166907953594" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.3267006146683015E-30" />
-      <entry key="MS500" value="1.0581679077795444E-6" />
-      <entry key="S2" value="0.032072930746575745" />
-      <entry key="S5" value="0.25261286162169094" />
-      <entry key="S10" value="0.5026060700207379" />
-      <entry key="S30" value="0.7950770965516323" />
-      <entry key="S60" value="0.8916710402859501" />
-      <entry key="M2" value="0.9446900480920032" />
-      <entry key="M5" value="1.0440643542389545" />
-      <entry key="M10" value="1.3568010781140438" />
-      <entry key="M15" value="1.671210282456275" />
-      <entry key="M30" value="2.5814938803165646" />
-      <entry key="H1" value="4.3896428376317695" />
-      <entry key="H2" value="7.940686125904418" />
-      <entry key="H4" value="13.45277048900887" />
-      <entry key="D1" value="25.05362166241343" />
-      <entry key="W1" value="28.387506780803413" />
+      <entry key="MS100" value="2.5589557960510107E-34" />
+      <entry key="MS500" value="1.9125489386379362E-7" />
+      <entry key="S2" value="0.020912364460984493" />
+      <entry key="S5" value="0.2128929381195934" />
+      <entry key="S10" value="0.461403227253119" />
+      <entry key="S30" value="0.7727284032588719" />
+      <entry key="S60" value="0.879049797591062" />
+      <entry key="M2" value="0.9379803676241747" />
+      <entry key="M5" value="1.041091814540343" />
+      <entry key="M10" value="1.354868237565617" />
+      <entry key="M15" value="1.6696227491192372" />
+      <entry key="M30" value="2.580267469327818" />
+      <entry key="H1" value="4.388600002356799" />
+      <entry key="H2" value="7.939742846487662" />
+      <entry key="H4" value="13.451971433475322" />
+      <entry key="D1" value="25.05337363753619" />
+      <entry key="W1" value="28.38746663355529" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8645372314516401" />
-      <entry key="MS500" value="0.9994437020907377" />
-      <entry key="S2" value="2.3747781858015737" />
-      <entry key="S5" value="7.292801691608119" />
-      <entry key="S10" value="15.278867410384708" />
-      <entry key="S30" value="28.966196033772086" />
-      <entry key="S60" value="37.22960431022532" />
-      <entry key="M2" value="49.22844949188875" />
-      <entry key="M5" value="80.06644490184625" />
-      <entry key="M10" value="128.15019187001454" />
-      <entry key="M15" value="162.71872078481468" />
-      <entry key="M30" value="237.20094680028419" />
-      <entry key="H1" value="410.9423079931132" />
-      <entry key="H2" value="852.0137835266248" />
-      <entry key="H4" value="1616.5142150920346" />
-      <entry key="D1" value="3357.708259691376" />
-      <entry key="W1" value="3878.5596710309233" />
+      <entry key="MS100" value="1.4273623845501462" />
+      <entry key="MS500" value="2.6663215448511535" />
+      <entry key="S2" value="4.405167157068253" />
+      <entry key="S5" value="9.087519229752102" />
+      <entry key="S10" value="16.99681620431263" />
+      <entry key="S30" value="31.142102667593647" />
+      <entry key="S60" value="39.697684519592826" />
+      <entry key="M2" value="51.87632696613863" />
+      <entry key="M5" value="82.83749799519094" />
+      <entry key="M10" value="130.96713907179787" />
+      <entry key="M15" value="165.56381896388652" />
+      <entry key="M30" value="240.088092652099" />
+      <entry key="H1" value="413.8445989703682" />
+      <entry key="H2" value="854.9125309397426" />
+      <entry key="H4" value="1619.4181781881061" />
+      <entry key="D1" value="3360.675015739012" />
+      <entry key="W1" value="3881.55418525664" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -262,7 +252,8 @@
     <MESSAGE value="Build issues fixed" />
     <MESSAGE value="Security Issues Fixed" />
     <MESSAGE value="Api Gateway Fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Api Gateway Fixes" />
+    <MESSAGE value="Fixed Api-Gateway Service" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Api-Gateway Service" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
