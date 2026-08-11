@@ -1,6 +1,7 @@
 package com.passwordlessauth.apigateway.config;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 import java.util.UUID;
 
 import jakarta.servlet.FilterChain;
@@ -17,13 +18,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class RequestIdFilter extends OncePerRequestFilter {
 
     public static final String HEADER_NAME = "X-Request-ID";
+    private static final Pattern REQUEST_ID_PATTERN = Pattern.compile("[A-Za-z0-9._-]{8,64}");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String requestId = request.getHeader(HEADER_NAME);
-        if (requestId == null || !requestId.matches("^[A-Za-z0-9._-]{8,64}$")) {
+        if (requestId == null || !REQUEST_ID_PATTERN.matcher(requestId).matches()) {
             requestId = UUID.randomUUID().toString();
         }
 

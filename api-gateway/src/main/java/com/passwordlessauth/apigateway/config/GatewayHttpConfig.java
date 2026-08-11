@@ -2,6 +2,7 @@ package com.passwordlessauth.apigateway.config;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.net.http.HttpClient;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +29,13 @@ public class GatewayHttpConfig {
 
     @Bean
     public RestTemplate restTemplate(GatewayProperties properties) {
-        JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory();
-        factory.setReadTimeout((int) Duration.ofMillis(properties.getReadTimeoutMillis()).toMillis());
+        Duration connectTimeout = Duration.ofMillis(properties.getConnectTimeoutMillis());
+        Duration readTimeout = Duration.ofMillis(properties.getReadTimeoutMillis());
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(connectTimeout)
+                .build();
+        JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(client);
+        factory.setReadTimeout(readTimeout);
         RestTemplate template = new RestTemplate(factory);
         template.setErrorHandler(PASSTHROUGH_ERROR_HANDLER);
         return template;

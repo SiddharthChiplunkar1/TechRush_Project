@@ -1,5 +1,8 @@
 package com.passwordlessauth.apigateway.config;
 
+import java.net.URI;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -100,5 +103,35 @@ public class GatewayProperties {
 
     public void setMaxRequestsPerMinute(int maxRequestsPerMinute) {
         this.maxRequestsPerMinute = maxRequestsPerMinute;
+    }
+
+    @PostConstruct
+    void validateTrustedServiceUrls() {
+        validateServiceUrl("gateway.auth-url", authUrl);
+        validateServiceUrl("gateway.banking-url", bankingUrl);
+        validateServiceUrl("gateway.face-url", faceUrl);
+    }
+
+    private void validateServiceUrl(String propertyName, String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+
+        URI uri = URI.create(value);
+        String scheme = uri.getScheme();
+
+        if (scheme == null
+                || (!scheme.equalsIgnoreCase("http")
+                && !scheme.equalsIgnoreCase("https"))) {
+            throw new IllegalStateException(propertyName + " must use http or https");
+        }
+
+        if (uri.getHost() == null) {
+            throw new IllegalStateException(propertyName + " must include a host");
+        }
+
+        if (uri.getRawQuery() != null || uri.getFragment() != null) {
+            throw new IllegalStateException(propertyName + " must not include query parameters or fragments");
+        }
     }
 }
