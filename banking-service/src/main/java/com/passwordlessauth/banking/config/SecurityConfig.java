@@ -42,7 +42,7 @@ public class SecurityConfig {
             JwtFilter jwtFilter,
             AuthenticationEntryPoint authenticationEntryPoint,
             ObjectMapper objectMapper,
-            @Value("${cors.allowed.origins:http://localhost:3000,http://localhost:5173}") String allowedOrigins
+            @Value("${cors.allowed.origins:http://localhost:3000,http://localhost:4173,http://localhost:5173}") String allowedOrigins
     ) {
 
         this.jwtFilter = jwtFilter;
@@ -243,7 +243,8 @@ public class SecurityConfig {
                         "Content-Type",
                         "Accept",
                         "Origin",
-                        "X-Requested-With"
+                        "X-Requested-With",
+                        "X-Device-Fingerprint"
                 )
         );
 

@@ -19,10 +19,14 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
 import { Route as AuthenticatedTransferRouteImport } from './routes/_authenticated/transfer'
+import { Route as AuthenticatedTrustedDevicesRouteImport } from './routes/_authenticated/trusted-devices'
 import { Route as LoginIndexRouteImport } from './routes/login.index'
+import { Route as LoginDeviceRouteImport } from './routes/login.device'
 import { Route as LoginFaceRouteImport } from './routes/login.face'
 import { Route as LoginGoogleRouteImport } from './routes/login.google'
 import { Route as LoginOtpRouteImport } from './routes/login.otp'
+import { Route as LoginStepUpRouteImport } from './routes/login.step-up'
+import { Route as RegisterVerifyRouteImport } from './routes/register.verify'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -75,9 +79,20 @@ const AuthenticatedTransferRoute = AuthenticatedTransferRouteImport.update({
   path: '/transfer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTrustedDevicesRoute =
+  AuthenticatedTrustedDevicesRouteImport.update({
+    id: '/trusted-devices',
+    path: '/trusted-devices',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginDeviceRoute = LoginDeviceRouteImport.update({
+  id: '/login/device',
+  path: '/login/device',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginFaceRoute = LoginFaceRouteImport.update({
@@ -95,10 +110,20 @@ const LoginOtpRoute = LoginOtpRouteImport.update({
   path: '/login/otp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginStepUpRoute = LoginStepUpRouteImport.update({
+  id: '/login/step-up',
+  path: '/login/step-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterVerifyRoute = RegisterVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => RegisterRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/register': typeof RegisterRoute
+  '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
@@ -106,14 +131,18 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
   '/transfer': typeof AuthenticatedTransferRoute
+  '/trusted-devices': typeof AuthenticatedTrustedDevicesRoute
+  '/login/device': typeof LoginDeviceRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
+  '/login/step-up': typeof LoginStepUpRoute
+  '/register/verify': typeof RegisterVerifyRoute
   '/login/': typeof LoginIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/register': typeof RegisterRoute
+  '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
@@ -121,16 +150,20 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
   '/transfer': typeof AuthenticatedTransferRoute
+  '/trusted-devices': typeof AuthenticatedTrustedDevicesRoute
+  '/login/device': typeof LoginDeviceRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
+  '/login/step-up': typeof LoginStepUpRoute
+  '/register/verify': typeof RegisterVerifyRoute
   '/login': typeof LoginIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/register': typeof RegisterRoute
+  '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
@@ -138,9 +171,13 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
   '/_authenticated/transfer': typeof AuthenticatedTransferRoute
+  '/_authenticated/trusted-devices': typeof AuthenticatedTrustedDevicesRoute
+  '/login/device': typeof LoginDeviceRoute
   '/login/face': typeof LoginFaceRoute
   '/login/google': typeof LoginGoogleRoute
   '/login/otp': typeof LoginOtpRoute
+  '/login/step-up': typeof LoginStepUpRoute
+  '/register/verify': typeof RegisterVerifyRoute
   '/login/': typeof LoginIndexRoute
 }
 export interface FileRouteTypes {
@@ -155,9 +192,13 @@ export interface FileRouteTypes {
     | '/settings'
     | '/transactions'
     | '/transfer'
+    | '/trusted-devices'
+    | '/login/device'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
+    | '/login/step-up'
+    | '/register/verify'
     | '/login/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -170,9 +211,13 @@ export interface FileRouteTypes {
     | '/settings'
     | '/transactions'
     | '/transfer'
+    | '/trusted-devices'
+    | '/login/device'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
+    | '/login/step-up'
+    | '/register/verify'
     | '/login'
   id:
     | '__root__'
@@ -186,20 +231,26 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/transactions'
     | '/_authenticated/transfer'
+    | '/_authenticated/trusted-devices'
+    | '/login/device'
     | '/login/face'
     | '/login/google'
     | '/login/otp'
+    | '/login/step-up'
+    | '/register/verify'
     | '/login/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  RegisterRoute: typeof RegisterRoute
+  RegisterRoute: typeof RegisterRouteWithChildren
   UnauthorizedRoute: typeof UnauthorizedRoute
+  LoginDeviceRoute: typeof LoginDeviceRoute
   LoginFaceRoute: typeof LoginFaceRoute
   LoginGoogleRoute: typeof LoginGoogleRoute
   LoginOtpRoute: typeof LoginOtpRoute
+  LoginStepUpRoute: typeof LoginStepUpRoute
   LoginIndexRoute: typeof LoginIndexRoute
 }
 
@@ -275,11 +326,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTransferRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/trusted-devices': {
+      id: '/_authenticated/trusted-devices'
+      path: '/trusted-devices'
+      fullPath: '/trusted-devices'
+      preLoaderRoute: typeof AuthenticatedTrustedDevicesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/login/': {
       id: '/login/'
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/device': {
+      id: '/login/device'
+      path: '/login/device'
+      fullPath: '/login/device'
+      preLoaderRoute: typeof LoginDeviceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/face': {
@@ -303,6 +368,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginOtpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login/step-up': {
+      id: '/login/step-up'
+      path: '/login/step-up'
+      fullPath: '/login/step-up'
+      preLoaderRoute: typeof LoginStepUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register/verify': {
+      id: '/register/verify'
+      path: '/verify'
+      fullPath: '/register/verify'
+      preLoaderRoute: typeof RegisterVerifyRouteImport
+      parentRoute: typeof RegisterRoute
+    }
   }
 }
 
@@ -313,6 +392,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTransactionsRoute: typeof AuthenticatedTransactionsRoute
   AuthenticatedTransferRoute: typeof AuthenticatedTransferRoute
+  AuthenticatedTrustedDevicesRoute: typeof AuthenticatedTrustedDevicesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -322,19 +402,34 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTransactionsRoute: AuthenticatedTransactionsRoute,
   AuthenticatedTransferRoute: AuthenticatedTransferRoute,
+  AuthenticatedTrustedDevicesRoute: AuthenticatedTrustedDevicesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface RegisterRouteChildren {
+  RegisterVerifyRoute: typeof RegisterVerifyRoute
+}
+
+const RegisterRouteChildren: RegisterRouteChildren = {
+  RegisterVerifyRoute: RegisterVerifyRoute,
+}
+
+const RegisterRouteWithChildren = RegisterRoute._addFileChildren(
+  RegisterRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  RegisterRoute: RegisterRoute,
+  RegisterRoute: RegisterRouteWithChildren,
   UnauthorizedRoute: UnauthorizedRoute,
+  LoginDeviceRoute: LoginDeviceRoute,
   LoginFaceRoute: LoginFaceRoute,
   LoginGoogleRoute: LoginGoogleRoute,
   LoginOtpRoute: LoginOtpRoute,
+  LoginStepUpRoute: LoginStepUpRoute,
   LoginIndexRoute: LoginIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { AuthLayout } from "@/components/layout/AuthLayout";
+import { Input } from "@/components/ui-kit/Input";
 import { FaceScanner } from "@/components/ui-kit/FaceScanner";
 import { useAuth } from "@/context/AuthContext";
 const Route = createFileRoute("/login/face")({
@@ -16,21 +18,39 @@ const Route = createFileRoute("/login/face")({
 });
 function FaceLoginPage() {
   const { loginWithFace, isBusy } = useAuth();
+  const [email, setEmail] = useState("");
   const [succeeded, setSucceeded] = useState(false);
   return <AuthLayout title="Face login" description="Center your face inside the frame and hold still.">
-      <FaceScanner
-    submitLabel="Verify face"
-    busy={isBusy}
-    succeeded={succeeded}
-    onSubmit={async (image) => {
-      try {
-        await loginWithFace(image);
-        setSucceeded(true);
-      } catch {
-        setSucceeded(false);
-      }
-    }}
-  />
+      <div className="space-y-5">
+        <Input
+          label="Email address"
+          type="email"
+          placeholder="you@company.com"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setSucceeded(false);
+          }}
+        />
+        <FaceScanner
+          submitLabel="Verify face"
+          busy={isBusy}
+          succeeded={succeeded}
+          onSubmit={async (image) => {
+            if (!email.trim()) {
+              toast.error("Enter your email before starting face login");
+              return;
+            }
+
+            try {
+              await loginWithFace({ email: email.trim().toLowerCase(), image });
+              setSucceeded(true);
+            } catch {
+              setSucceeded(false);
+            }
+          }}
+        />
+      </div>
     </AuthLayout>;
 }
 export {

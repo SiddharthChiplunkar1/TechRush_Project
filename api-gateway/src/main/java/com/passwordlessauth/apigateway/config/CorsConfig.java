@@ -31,6 +31,7 @@ public class CorsConfig {
             "Accept",
             "X-Requested-With",
             "X-Device-Id",
+            "X-Device-Fingerprint",
             "X-Request-ID"
     );
 

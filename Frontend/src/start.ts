@@ -28,13 +28,11 @@ export const startInstance = createStart(() => ({
   requestMiddleware: [errorMiddleware, csrfMiddleware],
 }));
 
-// Client-side auth refresh on load
-if (typeof window !== 'undefined') {
-  import('./lib/authClient').then(mod => {
-    mod.refreshAuth().then(token => {
-      if (token) {
-        console.log('Session restored via refresh token');
-      }
-    });
-  }).catch(err => console.debug('authClient load failed', err));
+// Client-side auth bootstrap on load
+if (typeof window !== "undefined") {
+  import("./lib/authSession")
+    .then((mod) => {
+      void mod.bootstrapAuthSession();
+    })
+    .catch((error) => console.debug("auth bootstrap failed", error));
 }

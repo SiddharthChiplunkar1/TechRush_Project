@@ -8,9 +8,7 @@ const bankingService = {
   confirmTransfer: (payload) => api.post("/api/banking/transfer/confirm", payload).then(unwrap),
   verifyStepUpChallenge: (challengeId) =>
     api.post(`/api/banking/step-up/challenges/${challengeId}/verify`).then(unwrap),
-  getTransactions: (params = {}) => api.get("/api/banking/transactions", { params }).then(unwrap)
+  getTransactions: (params = {}) => api.get("/api/banking/transactions", { params }).then(unwrap),
 };
 
-export {
-  bankingService
-};
+export { bankingService };

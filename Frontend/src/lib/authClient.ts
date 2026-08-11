@@ -1,28 +1,81 @@
-import axios from 'axios';
-import { tokenStorage } from './tokenStorage';
+import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+import { tokenStorage, userStorage } from "./tokenStorage";
 
-export async function refreshAuth() {
-  try {
-    // call refresh endpoint; backend will use refresh cookie
-    const res = await axios.post(`${API_BASE}/api/auth/refresh`, {}, { withCredentials: true });
-    if (res && res.data && res.data.data && res.data.data.accessToken) {
-      const token = res.data.data.accessToken;
-      tokenStorage.set(token, res.data.data.expiresIn ?? 900);
-      return token;
-    }
-  } catch (err) {
-    // no active session
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
+type AuthSessionPayload = {
+  accessToken?: string;
+  expiresIn?: number;
+  user?: unknown;
+};
+
+type AuthSessionEnvelope = {
+  data?: AuthSessionPayload;
+};
+
+type SessionResponse = AuthSessionPayload | AuthSessionEnvelope;
+
+let refreshPromise: Promise<AuthSessionPayload | null> | null = null;
+
+function unwrapSession(response: { data?: SessionResponse } | null): AuthSessionPayload | null {
+  const payload = response?.data;
+  if (!payload) {
     return null;
   }
+
+  if ("data" in payload && payload.data) {
+    return payload.data;
+  }
+
+  return payload;
 }
 
-export function getAccessToken() {
-  return tokenStorage.get();
+export async function refreshAuth() {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = axios
+    .post<SessionResponse>(`${API_BASE}/api/auth/refresh`, {}, { withCredentials: true })
+    .then((response) => {
+      const session = unwrapSession(response);
+
+      if (session?.accessToken) {
+        tokenStorage.set(session.accessToken, session.expiresIn ?? 900);
+        if (session.user) {
+          userStorage.set(session.user);
+        }
+        return session;
+      }
+
+      return null;
+    })
+    .catch(() => null)
+    .finally(() => {
+      refreshPromise = null;
+    });
+
+  return refreshPromise;
+}
+
+export function storeAuthSession(session: AuthSessionPayload) {
+  if (!session?.accessToken) {
+    return;
+  }
+
+  tokenStorage.set(session.accessToken, session.expiresIn ?? 900);
+  if (session.user) {
+    userStorage.set(session.user);
+  }
 }
 
 export function clearAuth() {
   tokenStorage.clear();
-  delete axios.defaults.headers.common['Authorization'];
+  userStorage.clear();
+  delete axios.defaults.headers.common.Authorization;
+}
+
+export function getAccessToken() {
+  return tokenStorage.get();
 }

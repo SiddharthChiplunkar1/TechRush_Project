@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -23,10 +24,12 @@ public class RiskClient {
 
     private final RestClient restClient;
     private final String authServiceUrl;
+    private final String internalServiceToken;
 
     public RiskClient(
             RestClient.Builder restClientBuilder,
-            @Value("${auth.service.url:http://auth-service:8080}") String authServiceUrl
+            @Value("${auth.service.url:http://auth-service:8080}") String authServiceUrl,
+            @Value("${auth.service.internal-token:}") String internalServiceToken
     ) {
         this.restClient = Objects.requireNonNull(
                 restClientBuilder,
@@ -40,6 +43,7 @@ public class RiskClient {
         }
 
         this.authServiceUrl = authServiceUrl.replaceAll("/+$", "");
+        this.internalServiceToken = internalServiceToken;
     }
 
     /**
@@ -67,11 +71,24 @@ public class RiskClient {
                         beneficiaryId
                 );
 
+        if (internalServiceToken == null || internalServiceToken.isBlank()) {
+            log.error(
+                    "Risk assessment disabled: internal service token is not configured"
+            );
+
+            return RiskLevel.HIGH;
+        }
+
         try {
 
             RiskAssessmentResponse response =
                     restClient.post()
                             .uri(authServiceUrl + "/internal/risk")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header(
+                                    "X-Internal-Service-Token",
+                                    internalServiceToken
+                            )
                             .body(request)
                             .retrieve()
                             .body(RiskAssessmentResponse.class);

@@ -4,14 +4,51 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Fixed Api-Gateway Service" />
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Fixed Auth-Service">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/.prettierrc" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/.prettierrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/ui-kit/FaceScanner.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/ui-kit/FaceScanner.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/context/AuthContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/context/AuthContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/hooks/useDeviceFingerprint.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/hooks/useDeviceFingerprint.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/hooks/useSessionCountdown.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/hooks/useSessionCountdown.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/hooks/useTheme.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/hooks/useTheme.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/lib/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/lib/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/lib/authClient.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/lib/authClient.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/lib/fingerprint.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/lib/fingerprint.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/lib/tokenStorage.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/lib/tokenStorage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/lib/utils.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/lib/utils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routeTree.gen.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routeTree.gen.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/_authenticated/dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/_authenticated/dashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/_authenticated/route.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/_authenticated/route.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/_authenticated/trusted-devices.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/_authenticated/trusted-devices.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/login.device.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/login.device.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/login.face.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/login.face.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/login.google.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/login.google.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/login.index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/login.index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/login.otp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/login.otp.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/routes/register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routes/register.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/services/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/services/authService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/services/bankingService.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/services/bankingService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/start.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/start.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/passwordlessauth/apigateway/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/InternalServiceTokenFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/InternalServiceTokenFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/passwordlessauth/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/security/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/passwordlessauth/security/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/client/RiskClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/client/RiskClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/src/main/java/com/passwordlessauth/banking/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/banking-service/target/test-classes/com/passwordlessauth/banking_service/BankingServiceApplicationTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/banking-service/target/test-classes/com/passwordlessauth/banking_service/BankingServiceApplicationTests.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="508" />
+    <option name="cachedIndexableFilesCount" value="528" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -26,7 +63,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="backend" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -49,61 +86,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.5379518753569443" />
-      <entry key="MS500" value="2.708629507251782" />
-      <entry key="S2" value="4.408805190046959" />
-      <entry key="S5" value="8.91941251503367" />
-      <entry key="S10" value="16.583060526014606" />
-      <entry key="S30" value="30.397126182231727" />
-      <entry key="S60" value="38.836075900898784" />
-      <entry key="M2" value="50.95022725730791" />
-      <entry key="M5" value="81.8049688521776" />
-      <entry key="M10" value="129.61950431805005" />
-      <entry key="M15" value="163.90045786423897" />
-      <entry key="M30" value="237.51267340611213" />
-      <entry key="H1" value="409.46018597984573" />
-      <entry key="H2" value="846.9767794512054" />
-      <entry key="H4" value="1605.9697512180253" />
-      <entry key="D1" value="3335.622800445658" />
-      <entry key="W1" value="3853.166907953594" />
+      <entry key="MS100" value="1.0391771078429477" />
+      <entry key="MS500" value="2.326007081859946" />
+      <entry key="S2" value="6.736160780251476" />
+      <entry key="S5" value="10.49499807224815" />
+      <entry key="S10" value="12.756250465628366" />
+      <entry key="S30" value="16.654100709939797" />
+      <entry key="S60" value="28.880755870378852" />
+      <entry key="M2" value="55.66140103631703" />
+      <entry key="M5" value="108.52599151142516" />
+      <entry key="M10" value="167.9951411444976" />
+      <entry key="M15" value="208.51348893406623" />
+      <entry key="M30" value="290.8029803506556" />
+      <entry key="H1" value="466.4590432779761" />
+      <entry key="H2" value="904.2370179866721" />
+      <entry key="H4" value="1664.3836320016069" />
+      <entry key="D1" value="3403.6357047701013" />
+      <entry key="W1" value="3925.345068853965" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="2.5589557960510107E-34" />
-      <entry key="MS500" value="1.9125489386379362E-7" />
-      <entry key="S2" value="0.020912364460984493" />
-      <entry key="S5" value="0.2128929381195934" />
-      <entry key="S10" value="0.461403227253119" />
-      <entry key="S30" value="0.7727284032588719" />
-      <entry key="S60" value="0.879049797591062" />
-      <entry key="M2" value="0.9379803676241747" />
-      <entry key="M5" value="1.041091814540343" />
-      <entry key="M10" value="1.354868237565617" />
-      <entry key="M15" value="1.6696227491192372" />
-      <entry key="M30" value="2.580267469327818" />
-      <entry key="H1" value="4.388600002356799" />
-      <entry key="H2" value="7.939742846487662" />
-      <entry key="H4" value="13.451971433475322" />
-      <entry key="D1" value="25.05337363753619" />
-      <entry key="W1" value="28.38746663355529" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="2.8621636956465985E-103" />
+      <entry key="S2" value="3.2298982555630363E-26" />
+      <entry key="S5" value="9.608544485780017E-11" />
+      <entry key="S10" value="1.50350182043885E-5" />
+      <entry key="S30" value="0.04900930505958723" />
+      <entry key="S60" value="0.38066086357920775" />
+      <entry key="M2" value="1.066722158289007" />
+      <entry key="M5" value="2.026265059809589" />
+      <entry key="M10" value="2.7360729351268964" />
+      <entry key="M15" value="3.2017040651111768" />
+      <entry key="M30" value="4.276131571879017" />
+      <entry key="H1" value="6.171075852178264" />
+      <entry key="H2" value="9.767789468547148" />
+      <entry key="H4" value="15.31709348357424" />
+      <entry key="D1" value="27.01372716077256" />
+      <entry key="W1" value="30.38109743407182" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.4273623845501462" />
-      <entry key="MS500" value="2.6663215448511535" />
-      <entry key="S2" value="4.405167157068253" />
-      <entry key="S5" value="9.087519229752102" />
-      <entry key="S10" value="16.99681620431263" />
-      <entry key="S30" value="31.142102667593647" />
-      <entry key="S60" value="39.697684519592826" />
-      <entry key="M2" value="51.87632696613863" />
-      <entry key="M5" value="82.83749799519094" />
-      <entry key="M10" value="130.96713907179787" />
-      <entry key="M15" value="165.56381896388652" />
-      <entry key="M30" value="240.088092652099" />
-      <entry key="H1" value="413.8445989703682" />
-      <entry key="H2" value="854.9125309397426" />
-      <entry key="H4" value="1619.4181781881061" />
-      <entry key="D1" value="3360.675015739012" />
-      <entry key="W1" value="3881.55418525664" />
+      <entry key="MS100" value="0.21639348862582578" />
+      <entry key="MS500" value="1.774170975696557" />
+      <entry key="S2" value="6.483124688727337" />
+      <entry key="S5" value="10.373115872473095" />
+      <entry key="S10" value="12.690508085139998" />
+      <entry key="S30" value="16.677553100734812" />
+      <entry key="S60" value="29.241205638714668" />
+      <entry key="M2" value="56.70991297867061" />
+      <entry key="M5" value="110.53849234463443" />
+      <entry key="M10" value="170.72067310248082" />
+      <entry key="M15" value="211.70647674510107" />
+      <entry key="M30" value="295.07287259493216" />
+      <entry key="H1" value="472.62519504305385" />
+      <entry key="H2" value="914.000439274771" />
+      <entry key="H4" value="1679.6969874398253" />
+      <entry key="D1" value="3430.648237633688" />
+      <entry key="W1" value="3955.725971612768" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
