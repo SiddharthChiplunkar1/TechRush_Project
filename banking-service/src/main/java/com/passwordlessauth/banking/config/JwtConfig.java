@@ -34,11 +34,25 @@ public class JwtConfig {
     private static final int MIN_SECRET_BYTES = 32;
 
     private final String jwtSecret;
+    private final String issuer;
+    private final String audience;
 
     public JwtConfig(
-            @Value("${jwt.secret:${app.jwt.secret:}}") String jwtSecret
+            @Value("${jwt.secret:${app.jwt.secret:}}") String jwtSecret,
+            @Value("${app.jwt.issuer:TechRush}") String issuer,
+            @Value("${app.jwt.audience:techrush-app}") String audience
     ) {
         this.jwtSecret = jwtSecret;
+        this.issuer = issuer;
+        this.audience = audience;
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public String getAudience() {
+        return audience;
     }
 
     /**

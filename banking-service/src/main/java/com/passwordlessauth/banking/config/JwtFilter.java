@@ -38,9 +38,11 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final int MAX_TOKEN_LENGTH = 8192;
 
     private final SecretKey jwtSecretKey;
+    private final JwtConfig jwtConfig;
 
-    public JwtFilter(SecretKey jwtSecretKey) {
+    public JwtFilter(SecretKey jwtSecretKey, JwtConfig jwtConfig) {
         this.jwtSecretKey = jwtSecretKey;
+        this.jwtConfig = jwtConfig;
     }
 
     @Override
@@ -119,9 +121,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
 
-            Claims claims = Jwts
-                    .parser()
-                    .verifyWith(jwtSecretKey)
+            var parserBuilder = Jwts.parser().verifyWith(jwtSecretKey);
+            if (jwtConfig != null && jwtConfig.getIssuer() != null && !jwtConfig.getIssuer().isBlank()) {
+                parserBuilder.requireIssuer(jwtConfig.getIssuer());
+            }
+            if (jwtConfig != null && jwtConfig.getAudience() != null && !jwtConfig.getAudience().isBlank()) {
+                parserBuilder.requireAudience(jwtConfig.getAudience());
+            }
+
+            Claims claims = parserBuilder
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();

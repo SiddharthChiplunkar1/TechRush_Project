@@ -67,6 +67,17 @@ public class BeneficiaryController {
         AuthenticatedUser authenticatedUser =
                 requireAuthenticatedUser(user);
 
+        if (dto.getAccountIdentifier() != null) {
+            String identifier = dto.getAccountIdentifier().trim();
+            if (identifier.equalsIgnoreCase(authenticatedUser.userId()) ||
+                (authenticatedUser.email() != null && identifier.equalsIgnoreCase(authenticatedUser.email()))) {
+                throw new IllegalArgumentException("Cannot add yourself as a beneficiary");
+            }
+            if (beneficiaryRepository.existsByUserIdAndAccountIdentifier(authenticatedUser.userId(), identifier)) {
+                throw new IllegalArgumentException("Beneficiary already exists for this account identifier");
+            }
+        }
+
         Beneficiary beneficiary =
                 Beneficiary.create(
                         authenticatedUser.userId(),
