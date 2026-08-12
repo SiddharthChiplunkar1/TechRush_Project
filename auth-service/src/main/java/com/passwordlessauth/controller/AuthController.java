@@ -43,10 +43,16 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Value("${app.security.refresh-cookie-secure}")
+    @Value("${app.google.client-id:}")
+    private String googleClientId;
+
+    @Value("${app.google.redirect-uri:http://localhost:5173/login/google}")
+    private String googleRedirectUri;
+
+    @Value("${app.security.refresh-cookie-secure:false}")
     private boolean refreshCookieSecure;
 
-    @Value("${app.jwt.refresh-token-expiration}")
+    @Value("${app.jwt.refresh-token-expiration:604800000}")
     private long refreshTokenExpiration;
 
     private ResponseEntity<ApiResponse<JwtResponse>> withRefreshCookie(
@@ -121,6 +127,14 @@ public class AuthController {
             @Valid @RequestBody IdentifyRequest request
     ) {
         return ResponseEntity.ok(ApiResponse.success(authService.identify(request)));
+    }
+
+    @GetMapping("/google/config")
+    public ResponseEntity<ApiResponse<java.util.Map<String, String>>> googleConfig() {
+        return ResponseEntity.ok(ApiResponse.success(java.util.Map.of(
+                "clientId", googleClientId,
+                "redirectUri", googleRedirectUri
+        )));
     }
 
     @PostMapping("/continue")

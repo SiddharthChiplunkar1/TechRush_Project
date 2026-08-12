@@ -157,9 +157,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail()).orElse(null);
 
         if (user == null) {
-            return LoginResponse.builder()
-                    .message("If the email is registered, an OTP has been sent.")
-                    .build();
+            throw new UserNotFoundException("No account is registered with that email.");
         }
 
         checkAccountLock(user);
@@ -267,7 +265,9 @@ public class AuthService {
         Device    device = deviceService.resolveDevice(user, httpRequest);
 
         try {
-            FaceVerifyResult result = faceIdClient.verifyFace(user.getUserId(), request.getFaceImage());
+            FaceVerifyResult result = request.getFaceImages() != null && request.getFaceImages().size() >= 3
+                    ? faceIdClient.verifyLive(user.getUserId(), request.getFaceImages())
+                    : faceIdClient.verifyFace(user.getUserId(), request.getFaceImage());
             if (!result.isMatched() || !result.isLive()) {
                 throw new FaceVerificationException(
                         "Face verification failed. Confidence: " + result.getConfidence());

@@ -12,6 +12,7 @@ import com.passwordlessauth.enums.AuthMethod;
 import com.passwordlessauth.enums.RiskLevel;
 import com.passwordlessauth.enums.Role;
 import com.passwordlessauth.exception.InvalidOtpException;
+import com.passwordlessauth.exception.UserNotFoundException;
 import com.passwordlessauth.repository.DeviceRepository;
 import com.passwordlessauth.repository.LoginHistoryRepository;
 import com.passwordlessauth.repository.RefreshTokenRepository;
@@ -94,16 +95,15 @@ class AuthLoginOtpRegressionTest {
     }
 
     @Test
-    void sendOtp_unregisteredEmail_doesNotCreateUserOrIssueSession() {
+    void sendOtp_unregisteredEmail_isRejectedWithoutCreatingUserOrSession() {
         OtpRequest request = new OtpRequest();
         request.setEmail("security-regression-12345@example.test");
 
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
 
-        LoginResponse response = authService.sendOtp(request);
-
-        assertThat(response.getMessage())
-                .isEqualTo("If the email is registered, an OTP has been sent.");
+        assertThatThrownBy(() -> authService.sendOtp(request))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("No account is registered with that email.");
         verify(userRepository, never()).save(any());
         verify(otpService, never()).generateAndSendLoginOtp(any());
         verify(jwtService, never()).generateAccessToken(any(), any());
