@@ -3,6 +3,7 @@ package com.passwordlessauth.dto.requests;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import java.util.List;
 
 @Data
 public class FaceLoginRequest {
@@ -12,4 +13,6 @@ public class FaceLoginRequest {
 
     @NotBlank(message = "Face image is required")
     private String faceImage;
+
+    private List<@NotBlank String> faceImages;
 }

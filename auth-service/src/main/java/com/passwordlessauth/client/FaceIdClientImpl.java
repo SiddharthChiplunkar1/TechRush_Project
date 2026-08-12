@@ -1,6 +1,7 @@
 package com.passwordlessauth.client;
 
 import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -222,9 +223,36 @@ public class FaceIdClientImpl implements FaceIdClient {
         }
     }
 
-    private HttpEntity<Map<String, String>> buildRequest(
+    @Override
+    public FaceVerifyResult verifyLive(String userId, List<String> frames) throws FaceVerificationException {
+        if (frames == null || frames.size() < 3 || frames.size() > 15) {
+            throw new FaceVerificationException("Face liveness verification requires a short frame burst");
+        }
+
+        String url = faceIdServiceUrl + "/api/face/verify-live";
+        Map<String, Object> body = Map.of("userId", userId, "frames", frames);
+        try {
+            ResponseEntity<FaceVerifyResult> response = restTemplate.postForEntity(
+                    url, buildRequest(userId, body), FaceVerifyResult.class);
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                throw new FaceVerificationException("Face verification could not be completed");
+            }
+            return response.getBody();
+        } catch (HttpStatusCodeException | ResourceAccessException ex) {
+            log.warn("Face liveness verification failed for user={} status={}", maskId(userId),
+                    ex instanceof HttpStatusCodeException http ? http.getStatusCode().value() : "unavailable");
+            throw new FaceVerificationException("Face recognition service is temporarily unavailable");
+        } catch (FaceVerificationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            log.error("Unexpected FaceID liveness failure for user={}", maskId(userId), ex);
+            throw new FaceVerificationException("Face verification could not be completed");
+        }
+    }
+
+    private HttpEntity<Map<String, ?>> buildRequest(
             String userId,
-            Map<String, String> body
+            Map<String, ?> body
     ) {
         HttpHeaders headers = new HttpHeaders();
 

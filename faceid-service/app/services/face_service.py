@@ -70,6 +70,7 @@ class FaceService:
         return {
             "success": True,
             "match": True,
+            "matched": True,
             "similarity": best_similarity,
             "message": "Face verification successful",
         }
