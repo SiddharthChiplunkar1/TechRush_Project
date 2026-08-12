@@ -15,7 +15,7 @@ import {
   ReceiptText,
   ShieldAlert,
   ShieldCheck,
-  UserRound
+  UserRound,
 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -24,13 +24,14 @@ import { Button } from "@/components/ui-kit/Button";
 import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { Modal } from "@/components/ui-kit/Modal";
 import { Input } from "@/components/ui-kit/Input";
+import { OtpInput } from "@/components/ui-kit/OtpInput";
 import { bankingService } from "@/services/bankingService";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -45,25 +46,19 @@ const transferSchema = z.object({
     .min(1, "Amount is required")
     .refine(
       (value) => amountPattern.test(value) && Number.isFinite(Number(value)) && Number(value) > 0,
-      "Enter a valid amount with up to 2 decimal places"
+      "Enter a valid amount with up to 2 decimal places",
     ),
-  description: z.string().trim().max(255, "Description must not exceed 255 characters")
+  description: z.string().trim().max(255, "Description must not exceed 255 characters"),
 });
 
-const wizardSteps = [
-  "Recipient",
-  "Amount",
-  "Review",
-  "Verification",
-  "Complete"
-];
+const wizardSteps = ["Recipient", "Amount", "Review", "Verification", "Complete"];
 
 function formatMoney(value) {
   const amount = Number(value ?? 0);
   if (!Number.isFinite(amount)) return "$0.00";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD"
+    currency: "USD",
   }).format(amount);
 }
 
@@ -137,54 +132,74 @@ const Route = createFileRoute("/_authenticated/transfer")({
   head: () => ({
     meta: [
       { title: "Transfer funds - SecurePass AI" },
-      { name: "description", content: "Send a real transfer to an existing beneficiary and complete any required step-up verification." },
+      {
+        name: "description",
+        content:
+          "Send a real transfer to an existing beneficiary and complete any required step-up verification.",
+      },
       { property: "og:title", content: "Transfer funds - SecurePass AI" },
-      { property: "og:description", content: "A secure banking transfer flow with server-recorded step-up verification." },
-      { name: "robots", content: "noindex" }
-    ]
+      {
+        property: "og:description",
+        content: "A secure banking transfer flow with server-recorded step-up verification.",
+      },
+      { name: "robots", content: "noindex" },
+    ],
   }),
-  component: TransferPage
+  component: TransferPage,
 });
 
 function StepItem({ label, index, active }) {
   const completed = index < active;
   const current = index === active;
 
-  return <div className="flex min-w-0 flex-1 items-center gap-3">
+  return (
+    <div className="flex min-w-0 flex-1 items-center gap-3">
       <span
-    className={cn(
-      "inline-flex size-8 items-center justify-center rounded-full border text-xs font-semibold transition-colors",
-      completed && "border-success bg-success text-success-foreground",
-      current && !completed && "border-primary bg-primary text-primary-foreground",
-      !completed && !current && "border-border bg-card text-muted-foreground"
-    )}
-  >
+        className={cn(
+          "inline-flex size-8 items-center justify-center rounded-full border text-xs font-semibold transition-colors",
+          completed && "border-success bg-success text-success-foreground",
+          current && !completed && "border-primary bg-primary text-primary-foreground",
+          !completed && !current && "border-border bg-card text-muted-foreground",
+        )}
+      >
         {completed ? <CheckCircle2 className="size-4" /> : index + 1}
       </span>
       <div className="min-w-0">
-        <p className={cn("text-xs font-medium", current || completed ? "text-foreground" : "text-muted-foreground")}>
+        <p
+          className={cn(
+            "text-xs font-medium",
+            current || completed ? "text-foreground" : "text-muted-foreground",
+          )}
+        >
           {label}
         </p>
       </div>
-    </div>;
+    </div>
+  );
 }
 
 function WizardProgress({ step }) {
-  return <div className="rounded-3xl border border-glass-border bg-card/70 p-4 backdrop-blur">
+  return (
+    <div className="rounded-3xl border border-glass-border bg-card/70 p-4 backdrop-blur">
       <div className="grid gap-3 sm:grid-cols-5">
-        {wizardSteps.map((label, index) => <StepItem key={label} label={label} index={index} active={step} />)}
+        {wizardSteps.map((label, index) => (
+          <StepItem key={label} label={label} index={index} active={step} />
+        ))}
       </div>
-    </div>;
+    </div>
+  );
 }
 
 function InfoRow({ icon: Icon, label, value }) {
-  return <div className="rounded-2xl bg-muted/60 p-4">
+  return (
+    <div className="rounded-2xl bg-muted/60 p-4">
       <p className="flex items-center gap-2 text-xs text-muted-foreground">
         <Icon className="size-3.5" />
         {label}
       </p>
       <p className="mt-1 break-words text-sm font-medium text-foreground">{value}</p>
-    </div>;
+    </div>
+  );
 }
 
 function TransferPage() {
@@ -197,27 +212,37 @@ function TransferPage() {
   const [stepUpExpiresAt, setStepUpExpiresAt] = useState(null);
   const [stepUpSecondsRemaining, setStepUpSecondsRemaining] = useState(null);
   const [stepUpState, setStepUpState] = useState("idle");
+  const [stepUpOtp, setStepUpOtp] = useState("");
+  const [preTransferOtpOpen, setPreTransferOtpOpen] = useState(false);
+  const [preTransferOtp, setPreTransferOtp] = useState("");
+  const [pendingTransferValues, setPendingTransferValues] = useState(null);
 
   const beneficiariesQuery = useQuery({
     queryKey: ["beneficiaries"],
-    queryFn: bankingService.getBeneficiaries
+    queryFn: bankingService.getBeneficiaries,
   });
   const balanceQuery = useQuery({
     queryKey: ["balance"],
-    queryFn: bankingService.getBalance
+    queryFn: bankingService.getBalance,
   });
 
   const beneficiaries = beneficiariesQuery.data ?? [];
   const availableBalance = Number(balanceQuery.data?.balance);
 
-  const recipientOptions = useMemo(() => beneficiaries.map((beneficiary) => ({
-    label: formatRecipient(beneficiary),
-    value: beneficiary.accountIdentifier
-  })), [beneficiaries]);
+  const recipientOptions = useMemo(
+    () =>
+      beneficiaries.map((beneficiary) => ({
+        label: formatRecipient(beneficiary),
+        value: beneficiary.accountIdentifier,
+      })),
+    [beneficiaries],
+  );
 
   const selectedBeneficiary = useMemo(
-    () => beneficiaries.find((beneficiary) => beneficiary.accountIdentifier === selectedRecipient) ?? null,
-    [beneficiaries, selectedRecipient]
+    () =>
+      beneficiaries.find((beneficiary) => beneficiary.accountIdentifier === selectedRecipient) ??
+      null,
+    [beneficiaries, selectedRecipient],
   );
 
   const form = useForm({
@@ -225,9 +250,34 @@ function TransferPage() {
     defaultValues: {
       recipient: "",
       amount: "",
-      description: ""
+      description: "",
     },
-    mode: "onBlur"
+    mode: "onBlur",
+  });
+
+  const requestTransferOtpMutation = useMutation({
+    mutationFn: bankingService.requestTransferOtp,
+    retry: false,
+    onSuccess: () => {
+      setErrorState(null);
+      setPreTransferOtpOpen(true);
+      toast.success("Transfer OTP sent to your registered email");
+    },
+    onError: (error) => {
+      if (error?.status === 429) {
+        setErrorState(null);
+        setPreTransferOtpOpen(true);
+        toast.info("A transfer OTP was already sent. Enter the latest code.");
+        return;
+      }
+      setPendingTransferValues(null);
+      setErrorState(mapTransferError(error, "initiate"));
+      toast.error(
+        error?.status === 500
+          ? "The transfer OTP service is unavailable right now"
+          : "Could not send the transfer OTP",
+      );
+    },
   });
 
   const initiateTransferMutation = useMutation({
@@ -238,14 +288,21 @@ function TransferPage() {
       setReceipt(null);
     },
     onSuccess: (result, variables) => {
-      const recipient = beneficiaries.find((beneficiary) => beneficiary.accountIdentifier === variables.toUserId) ?? null;
+      if (variables.otp) {
+        setPreTransferOtpOpen(false);
+        setPendingTransferValues(null);
+        setPreTransferOtp("");
+      }
+      const recipient =
+        beneficiaries.find((beneficiary) => beneficiary.accountIdentifier === variables.toUserId) ??
+        null;
       const basePayload = {
         transferId: result.transferId,
         recipientName: recipient?.name ?? "Selected recipient",
         recipientAccountIdentifier: variables.toUserId,
         amount: variables.amount,
         description: cleanDescription(variables.description) ?? "",
-        initiatedAt: new Date().toISOString()
+        initiatedAt: new Date().toISOString(),
       };
 
       if (result.stepUpRequired && result.stepUpChallengeId) {
@@ -253,9 +310,10 @@ function TransferPage() {
           ...basePayload,
           stepUpChallengeId: result.stepUpChallengeId,
           requiredAuthStrength: result.requiredAuthStrength,
-          status: result.status
+          status: result.status,
         });
         setStepUpState("required");
+        setStepUpOtp("");
         setStepUpExpiresAt(null);
         setStepUpSecondsRemaining(600);
         return;
@@ -266,17 +324,29 @@ function TransferPage() {
       confirmTransferMutation.mutate({
         transferId: result.transferId,
         confirm: true,
-        basePayload
+        basePayload,
       });
     },
-    onError: (error) => {
+    onError: (error, variables) => {
       setErrorState(mapTransferError(error, "initiate"));
-      toast.error("Transfer could not be started");
-    }
+      if (variables?.otp) {
+        setPreTransferOtpOpen(true);
+        if (error?.status === 404) {
+          toast.error("The selected beneficiary could not be found. Check the registered email.");
+        } else if (error?.status === 400) {
+          toast.error("The transfer OTP was invalid or expired");
+        } else {
+          toast.error("The transfer could not be authorized");
+        }
+      } else {
+        toast.error("Transfer could not be started");
+      }
+    },
   });
 
   const confirmTransferMutation = useMutation({
-    mutationFn: ({ transferId, confirm }) => bankingService.confirmTransfer({ transferId, confirm }),
+    mutationFn: ({ transferId, confirm }) =>
+      bankingService.confirmTransfer({ transferId, confirm }),
     retry: false,
     onSuccess: (result, variables) => {
       if (variables.confirm === false) {
@@ -294,7 +364,7 @@ function TransferPage() {
         recipientAccountIdentifier: basePayload?.recipientAccountIdentifier ?? "",
         amount: basePayload?.amount ?? "0",
         description: basePayload?.description ?? "",
-        completedAt: new Date().toISOString()
+        completedAt: new Date().toISOString(),
       };
 
       setReceipt(completed);
@@ -308,11 +378,11 @@ function TransferPage() {
       setStepUpState("failed");
       setErrorState(mapTransferError(error, "confirm"));
       toast.error("Transfer confirmation failed");
-    }
+    },
   });
 
   const verifyStepUpMutation = useMutation({
-    mutationFn: ({ challengeId }) => bankingService.verifyStepUpChallenge(challengeId),
+    mutationFn: ({ challengeId, otp }) => bankingService.verifyStepUpChallenge(challengeId, otp),
     retry: false,
     onMutate: () => {
       setStepUpState("verifying");
@@ -329,14 +399,14 @@ function TransferPage() {
       confirmTransferMutation.mutate({
         transferId: pendingTransfer.transferId,
         confirm: true,
-        basePayload: pendingTransfer
+        basePayload: pendingTransfer,
       });
     },
     onError: (error) => {
       setStepUpState("failed");
       setErrorState(mapTransferError(error, "verify"));
       toast.error("Step-up verification failed");
-    }
+    },
   });
 
   useEffect(() => {
@@ -346,7 +416,11 @@ function TransferPage() {
         if (value == null) return value;
         if (value <= 1) {
           window.clearInterval(timer);
-          if (stepUpState === "required" || stepUpState === "verifying" || stepUpState === "verified") {
+          if (
+            stepUpState === "required" ||
+            stepUpState === "verifying" ||
+            stepUpState === "verified"
+          ) {
             setStepUpState("expired");
             setErrorState("The verification window expired. Start a new transfer to continue.");
           }
@@ -371,29 +445,52 @@ function TransferPage() {
           ? 1
           : 0;
 
-  const isBusy = initiateTransferMutation.isPending
-    || confirmTransferMutation.isPending
-    || verifyStepUpMutation.isPending;
+  const isBusy =
+    initiateTransferMutation.isPending ||
+    requestTransferOtpMutation.isPending ||
+    confirmTransferMutation.isPending ||
+    verifyStepUpMutation.isPending;
 
   const onSubmit = form.handleSubmit((values) => {
-    const recipient = beneficiaries.find((beneficiary) => beneficiary.accountIdentifier === values.recipient);
+    const recipient = beneficiaries.find(
+      (beneficiary) => beneficiary.accountIdentifier === values.recipient,
+    );
     if (!recipient) {
       form.setError("recipient", { type: "validate", message: "Recipient is required" });
       return;
     }
 
     if (Number.isFinite(availableBalance) && Number(values.amount) > availableBalance) {
-      form.setError("amount", { type: "validate", message: "Amount exceeds your available balance" });
+      form.setError("amount", {
+        type: "validate",
+        message: "Amount exceeds your available balance",
+      });
       return;
     }
 
-    initiateTransferMutation.mutate({
+    const payload = {
       toUserId: recipient.accountIdentifier,
       amount: values.amount.trim(),
-      description: cleanDescription(values.description)
-    });
+      description: cleanDescription(values.description),
+    };
+
+    if (Number(values.amount) > 500) {
+      setPendingTransferValues(payload);
+      setPreTransferOtp("");
+      requestTransferOtpMutation.mutate();
+    } else {
+      initiateTransferMutation.mutate(payload);
+    }
     setSelectedRecipient(values.recipient);
   });
+
+  const submitPreTransferOtp = () => {
+    if (!pendingTransferValues || preTransferOtp.length !== 6) return;
+    initiateTransferMutation.mutate({
+      ...pendingTransferValues,
+      otp: preTransferOtp,
+    });
+  };
 
   const currentTitle = receipt
     ? "Transfer successful"
@@ -407,11 +504,13 @@ function TransferPage() {
       ? "Complete the server-recorded step-up challenge to release the transfer."
       : "Send money to a real beneficiary from your authenticated account.";
 
-  return <AppShell title={currentTitle} subtitle={currentSubtitle}>
+  return (
+    <AppShell title={currentTitle} subtitle={currentSubtitle}>
       <div className="space-y-5">
         <WizardProgress step={activeStep} />
 
-        {receipt ? <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+        {receipt ? (
+          <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
             <section className="glass-panel gradient-border rounded-[2rem] p-7">
               <div className="flex items-start gap-4">
                 <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-success/15 text-success">
@@ -428,28 +527,34 @@ function TransferPage() {
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 <InfoRow icon={UserRound} label="Recipient" value={receipt.recipientName} />
                 <InfoRow icon={Landmark} label="Amount" value={formatMoney(receipt.amount)} />
-                <InfoRow icon={ReceiptText} label="Transaction reference" value={receipt.transferId} />
-                <InfoRow icon={CalendarClock} label="Completed at" value={formatDateTime(receipt.completedAt)} />
+                <InfoRow
+                  icon={ReceiptText}
+                  label="Transaction reference"
+                  value={receipt.transferId}
+                />
+                <InfoRow
+                  icon={CalendarClock}
+                  label="Completed at"
+                  value={formatDateTime(receipt.completedAt)}
+                />
               </div>
 
-              {receipt.description ? <div className="mt-3 rounded-2xl bg-muted/60 p-4">
+              {receipt.description ? (
+                <div className="mt-3 rounded-2xl bg-muted/60 p-4">
                   <p className="text-xs text-muted-foreground">Description</p>
                   <p className="mt-1 text-sm text-foreground">{receipt.description}</p>
-                </div> : null}
+                </div>
+              ) : null}
 
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button variant="glass" onClick={() => setReceiptOpen(true)}>
                   View receipt
                 </Button>
                 <Link to="/transactions">
-                  <Button variant="glass">
-                    View transaction
-                  </Button>
+                  <Button variant="glass">View transaction</Button>
                 </Link>
                 <Link to="/dashboard">
-                  <Button>
-                    Back to dashboard
-                  </Button>
+                  <Button>Back to dashboard</Button>
                 </Link>
               </div>
             </section>
@@ -459,7 +564,9 @@ function TransferPage() {
               <div className="mt-4 space-y-3">
                 <div className="rounded-2xl bg-muted/60 p-4">
                   <p className="text-xs text-muted-foreground">Recipient</p>
-                  <p className="mt-1 text-sm font-medium text-foreground">{receipt.recipientName}</p>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    {receipt.recipientName}
+                  </p>
                 </div>
                 <div className="rounded-2xl bg-muted/60 p-4">
                   <p className="text-xs text-muted-foreground">Status</p>
@@ -467,11 +574,15 @@ function TransferPage() {
                 </div>
                 <div className="rounded-2xl bg-muted/60 p-4">
                   <p className="text-xs text-muted-foreground">Reference</p>
-                  <p className="mt-1 break-all font-mono text-sm text-foreground">{receipt.transferId}</p>
+                  <p className="mt-1 break-all font-mono text-sm text-foreground">
+                    {receipt.transferId}
+                  </p>
                 </div>
               </div>
             </section>
-          </div> : <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+          </div>
+        ) : (
+          <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
             <section className="glass-panel rounded-[2rem] p-7">
               <div className="flex items-center gap-3">
                 <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
@@ -480,75 +591,107 @@ function TransferPage() {
                 <div>
                   <h2 className="text-2xl font-bold">Bank transfer</h2>
                   <p className="text-sm text-muted-foreground">
-                    Choose a real beneficiary, review the details, then complete any required step-up verification.
+                    Choose a real beneficiary, review the details, then complete any required
+                    step-up verification.
                   </p>
                 </div>
               </div>
 
               <form className="mt-7 space-y-5" onSubmit={onSubmit}>
                 <Controller
-              control={form.control}
-              name="recipient"
-              render={({ field, fieldState }) => <div className="space-y-2">
-                    <label className="block text-sm font-medium text-foreground">Recipient</label>
-                    <Select
-                  value={field.value}
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    setSelectedRecipient(value);
-                  }}
-                  disabled={beneficiariesQuery.isLoading || recipientOptions.length === 0}
-                >
-                      <SelectTrigger className={cn(
-                    "h-12 rounded-2xl border border-border bg-card/70 px-4 text-sm text-foreground",
-                    fieldState.error && "border-destructive/70"
-                  )}>
-                        <SelectValue placeholder={beneficiariesQuery.isLoading ? "Loading beneficiaries..." : "Select a beneficiary"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {recipientOptions.map((recipient) => <SelectItem key={recipient.value} value={recipient.value}>
-                            {recipient.label}
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    {fieldState.error ? <p className="text-xs font-medium text-destructive">{fieldState.error.message}</p> : null}
-                  </div>}
-            />
+                  control={form.control}
+                  name="recipient"
+                  render={({ field, fieldState }) => (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-foreground">Recipient</label>
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setSelectedRecipient(value);
+                        }}
+                        disabled={beneficiariesQuery.isLoading || recipientOptions.length === 0}
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "h-12 rounded-2xl border border-border bg-card/70 px-4 text-sm text-foreground",
+                            fieldState.error && "border-destructive/70",
+                          )}
+                        >
+                          <SelectValue
+                            placeholder={
+                              beneficiariesQuery.isLoading
+                                ? "Loading beneficiaries..."
+                                : "Select a beneficiary"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {recipientOptions.map((recipient) => (
+                            <SelectItem key={recipient.value} value={recipient.value}>
+                              {recipient.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {fieldState.error ? (
+                        <p className="text-xs font-medium text-destructive">
+                          {fieldState.error.message}
+                        </p>
+                      ) : null}
+                    </div>
+                  )}
+                />
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Input
-                label="Amount"
-                inputMode="decimal"
-                placeholder="0.00"
-                error={form.formState.errors.amount?.message}
-                {...form.register("amount")}
+                    label="Amount"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    error={form.formState.errors.amount?.message}
+                    {...form.register("amount")}
                   />
                   <Input
-                label="Recipient account"
-                value={selectedBeneficiary?.accountIdentifier ?? ""}
-                readOnly
-                placeholder="Select a recipient"
-                hint="The backend uses the beneficiary destination identifier."
-              />
+                    label="Recipient account"
+                    value={selectedBeneficiary?.accountIdentifier ?? ""}
+                    readOnly
+                    placeholder="Select a recipient"
+                    hint="The backend uses the beneficiary destination identifier."
+                  />
                 </div>
                 <p className="-mt-3 text-xs text-muted-foreground">
-                  Available balance: {balanceQuery.isLoading ? "Loading..." : balanceQuery.isError ? "Unavailable" : formatMoney(availableBalance)}
+                  Available balance:{" "}
+                  {balanceQuery.isLoading
+                    ? "Loading..."
+                    : balanceQuery.isError
+                      ? "Unavailable"
+                      : formatMoney(availableBalance)}
                 </p>
 
                 <Textarea
-              rows={4}
-              placeholder="Optional note for this transfer"
-              className="rounded-2xl border-border bg-card/70 px-4 py-3 text-sm"
-              {...form.register("description")}
-            />
-                {form.formState.errors.description ? <p className="text-xs font-medium text-destructive">{form.formState.errors.description.message}</p> : null}
+                  rows={4}
+                  placeholder="Optional note for this transfer"
+                  className="rounded-2xl border-border bg-card/70 px-4 py-3 text-sm"
+                  {...form.register("description")}
+                />
+                {form.formState.errors.description ? (
+                  <p className="text-xs font-medium text-destructive">
+                    {form.formState.errors.description.message}
+                  </p>
+                ) : null}
 
-                {errorState ? <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+                {errorState ? (
+                  <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
                     {errorState}
-                  </div> : null}
+                  </div>
+                ) : null}
 
                 <div className="flex flex-wrap gap-3">
-                  <Button type="submit" loading={isBusy} disabled={recipientOptions.length === 0}>
+                  <Button
+                    type="submit"
+                    loading={isBusy}
+                    disabled={recipientOptions.length === 0 || isBusy}
+                  >
                     Review and submit
                   </Button>
                   <Link to="/dashboard">
@@ -564,12 +707,25 @@ function TransferPage() {
               <section className="glass-panel rounded-[2rem] p-6">
                 <h3 className="text-base font-semibold">Review</h3>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  This summary is based on your current form inputs. The backend remains authoritative.
+                  This summary is based on your current form inputs. The backend remains
+                  authoritative.
                 </p>
                 <div className="mt-4 space-y-3">
-                  <InfoRow icon={UserRound} label="Recipient" value={selectedBeneficiary ? selectedBeneficiary.name : "Choose a beneficiary"} />
-                  <InfoRow icon={Landmark} label="Amount" value={form.watch("amount") ? formatMoney(form.watch("amount")) : "$0.00"} />
-                  <InfoRow icon={ReceiptText} label="Description" value={form.watch("description")?.trim() || "No description"} />
+                  <InfoRow
+                    icon={UserRound}
+                    label="Recipient"
+                    value={selectedBeneficiary ? selectedBeneficiary.name : "Choose a beneficiary"}
+                  />
+                  <InfoRow
+                    icon={Landmark}
+                    label="Amount"
+                    value={form.watch("amount") ? formatMoney(form.watch("amount")) : "$0.00"}
+                  />
+                  <InfoRow
+                    icon={ReceiptText}
+                    label="Description"
+                    value={form.watch("description")?.trim() || "No description"}
+                  />
                 </div>
               </section>
 
@@ -591,123 +747,252 @@ function TransferPage() {
                 </div>
               </section>
 
-              {beneficiariesQuery.isLoading ? <div className="glass-panel rounded-[2rem] p-6">
+              {beneficiariesQuery.isLoading ? (
+                <div className="glass-panel rounded-[2rem] p-6">
                   <div className="space-y-3">
                     <div className="h-4 w-32 animate-pulse rounded-full bg-muted" />
                     <div className="h-24 animate-pulse rounded-2xl bg-muted" />
                   </div>
-                </div> : !recipientOptions.length ? <EmptyState
+                </div>
+              ) : !recipientOptions.length ? (
+                <EmptyState
                   icon={ArrowRightLeft}
                   title="No beneficiaries yet"
                   description="Add a beneficiary before initiating a transfer."
-                  action={<Link to="/dashboard"><Button variant="glass">Back to dashboard</Button></Link>}
-                /> : null}
+                  action={
+                    <div className="flex flex-wrap justify-center gap-3">
+                      <Link to="/beneficiaries">
+                        <Button>Add beneficiary</Button>
+                      </Link>
+                      <Link to="/dashboard">
+                        <Button variant="glass">Back to dashboard</Button>
+                      </Link>
+                    </div>
+                  }
+                />
+              ) : null}
             </aside>
-          </div>}
+          </div>
+        )}
       </div>
 
       <Modal
-      open={Boolean(
-        pendingTransfer?.stepUpChallengeId &&
-        stepUpState !== "idle" &&
-        stepUpState !== "complete" &&
-        stepUpState !== "cancelled" &&
-        !receipt
-      )}
-      onClose={() => {
-        if (stepUpState === "verifying" || confirmTransferMutation.isPending) return;
-        setPendingTransfer(null);
-        setStepUpState("idle");
-      }}
-      title="Additional verification required"
-      description="This transfer requires server-recorded step-up authentication before it can be completed."
-      footer={<>
-          <Button
-        variant="glass"
-        disabled={verifyStepUpMutation.isPending || confirmTransferMutation.isPending}
-        onClick={() => {
-          if (!pendingTransfer?.stepUpChallengeId) return;
-          verifyStepUpMutation.mutate({ challengeId: pendingTransfer.stepUpChallengeId });
+        open={Boolean(
+          pendingTransfer?.stepUpChallengeId &&
+          stepUpState !== "idle" &&
+          stepUpState !== "complete" &&
+          stepUpState !== "cancelled" &&
+          !receipt,
+        )}
+        onClose={() => {
+          if (stepUpState === "verifying" || confirmTransferMutation.isPending) return;
+          setPendingTransfer(null);
+          setStepUpState("idle");
         }}
+        title="Additional verification required"
+        description="This transfer requires server-recorded step-up authentication before it can be completed."
+        footer={
+          <>
+            <Button
+              variant="glass"
+              disabled={
+                verifyStepUpMutation.isPending ||
+                confirmTransferMutation.isPending ||
+                stepUpOtp.length !== 6
+              }
+              onClick={() => {
+                if (!pendingTransfer?.stepUpChallengeId) return;
+                verifyStepUpMutation.mutate({
+                  challengeId: pendingTransfer.stepUpChallengeId,
+                  otp: stepUpOtp,
+                });
+              }}
+            >
+              {verifyStepUpMutation.isPending || confirmTransferMutation.isPending ? (
+                <LoaderCircle className="size-4 animate-spin" />
+              ) : (
+                <BadgeCheck className="size-4" />
+              )}
+              Verify step-up
+            </Button>
+            <Button
+              variant="danger"
+              disabled={verifyStepUpMutation.isPending || confirmTransferMutation.isPending}
+              onClick={() => {
+                if (!pendingTransfer?.transferId) return;
+                confirmTransferMutation.mutate({
+                  transferId: pendingTransfer.transferId,
+                  confirm: false,
+                  basePayload: pendingTransfer,
+                });
+              }}
+            >
+              Cancel transfer
+            </Button>
+          </>
+        }
       >
-            {verifyStepUpMutation.isPending || confirmTransferMutation.isPending ? <LoaderCircle className="size-4 animate-spin" /> : <BadgeCheck className="size-4" />}
-            Verify step-up
-          </Button>
-          <Button
-        variant="danger"
-        disabled={verifyStepUpMutation.isPending || confirmTransferMutation.isPending}
-        onClick={() => {
-          if (!pendingTransfer?.transferId) return;
-          confirmTransferMutation.mutate({ transferId: pendingTransfer.transferId, confirm: false, basePayload: pendingTransfer });
-        }}
-      >
-            Cancel transfer
-          </Button>
-        </>}
-    >
-        {pendingTransfer ? <div className="space-y-4">
+        {pendingTransfer ? (
+          <div className="space-y-4">
             <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
               <p className="text-sm font-semibold text-foreground">Verification required</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                The banking service requires additional verification before the transfer can be released.
+                The banking service requires additional verification before the transfer can be
+                released.
+              </p>
+              <p className="mt-3 text-sm font-medium text-foreground">
+                An OTP was sent to your registered email. Enter it to authorize this transfer.
               </p>
             </div>
+
+            <OtpInput value={stepUpOtp} onChange={setStepUpOtp} disabled={isBusy} />
 
             <div className="grid gap-3 sm:grid-cols-2">
               <InfoRow icon={UserRound} label="Recipient" value={pendingTransfer.recipientName} />
               <InfoRow icon={Landmark} label="Amount" value={formatMoney(pendingTransfer.amount)} />
-              <InfoRow icon={ReceiptText} label="Transfer reference" value={pendingTransfer.transferId} />
-              <InfoRow icon={BadgeCheck} label="Required strength" value={String(pendingTransfer.requiredAuthStrength ?? "STRONG")} />
+              <InfoRow
+                icon={ReceiptText}
+                label="Transfer reference"
+                value={pendingTransfer.transferId}
+              />
+              <InfoRow
+                icon={BadgeCheck}
+                label="Required strength"
+                value={String(pendingTransfer.requiredAuthStrength ?? "STRONG")}
+              />
             </div>
 
-            {stepUpState === "verifying" ? <div className="rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
+            {stepUpState === "verifying" ? (
+              <div className="rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
                 Verifying with the banking service...
-              </div> : null}
+              </div>
+            ) : null}
 
-            {stepUpState === "verified" ? <div className="rounded-2xl border border-success/20 bg-success/10 p-4 text-sm text-success">
+            {stepUpState === "verified" ? (
+              <div className="rounded-2xl border border-success/20 bg-success/10 p-4 text-sm text-success">
                 Verification succeeded. The transfer is being completed now.
-              </div> : null}
+              </div>
+            ) : null}
 
-            {stepUpState === "failed" ? <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+            {stepUpState === "failed" ? (
+              <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
                 {errorState ?? "Step-up verification failed."}
-              </div> : null}
+              </div>
+            ) : null}
 
-            {stepUpState === "expired" ? <div className="rounded-2xl border border-warning/20 bg-warning/10 p-4 text-sm text-warning-foreground">
+            {stepUpState === "expired" ? (
+              <div className="rounded-2xl border border-warning/20 bg-warning/10 p-4 text-sm text-warning-foreground">
                 {errorState ?? "The verification window expired."}
-              </div> : null}
+              </div>
+            ) : null}
 
-            {stepUpExpiresAt ? <div className="rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
+            {stepUpExpiresAt ? (
+              <div className="rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
                 Verification expires at {formatDateTime(stepUpExpiresAt)}
-              </div> : null}
+              </div>
+            ) : null}
 
-            {typeof stepUpSecondsRemaining === "number" ? <div className="rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
-                Approximate time remaining: {Math.floor(stepUpSecondsRemaining / 60)}:{String(stepUpSecondsRemaining % 60).padStart(2, "0")}
-              </div> : null}
-          </div> : null}
+            {typeof stepUpSecondsRemaining === "number" ? (
+              <div className="rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
+                Approximate time remaining: {Math.floor(stepUpSecondsRemaining / 60)}:
+                {String(stepUpSecondsRemaining % 60).padStart(2, "0")}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </Modal>
 
       <Modal
-      open={receiptOpen}
-      onClose={() => setReceiptOpen(false)}
-      title="Receipt"
-      description="Safe receipt details for your completed transfer."
-      footer={<Button onClick={() => setReceiptOpen(false)}>Close</Button>}
-    >
-        {receipt ? <div className="space-y-3">
+        open={preTransferOtpOpen}
+        onClose={() => {
+          if (isBusy) return;
+          setPreTransferOtpOpen(false);
+          setPendingTransferValues(null);
+          setPreTransferOtp("");
+        }}
+        title="Verify transfer"
+        description="Transfers above $500 require a one-time verification code before submission."
+        footer={
+          <>
+            <Button
+              variant="glass"
+              disabled={isBusy || preTransferOtp.length !== 6}
+              onClick={submitPreTransferOtp}
+            >
+              {initiateTransferMutation.isPending ? (
+                <LoaderCircle className="size-4 animate-spin" />
+              ) : (
+                <BadgeCheck className="size-4" />
+              )}
+              Authorize transfer
+            </Button>
+            <Button
+              variant="danger"
+              disabled={isBusy}
+              onClick={() => {
+                setPreTransferOtpOpen(false);
+                setPendingTransferValues(null);
+                setPreTransferOtp("");
+              }}
+            >
+              Cancel
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
+            <p className="text-sm font-semibold text-foreground">OTP verification required</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              We sent a one-time code to your registered email. The transfer is not submitted until
+              the code is verified by the server.
+            </p>
+          </div>
+          <OtpInput value={preTransferOtp} onChange={setPreTransferOtp} disabled={isBusy} />
+          {pendingTransferValues ? (
+            <InfoRow
+              icon={Landmark}
+              label="Amount"
+              value={formatMoney(pendingTransferValues.amount)}
+            />
+          ) : null}
+          {errorState && preTransferOtpOpen ? (
+            <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+              {errorState}
+            </div>
+          ) : null}
+        </div>
+      </Modal>
+
+      <Modal
+        open={receiptOpen}
+        onClose={() => setReceiptOpen(false)}
+        title="Receipt"
+        description="Safe receipt details for your completed transfer."
+        footer={<Button onClick={() => setReceiptOpen(false)}>Close</Button>}
+      >
+        {receipt ? (
+          <div className="space-y-3">
             <InfoRow icon={UserRound} label="Recipient" value={receipt.recipientName} />
             <InfoRow icon={Landmark} label="Amount" value={formatMoney(receipt.amount)} />
             <InfoRow icon={ReceiptText} label="Transaction reference" value={receipt.transferId} />
-            <InfoRow icon={CalendarClock} label="Completed at" value={formatDateTime(receipt.completedAt)} />
+            <InfoRow
+              icon={CalendarClock}
+              label="Completed at"
+              value={formatDateTime(receipt.completedAt)}
+            />
             <InfoRow icon={BadgeCheck} label="Status" value={receipt.status} />
-            {receipt.description ? <div className="rounded-2xl bg-muted/60 p-4">
+            {receipt.description ? (
+              <div className="rounded-2xl bg-muted/60 p-4">
                 <p className="text-xs text-muted-foreground">Description</p>
                 <p className="mt-1 text-sm text-foreground">{receipt.description}</p>
-              </div> : null}
-          </div> : null}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </Modal>
-    </AppShell>;
+    </AppShell>
+  );
 }
 
-export {
-  Route
-};
+export { Route };

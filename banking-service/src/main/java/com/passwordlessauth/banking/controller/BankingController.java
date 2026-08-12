@@ -45,6 +45,14 @@ public class BankingController {
         );
     }
 
+    @PostMapping("/transfer/otp/request")
+    public ResponseEntity<Void> requestTransferOtp(
+            @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        bankingService.requestTransferOtp(user.userId());
+        return ResponseEntity.accepted().build();
+    }
+
     @PostMapping("/transfer/confirm")
     public ResponseEntity<TransferResponse> confirmTransfer(
             @Valid @RequestBody ConfirmTransferRequest request,

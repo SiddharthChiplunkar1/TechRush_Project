@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import com.passwordlessauth.banking.client.NotificationClient;
 import com.passwordlessauth.banking.client.RiskClient;
+import com.passwordlessauth.banking.client.UserResolverClient;
 import com.passwordlessauth.banking.dto.ConfirmTransferRequest;
 import com.passwordlessauth.banking.dto.TransferRequest;
 import com.passwordlessauth.banking.entity.StepUpChallenge;
@@ -40,6 +41,7 @@ class BankingServiceSecurityTest {
     private final NotificationClient notifications = mock(NotificationClient.class);
     private final RiskClient risk = mock(RiskClient.class);
     private final StepUpChallengeService stepUpChallenges = mock(StepUpChallengeService.class);
+    private final UserResolverClient userResolver = mock(UserResolverClient.class);
     private final AuthenticatedUser userA = new AuthenticatedUser("user-a", "a@example.test", "USER", "WEAK");
     private final AuthenticatedUser userB = new AuthenticatedUser("user-b", "b@example.test", "USER", "STRONG");
     private BankingService service;
@@ -126,6 +128,36 @@ class BankingServiceSecurityTest {
         assertThat(response.isStepUpRequired()).isTrue();
         assertThat(response.getStepUpChallengeId()).isEqualTo("challenge-123");
         assertThat(response.getRequiredAuthStrength()).isEqualTo(RequiredAuthStrength.STRONG);
+    }
+
+    @Test
+    void amountAboveThresholdRequiresOtpAndDoesNotCreateSecondChallenge() {
+        Account source = account("account-a", "user-a", "2500.00");
+        Account destination = account("account-b", "user-b", "0.00");
+        when(accounts.findByUserIdForUpdate("user-a")).thenReturn(Optional.of(source));
+        when(accounts.findByUserId("user-b")).thenReturn(Optional.of(destination));
+        when(userResolver.resolveRecipientId("user-b")).thenReturn("user-b");
+        when(risk.assessRisk("user-a", new BigDecimal("1000.00"), "user-b"))
+                .thenReturn(RiskLevel.LOW);
+        when(transactions.save(any(BankTransaction.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        BankingService otpService = new BankingService(
+                accounts,
+                transactions,
+                notifications,
+                risk,
+                stepUpChallenges,
+                userResolver
+        );
+        TransferRequest request = new TransferRequest("user-b", new BigDecimal("1000.00"), null);
+        request.setOtp("123456");
+
+        var response = otpService.initiateTransfer(request, userA);
+
+        verify(userResolver).verifyTransferOtp("user-a", "123456");
+        verify(stepUpChallenges, org.mockito.Mockito.never()).createChallenge(any(), any(), any());
+        assertThat(response.isStepUpRequired()).isFalse();
+        assertThat(response.getStatus()).isEqualTo(TransactionStatus.PENDING);
     }
 
     @Test

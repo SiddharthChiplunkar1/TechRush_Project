@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +18,6 @@ import java.math.BigDecimal;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class TransferRequest {
 
     /**
@@ -53,4 +51,17 @@ public class TransferRequest {
             message = "Description must not exceed 255 characters"
     )
     private String description;
+
+    /**
+     * One-time authorization for transfers above the configured threshold.
+     * The banking service validates it through Auth and never stores it.
+     */
+    @Size(min = 6, max = 6, message = "Transfer OTP must be 6 digits")
+    private String otp;
+
+    public TransferRequest(String toUserId, BigDecimal amount, String description) {
+        this.toUserId = toUserId;
+        this.amount = amount;
+        this.description = description;
+    }
 }

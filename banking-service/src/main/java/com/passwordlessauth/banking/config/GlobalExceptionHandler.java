@@ -4,6 +4,7 @@ import com.passwordlessauth.banking.exceptions.FraudDetectedException;
 import com.passwordlessauth.banking.exceptions.InsufficientFundsException;
 import com.passwordlessauth.banking.exceptions.NotFoundException;
 import com.passwordlessauth.banking.exceptions.UnauthorizedAccessException;
+import com.passwordlessauth.banking.exceptions.TooManyRequestsException;
 
 import jakarta.validation.ConstraintViolationException;
 
@@ -140,6 +141,17 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "INVALID_REQUEST",
                 "The request contains invalid data."
+        );
+    }
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<Map<String, Object>> handleTooManyRequests(
+            TooManyRequestsException ex
+    ) {
+        return buildErrorResponse(
+                HttpStatus.TOO_MANY_REQUESTS,
+                "TOO_MANY_REQUESTS",
+                "A transfer OTP was already sent. Please use the latest code."
         );
     }
 

@@ -93,6 +93,11 @@ public class OtpService {
         generateAndSendOtp(user, "LOGIN_STEP_UP");
     }
 
+    @Transactional
+    public void generateAndSendTransferStepUpOtp(User user) {
+        generateAndSendOtp(user, "TRANSFER_STEP_UP");
+    }
+
     private void generateAndSendOtp(User user, String email, String purpose) {
         LocalDateTime cooldownSince = LocalDateTime.now().minusSeconds(otpResendCooldownSeconds);
         if (otpTokenRepository.existsRecentToken(email, purpose, cooldownSince)) {

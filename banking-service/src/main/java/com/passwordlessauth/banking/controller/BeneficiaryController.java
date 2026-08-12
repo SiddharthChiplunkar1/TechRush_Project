@@ -1,6 +1,7 @@
 package com.passwordlessauth.banking.controller;
 
 import com.passwordlessauth.banking.dto.BeneficiaryDto;
+import com.passwordlessauth.banking.client.UserResolverClient;
 import com.passwordlessauth.banking.entity.Beneficiary;
 import com.passwordlessauth.banking.exceptions.NotFoundException;
 import com.passwordlessauth.banking.repository.BeneficiaryRepository;
@@ -20,11 +21,14 @@ import java.util.List;
 public class BeneficiaryController {
 
     private final BeneficiaryRepository beneficiaryRepository;
+    private final UserResolverClient userResolverClient;
 
     public BeneficiaryController(
-            BeneficiaryRepository beneficiaryRepository
+            BeneficiaryRepository beneficiaryRepository,
+            UserResolverClient userResolverClient
     ) {
         this.beneficiaryRepository = beneficiaryRepository;
+        this.userResolverClient = userResolverClient;
     }
 
     /**
@@ -67,6 +71,8 @@ public class BeneficiaryController {
         AuthenticatedUser authenticatedUser =
                 requireAuthenticatedUser(user);
 
+        validateRecipient(authenticatedUser.userId(), dto.getAccountIdentifier());
+
         Beneficiary beneficiary =
                 Beneficiary.create(
                         authenticatedUser.userId(),
@@ -81,6 +87,27 @@ public class BeneficiaryController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(toDto(saved));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BeneficiaryDto> update(
+            @PathVariable String id,
+            @Valid @RequestBody BeneficiaryDto dto,
+            @AuthenticationPrincipal AuthenticatedUser user
+    ) {
+        AuthenticatedUser authenticatedUser = requireAuthenticatedUser(user);
+        Beneficiary beneficiary = beneficiaryRepository.findByIdAndUserId(
+                        id,
+                        authenticatedUser.userId()
+                )
+                .orElseThrow(() -> new NotFoundException("Beneficiary not found"));
+
+        validateRecipient(authenticatedUser.userId(), dto.getAccountIdentifier());
+        beneficiary.rename(dto.getName());
+        beneficiary.changeAccountIdentifier(dto.getAccountIdentifier());
+        beneficiary.setFavourite(dto.isFavourite());
+
+        return ResponseEntity.ok(toDto(beneficiaryRepository.save(beneficiary)));
     }
 
     /**
@@ -185,6 +212,13 @@ public class BeneficiaryController {
         }
 
         return user;
+    }
+
+    private void validateRecipient(String senderId, String identifier) {
+        String recipientId = userResolverClient.resolveRecipientId(identifier.trim());
+        if (senderId.equals(recipientId)) {
+            throw new IllegalArgumentException("Cannot add yourself as a beneficiary");
+        }
     }
 
     /**

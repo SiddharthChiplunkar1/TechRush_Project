@@ -99,7 +99,12 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Service-token authentication is enforced by the filter.
-                        .requestMatchers("/internal/risk")
+                        .requestMatchers(
+                                "/internal/risk",
+                                "/internal/users/resolve",
+                                "/internal/transfer/step-up/request",
+                                "/internal/transfer/step-up/verify"
+                        )
                         .permitAll()
 
                         // Swagger (optional but recommended)

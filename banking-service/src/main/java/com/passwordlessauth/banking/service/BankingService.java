@@ -2,6 +2,7 @@ package com.passwordlessauth.banking.service;
 
 import com.passwordlessauth.banking.client.NotificationClient;
 import com.passwordlessauth.banking.client.RiskClient;
+import com.passwordlessauth.banking.client.UserResolverClient;
 import com.passwordlessauth.banking.dto.BalanceResponse;
 import com.passwordlessauth.banking.dto.ConfirmTransferRequest;
 import com.passwordlessauth.banking.dto.TransactionDto;
@@ -25,6 +26,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,7 @@ public class BankingService {
     private final TransactionRepository transactionRepository;
     private final NotificationClient notificationClient;
     private final RiskClient riskClient;
+    private final UserResolverClient userResolverClient;
     private final StepUpChallengeService stepUpChallengeService;
 
     /**
@@ -58,6 +61,9 @@ public class BankingService {
     @Value("${banking.demo.auto-create-accounts:false}")
     private boolean autoCreateAccounts;
 
+    @Value("${app.banking.step-up-threshold:500.00}")
+    private BigDecimal stepUpThreshold = new BigDecimal("500.00");
+
     public BankingService(
             AccountRepository accountRepository,
             TransactionRepository transactionRepository,
@@ -65,10 +71,23 @@ public class BankingService {
             RiskClient riskClient,
             StepUpChallengeService stepUpChallengeService
     ) {
+        this(accountRepository, transactionRepository, notificationClient, riskClient, stepUpChallengeService, null);
+    }
+
+    @Autowired
+    public BankingService(
+            AccountRepository accountRepository,
+            TransactionRepository transactionRepository,
+            NotificationClient notificationClient,
+            RiskClient riskClient,
+            StepUpChallengeService stepUpChallengeService,
+            UserResolverClient userResolverClient
+    ) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.notificationClient = notificationClient;
         this.riskClient = riskClient;
+        this.userResolverClient = userResolverClient;
         this.stepUpChallengeService = stepUpChallengeService;
     }
 
@@ -116,7 +135,10 @@ public class BankingService {
 
         requireUserId(senderId);
 
-        String recipientId = request.getToUserId().trim();
+        String recipientIdentifier = request.getToUserId().trim();
+        String recipientId = userResolverClient == null
+                ? recipientIdentifier
+                : userResolverClient.resolveRecipientId(recipientIdentifier);
 
         if (senderId.equals(recipientId)) {
             throw new IllegalArgumentException(
@@ -181,6 +203,29 @@ public class BankingService {
             );
         }
 
+        /*
+         * HIGH and CRITICAL transactions require step-up
+         * authentication before confirmation.
+         */
+        boolean amountRequiresStepUp = request.getAmount().compareTo(stepUpThreshold) > 0;
+        if (amountRequiresStepUp) {
+            if (request.getOtp() == null || request.getOtp().isBlank()) {
+                throw new IllegalArgumentException(
+                        "Transfer OTP is required for transfers above the step-up threshold"
+                );
+            }
+            if (userResolverClient == null) {
+                throw new IllegalStateException("Transfer OTP verification is unavailable");
+            }
+            userResolverClient.verifyTransferOtp(senderId, request.getOtp());
+        }
+
+        boolean riskRequiresStepUp = (riskLevel == RiskLevel.HIGH
+                || riskLevel == RiskLevel.CRITICAL) && !amountRequiresStepUp;
+        if (amountRequiresStepUp && riskLevel == RiskLevel.LOW) {
+            riskLevel = RiskLevel.HIGH;
+        }
+
         BankTransaction transaction = BankTransaction.create(
                 sourceAccount.getAccountId(),
                 destinationAccount.getAccountId(),
@@ -191,12 +236,7 @@ public class BankingService {
                 riskLevel
         );
 
-        /*
-         * HIGH and CRITICAL transactions require step-up
-         * authentication before confirmation.
-         */
-        if (riskLevel == RiskLevel.HIGH
-                || riskLevel == RiskLevel.CRITICAL) {
+        if (riskRequiresStepUp) {
 
             transaction.transitionTo(
                     TransactionStatus.BLOCKED_STEP_UP_REQUIRED
@@ -215,8 +255,7 @@ public class BankingService {
                 saved.getStatus()
         );
 
-        if (riskLevel == RiskLevel.HIGH
-                || riskLevel == RiskLevel.CRITICAL) {
+        if (riskRequiresStepUp) {
             StepUpChallenge challenge = stepUpChallengeService.createChallenge(
                     senderId,
                     saved.getTransactionId(),
@@ -225,9 +264,20 @@ public class BankingService {
             response.setStepUpChallengeId(challenge.getChallengeId());
             response.setRequiredAuthStrength(challenge.getRequiredAuthStrength());
             response.setStepUpRequired(true);
+            if (userResolverClient != null) {
+                userResolverClient.requestTransferOtp(senderId);
+            }
         }
 
         return response;
+    }
+
+    public void requestTransferOtp(String userId) {
+        requireUserId(userId);
+        if (userResolverClient == null) {
+            throw new IllegalStateException("Transfer OTP service is unavailable");
+        }
+        userResolverClient.requestTransferOtp(userId);
     }
 
     /**

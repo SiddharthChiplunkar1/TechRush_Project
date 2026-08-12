@@ -22,7 +22,7 @@ spring:
 
 app:
   banking:
-    step-up-threshold: 1000.00
+    step-up-threshold: ${BANKING_STEP_UP_THRESHOLD:500.00}
 
 auth:
   service:

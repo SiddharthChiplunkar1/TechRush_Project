@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedBeneficiariesRouteImport } from './routes/_authenticated/beneficiaries'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedFaceEnrollmentRouteImport } from './routes/_authenticated/face-enrollment'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -53,6 +54,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBeneficiariesRoute =
+  AuthenticatedBeneficiariesRouteImport.update({
+    id: '/beneficiaries',
+    path: '/beneficiaries',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/beneficiaries': typeof AuthenticatedBeneficiariesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -152,6 +160,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/beneficiaries': typeof AuthenticatedBeneficiariesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -174,6 +183,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/beneficiaries': typeof AuthenticatedBeneficiariesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/unauthorized'
     | '/admin'
+    | '/beneficiaries'
     | '/dashboard'
     | '/face-enrollment'
     | '/profile'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/unauthorized'
     | '/admin'
+    | '/beneficiaries'
     | '/dashboard'
     | '/face-enrollment'
     | '/profile'
@@ -237,6 +249,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/unauthorized'
     | '/_authenticated/admin'
+    | '/_authenticated/beneficiaries'
     | '/_authenticated/dashboard'
     | '/_authenticated/face-enrollment'
     | '/_authenticated/profile'
@@ -301,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/beneficiaries': {
+      id: '/_authenticated/beneficiaries'
+      path: '/beneficiaries'
+      fullPath: '/beneficiaries'
+      preLoaderRoute: typeof AuthenticatedBeneficiariesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -406,6 +426,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBeneficiariesRoute: typeof AuthenticatedBeneficiariesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFaceEnrollmentRoute: typeof AuthenticatedFaceEnrollmentRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -417,6 +438,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBeneficiariesRoute: AuthenticatedBeneficiariesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFaceEnrollmentRoute: AuthenticatedFaceEnrollmentRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,

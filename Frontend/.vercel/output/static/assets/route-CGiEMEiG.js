@@ -1,0 +1,1 @@
+import{d as e,t}from"./fileRoute-B_eoOAie.js";import{n}from"./Match-ChWtWkw2.js";var r=e(),i=t(`/_authenticated`)({}),a=()=>(0,r.jsx)(n,{});export{i as Route,a as component};
