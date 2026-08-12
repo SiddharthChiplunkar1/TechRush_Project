@@ -78,7 +78,7 @@ public class AuthController {
                         )
                         .httpOnly(true)
                         .secure(refreshCookieSecure)
-                        .sameSite("Lax")
+                        .sameSite(refreshCookieSecure ? "None" : "Lax")
                         .path("/api/auth")
                         .maxAge(
                                 Duration.ofMillis(
@@ -305,7 +305,7 @@ public class AuthController {
                         .from(REFRESH_COOKIE, "")
                         .httpOnly(true)
                         .secure(refreshCookieSecure)
-                        .sameSite("Lax")
+                        .sameSite(refreshCookieSecure ? "None" : "Lax")
                         .path("/api/auth")
                         .maxAge(Duration.ZERO)
                         .build();

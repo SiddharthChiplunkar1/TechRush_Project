@@ -1,7 +1,9 @@
 package com.passwordlessauth.security;
 
 import java.util.List;
+import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -21,16 +23,27 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.passwordlessauth.config.JwtFilter;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final InternalServiceTokenFilter internalServiceTokenFilter;
+    private final List<String> allowedOrigins;
+
+    public SecurityConfig(
+            JwtFilter jwtFilter,
+            InternalServiceTokenFilter internalServiceTokenFilter,
+            @Value("${cors.allowed.origins:http://localhost:3000,http://localhost:4173,http://localhost:5173}") String allowedOrigins
+    ) {
+        this.jwtFilter = jwtFilter;
+        this.internalServiceTokenFilter = internalServiceTokenFilter;
+        this.allowedOrigins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .toList();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -135,11 +148,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:4173",
-                "http://localhost:5173"
-        ));
+        config.setAllowedOrigins(allowedOrigins);
 
         config.setAllowedMethods(List.of(
                 "GET",
