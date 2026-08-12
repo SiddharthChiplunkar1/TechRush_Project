@@ -13,7 +13,7 @@ router = APIRouter(tags=["Face Authentication"])
 
 
 class EnrollRequest(BaseModel):
-    image_base64: str = Field(min_length=20)
+    frames: List[str] = Field(min_length=5, max_length=15)
 
 
 class VerifyRequest(BaseModel):
@@ -21,7 +21,7 @@ class VerifyRequest(BaseModel):
 
 
 class VerifyLiveRequest(BaseModel):
-    frames: List[str] = Field(min_length=3, max_length=15)
+    frames: List[str] = Field(min_length=5, max_length=15)
 
 
 def get_face_service(db: Session = Depends(get_db)) -> FaceService:
@@ -53,7 +53,7 @@ async def enroll(
     user_id: str = Depends(resolve_user_id),
     service: FaceService = Depends(get_face_service),
 ):
-    return service.enroll(user_id=user_id, image_base64=enroll_request.image_base64)
+    return service.enroll_live(user_id=user_id, frames=enroll_request.frames)
 
 
 @router.post("/verify", status_code=status.HTTP_200_OK)

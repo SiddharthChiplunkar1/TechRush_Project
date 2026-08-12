@@ -2,6 +2,17 @@
 
 Passwordless face-recognition authentication microservice.
 
+## Recognition model
+
+Production uses InsightFace `buffalo_l` by default: SCRFD face detection and
+ArcFace `w600k_r50` embeddings. The Docker image downloads the pinned model
+archive and verifies its SHA-256 checksum during build. If model loading fails,
+the service fails startup instead of downgrading to the OpenCV test matcher.
+
+The pretrained InsightFace weights are licensed for non-commercial research by
+their upstream project. Obtain a commercially licensed model before deploying
+this service commercially.
+
 ## Endpoints
 
 | Endpoint | Purpose | Key rule |

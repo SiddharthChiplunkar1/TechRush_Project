@@ -17,12 +17,12 @@ function FaceScanner({ onSubmit, submitLabel, busy = false, succeeded = false })
 
   const capture = useCallback(async () => {
     const frames = [];
-    for (let index = 0; index < 3; index += 1) {
+    for (let index = 0; index < 5; index += 1) {
       const image = webcamRef.current?.getScreenshot();
       if (image) frames.push(image);
-      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+      await new Promise((resolve) => window.setTimeout(resolve, 140));
     }
-    if (frames.length > 0) setShot(frames);
+    if (frames.length === 5) setShot(frames);
   }, []);
   return <div className="flex flex-col items-center gap-6">
       <div className="relative aspect-square w-full max-w-sm overflow-hidden rounded-[2rem] border border-glass-border bg-card/60 shadow-glow">

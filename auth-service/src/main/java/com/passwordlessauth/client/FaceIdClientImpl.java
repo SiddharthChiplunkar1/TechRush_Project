@@ -53,16 +53,19 @@ public class FaceIdClientImpl implements FaceIdClient {
     @Override
     public void enrollFace(
             String userId,
-            String imageBase64
+            List<String> frames
     ) throws FaceVerificationException {
 
-        validateInput(userId, imageBase64);
+        if (!StringUtils.hasText(userId) || frames == null || frames.size() < 5 || frames.size() > 15) {
+            throw new FaceVerificationException("Face enrollment requires a short live frame burst");
+        }
+        frames.forEach(frame -> validateInput(userId, frame));
 
         String url = faceIdServiceUrl + "/api/face/enroll";
 
-        Map<String, String> body = Map.of(
+        Map<String, Object> body = Map.of(
                 "userId", userId,
-                "image_base64", imageBase64
+                "frames", frames
         );
 
         try {
@@ -225,7 +228,7 @@ public class FaceIdClientImpl implements FaceIdClient {
 
     @Override
     public FaceVerifyResult verifyLive(String userId, List<String> frames) throws FaceVerificationException {
-        if (frames == null || frames.size() < 3 || frames.size() > 15) {
+        if (frames == null || frames.size() < 5 || frames.size() > 15) {
             throw new FaceVerificationException("Face liveness verification requires a short frame burst");
         }
 

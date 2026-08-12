@@ -1,0 +1,7 @@
+.models/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+test.db
+faceid.db
+tests/

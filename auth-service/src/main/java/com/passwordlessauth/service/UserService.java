@@ -44,7 +44,7 @@ public class UserService {
     public void enrollFaceId(String userId, FaceEnrollRequest request) {
         User user = getUser(userId);
         
-        faceIdClient.enrollFace(userId, request.getFaceImage());
+        faceIdClient.enrollFace(userId, request.getFaceImages());
         
         user.setFaceEnrolled(true);
         userRepository.save(user);

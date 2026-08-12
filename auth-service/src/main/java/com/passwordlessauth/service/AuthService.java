@@ -265,9 +265,7 @@ public class AuthService {
         Device    device = deviceService.resolveDevice(user, httpRequest);
 
         try {
-            FaceVerifyResult result = request.getFaceImages() != null && request.getFaceImages().size() >= 3
-                    ? faceIdClient.verifyLive(user.getUserId(), request.getFaceImages())
-                    : faceIdClient.verifyFace(user.getUserId(), request.getFaceImage());
+            FaceVerifyResult result = faceIdClient.verifyLive(user.getUserId(), request.getFaceImages());
             if (!result.isMatched() || !result.isLive()) {
                 throw new FaceVerificationException(
                         "Face verification failed. Confidence: " + result.getConfidence());

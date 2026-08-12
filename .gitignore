@@ -37,6 +37,7 @@ target/
 *.iml
 # ONNX model files (too large for Git, store in S3/cloud storage)
 *.onnx
+faceid-service/.models/
 
 # Python
 __pycache__/

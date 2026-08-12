@@ -4,6 +4,7 @@ os.environ.setdefault("JWT_SECRET", "test-jwt-secret-test-jwt-secret-32b")
 os.environ["DEBUG"] = "false"
 os.environ.setdefault("DATABASE_URL", "sqlite:///./test.db")
 os.environ.setdefault("FACEID_SERVICE_TOKEN", "test-faceid-service-token")
+os.environ.setdefault("FACE_MATCHER", "opencv")
 
 import numpy as np
 import pytest

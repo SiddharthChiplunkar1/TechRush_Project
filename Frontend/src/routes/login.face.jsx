@@ -20,7 +20,7 @@ function FaceLoginPage() {
   const { loginWithFace, isBusy } = useAuth();
   const [email, setEmail] = useState("");
   const [succeeded, setSucceeded] = useState(false);
-  return <AuthLayout title="Face login" description="Center your face inside the frame and hold still.">
+  return <AuthLayout title="Face login" description="Center your face and blink naturally or slowly turn your head during capture.">
       <div className="space-y-5">
         <Input
           label="Email address"

@@ -33,14 +33,18 @@ class Settings(BaseSettings):
     jwt_audience: str = "techrush-app"
     jwt_issuer: str = "TechRush"
     faceid_service_token: str = ""
+    face_matcher: str = "arcface"
+    insightface_model: str = "buffalo_l"
+    insightface_root: str = "/models/insightface"
 
     # ============================================================
     # Service Config
     # ============================================================
     
-    similarity_threshold: float = 0.60
-    verify_similarity_threshold: float = 0.60
+    similarity_threshold: float = 0.78
+    verify_similarity_threshold: float = 0.78
     live_blink_threshold: float = 0.21
+    live_motion_threshold: float = 0.012
     max_image_bytes: int = 5 * 1024 * 1024
     max_verify_attempts: int = 10
     max_verify_window_seconds: int = 60

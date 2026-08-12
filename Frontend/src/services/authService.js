@@ -33,7 +33,8 @@ const authService = {
   removeDevice: (deviceId) => api.delete(`/api/devices/${deviceId}`).then(unwrap),
   getProfile: () => api.get("/api/users/me").then(unwrap),
   updateProfile: (payload) => api.put("/api/users/me", payload).then(unwrap),
-  enrollFace: (image) => api.post("/api/users/me/face-enroll", { faceImage: image }).then(unwrap),
+  enrollFace: (frames) =>
+    api.post("/api/users/me/face-enroll", { faceImages: frames }).then(unwrap),
   loginHistory: () => api.get("/api/users/me/login-history").then(unwrap),
 };
 

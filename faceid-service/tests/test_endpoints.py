@@ -31,6 +31,7 @@ app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 SERVICE_HEADERS = {"X-Service-Token": "test-faceid-service-token"}
+LIVE_FRAMES = [VALID_IMAGE_BASE64] * 5
 
 @pytest.fixture(autouse=True)
 def cleanup_db():
@@ -44,15 +45,16 @@ def test_health():
     assert response.json()["status"] == "ok"
 
 
+@patch("app.services.face_service.FaceService._assess_liveness", return_value=True)
 @patch("app.services.matcher.OpenCVFaceMatcher.extract_embedding")
-def test_enroll_success(mock_extract):
+def test_enroll_success(mock_extract, mock_live):
     mock_extract.return_value = "mocked_embedding_base64_str"
     token = create_token(user_id="user-123")
     
     response = client.post(
         "/api/face/enroll",
         headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
-        json={"image_base64": VALID_IMAGE_BASE64}
+        json={"frames": LIVE_FRAMES}
     )
     
     assert response.status_code == 200
@@ -63,9 +65,10 @@ def test_enroll_success(mock_extract):
     assert "embedding_id" in data
 
 
+@patch("app.services.face_service.FaceService._assess_liveness", return_value=True)
 @patch("app.services.matcher.OpenCVFaceMatcher.extract_embedding")
 @patch("app.services.matcher.OpenCVFaceMatcher.verify")
-def test_verify_success(mock_verify, mock_extract):
+def test_verify_success(mock_verify, mock_extract, mock_live):
     # Setup - enroll first
     mock_extract.return_value = "mocked_embedding_base64_str"
     token = create_token(user_id="user-123")
@@ -73,7 +76,7 @@ def test_verify_success(mock_verify, mock_extract):
     client.post(
         "/api/face/enroll",
         headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
-        json={"image_base64": VALID_IMAGE_BASE64}
+        json={"frames": LIVE_FRAMES}
     )
     
     # Mock verify
@@ -106,9 +109,10 @@ def test_verify_not_enrolled():
     assert response.json()["error"] == "USER_NOT_ENROLLED"
 
 
+@patch("app.services.face_service.FaceService._assess_liveness", return_value=True)
 @patch("app.services.matcher.OpenCVFaceMatcher.extract_embedding")
 @patch("app.services.matcher.OpenCVFaceMatcher.verify")
-def test_verify_failure(mock_verify, mock_extract):
+def test_verify_failure(mock_verify, mock_extract, mock_live):
     mock_extract.return_value = "mocked_embedding_base64_str"
     token = create_token(user_id="user-123")
     
@@ -116,7 +120,7 @@ def test_verify_failure(mock_verify, mock_extract):
     client.post(
         "/api/face/enroll",
         headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
-        json={"image_base64": VALID_IMAGE_BASE64}
+        json={"frames": LIVE_FRAMES}
     )
     
     # Mock verify to throw MatchFailedError
@@ -128,5 +132,17 @@ def test_verify_failure(mock_verify, mock_extract):
         json={"image_base64": VALID_IMAGE_BASE64}
     )
     
+    assert response.status_code == 401
+    assert response.json()["error"] == "MATCH_FAILED"
+
+
+@patch("app.services.face_service.FaceService._assess_liveness", return_value=False)
+def test_enroll_rejects_static_frame_burst(mock_live):
+    token = create_token(user_id="user-static")
+    response = client.post(
+        "/api/face/enroll",
+        headers={**SERVICE_HEADERS, "Authorization": f"Bearer {token}"},
+        json={"frames": LIVE_FRAMES},
+    )
     assert response.status_code == 401
     assert response.json()["error"] == "MATCH_FAILED"

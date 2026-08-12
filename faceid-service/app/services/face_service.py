@@ -13,7 +13,7 @@ from app.exceptions.handlers import (
     UserNotEnrolledError,
 )
 from app.repository.face_repository import FaceRepository
-from app.services.matcher import OpenCVFaceMatcher
+from app.services.matcher import ArcFaceMatcher, OpenCVFaceMatcher
 from app.utils.image_utils import decode_base64_image, validate_image_quality, compute_image_hash
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,10 @@ class FaceService:
     def __init__(self, db: Session):
         self.db = db
         self.repository = FaceRepository(db)
-        self.matcher = OpenCVFaceMatcher()
+        if settings.face_matcher.lower() == "opencv":
+            self.matcher = OpenCVFaceMatcher()
+        else:
+            self.matcher = ArcFaceMatcher()
 
     def enroll(self, user_id: str, image_base64: str) -> Dict[str, Any]:
         self._check_rate_limit(f"enroll:{user_id}", settings.max_enroll_attempts, settings.max_enroll_window_seconds)
@@ -44,6 +47,14 @@ class FaceService:
             "embedding_id": saved.id,
             "quality_score": quality_score,
         }
+
+    def enroll_live(self, user_id: str, frames: List[str]) -> Dict[str, Any]:
+        """Require a live frame burst before persisting the enrollment template."""
+        if len(frames) < 5:
+            raise MatchFailedError("Liveness verification requires multiple frames")
+        if not self._assess_liveness(frames):
+            raise MatchFailedError("Liveness verification failed")
+        return self.enroll(user_id=user_id, image_base64=frames[-1])
 
     def verify(self, user_id: str, image_base64: str) -> Dict[str, Any]:
         self._check_rate_limit(f"verify:{user_id}", settings.max_verify_attempts, settings.max_verify_window_seconds)
@@ -100,9 +111,17 @@ class FaceService:
         return image
 
     def _assess_liveness(self, frames: List[str]) -> bool:
-        # Minimal signal: ensure the burst is not a replay of identical frames.
-        hashes = {compute_image_hash(decode_base64_image(frame)) for frame in frames}
-        return len(hashes) >= 2
+        # Require one face in every frame and measurable movement in the
+        # normalized face crop. Hash changes alone are not a liveness signal:
+        # JPEG metadata or a replay can make identical stills hash differently.
+        crops = []
+        for frame in frames:
+            self._decode_and_validate(frame)
+            crops.append(self.matcher.liveness_signature(frame))
+
+        changes = [float(np.mean(np.abs(current - previous)))
+                   for previous, current in zip(crops, crops[1:])]
+        return max(changes, default=0.0) >= settings.live_motion_threshold
 
     def _check_rate_limit(self, key: str, max_attempts: int, window_seconds: int) -> None:
         now = time.time()

@@ -115,6 +115,9 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres-faceid:5432/faceid
       - JWT_SECRET=${JWT_SECRET:-dGVjaHJ1c2gtZGV2LXNlY3JldC1rZXktZm9yLWxvY2FsLWRldmVsb3BtZW50LW9ubHk=}
       - FACEID_SERVICE_TOKEN=${FACEID_SERVICE_TOKEN:-dev-faceid-service-token}
+      - FACE_MATCHER=arcface
+      - INSIGHTFACE_MODEL=buffalo_l
+      - INSIGHTFACE_ROOT=/models/insightface
       - DEBUG=true
       - LOG_LEVEL=INFO
     depends_on:
@@ -123,6 +126,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./faceid-service:/app
+      - insightface_models:/models/insightface
 
   api-gateway:
     build:
@@ -152,3 +156,4 @@ services:
 volumes:
   postgres_faceid_data:
   insightface_cache:
+  insightface_models:

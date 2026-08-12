@@ -25,8 +25,8 @@ function FaceEnrollmentPage() {
   return <AppShell title="Face enrollment" subtitle="Add biometric login to your account">
       <div className="glass-panel mx-auto max-w-2xl rounded-[2rem] p-7">
         <p className="mb-7 text-sm text-muted-foreground">
-          Find even lighting, remove sunglasses and keep your face centered. The template is encrypted before it leaves
-          this device.
+          Find even lighting, remove sunglasses and keep your face centered. During capture, blink naturally or slowly
+          turn your head so the live-face check can reject photographs and screen replays.
         </p>
         <FaceScanner
     submitLabel="Enroll face"
@@ -34,16 +34,24 @@ function FaceEnrollmentPage() {
     succeeded={done}
     onSubmit={async (image) => {
       setBusy(true);
+      let enrolled = false;
       try {
-        await authService.enrollFace(Array.isArray(image) ? image[0] : image);
+        await authService.enrollFace(image);
         markFaceEnrolled();
         setDone(true);
+        enrolled = true;
         toast.success("Face enrolled \u2014 Biometric level unlocked");
-        await router.navigate({ to: "/dashboard" });
-      } catch {
-        toast.error("Enrollment failed, please retake");
+      } catch (error) {
+        toast.error(error?.message ?? "Enrollment failed, please retake");
       } finally {
         setBusy(false);
+      }
+      if (enrolled) {
+        try {
+          await router.navigate({ to: "/dashboard" });
+        } catch {
+          toast.error("Face enrolled, but dashboard navigation failed. Open /dashboard manually.");
+        }
       }
     }}
   />
