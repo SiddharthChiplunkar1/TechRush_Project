@@ -35,11 +35,11 @@ function FaceEnrollmentPage() {
     onSubmit={async (image) => {
       setBusy(true);
       try {
-        await authService.enrollFace(image);
+        await authService.enrollFace(Array.isArray(image) ? image[0] : image);
         markFaceEnrolled();
         setDone(true);
         toast.success("Face enrolled \u2014 Biometric level unlocked");
-        window.setTimeout(() => void router.navigate({ to: "/dashboard" }), 1400);
+        await router.navigate({ to: "/dashboard" });
       } catch {
         toast.error("Enrollment failed, please retake");
       } finally {

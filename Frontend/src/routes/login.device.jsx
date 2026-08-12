@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { MonitorSmartphone, ShieldCheck } from "lucide-react";
 
 import { AuthLayout } from "@/components/layout/AuthLayout";
@@ -31,7 +31,6 @@ const Route = createFileRoute("/login/device")({
 });
 
 function DeviceLoginPage() {
-  const router = useRouter();
   const fingerprint = useDeviceFingerprint();
   const { loginWithTrustedDevice, isBusy } = useAuth();
   const [email, setEmail] = useState("");
@@ -61,7 +60,6 @@ function DeviceLoginPage() {
               disabled={!email.trim()}
               onClick={async () => {
                 await loginWithTrustedDevice({ email });
-                await router.navigate({ to: "/dashboard" });
               }}
             >
               <ShieldCheck className="size-4" />

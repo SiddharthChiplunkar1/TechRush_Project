@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Button } from "@/components/ui-kit/Button";
 import { useAuth } from "@/context/AuthContext";
+import { authService } from "@/services/authService";
 
 const GOOGLE_STATE_KEY = "techrush.auth.google-state";
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -40,9 +41,25 @@ function createOauthState() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+function isUsableGoogleClientId(clientId) {
+  return Boolean(clientId && !clientId.startsWith("your-google-client-id"));
+}
+
 function GoogleLoginPage() {
   const { loginWithGoogle, isBusy } = useAuth();
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const [googleConfig, setGoogleConfig] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    void authService.getGoogleConfig().then((config) => {
+      if (active) setGoogleConfig(config);
+    }).catch(() => {
+      if (active) setGoogleConfig(null);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -78,7 +95,7 @@ function GoogleLoginPage() {
       return;
     }
 
-    if (!googleClientId) {
+    if (!isUsableGoogleClientId(googleConfig?.clientId)) {
       toast.error("Google login is not configured for this frontend");
       return;
     }
@@ -88,7 +105,7 @@ function GoogleLoginPage() {
 
     const params = new URLSearchParams({
       client_id: googleClientId,
-      redirect_uri: getGoogleRedirectUri(),
+      redirect_uri: googleConfig.redirectUri || getGoogleRedirectUri(),
       response_type: "code",
       scope: "openid email profile",
       state,

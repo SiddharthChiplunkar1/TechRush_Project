@@ -202,8 +202,13 @@ function TransferPage() {
     queryKey: ["beneficiaries"],
     queryFn: bankingService.getBeneficiaries
   });
+  const balanceQuery = useQuery({
+    queryKey: ["balance"],
+    queryFn: bankingService.getBalance
+  });
 
   const beneficiaries = beneficiariesQuery.data ?? [];
+  const availableBalance = Number(balanceQuery.data?.balance);
 
   const recipientOptions = useMemo(() => beneficiaries.map((beneficiary) => ({
     label: formatRecipient(beneficiary),
@@ -377,6 +382,11 @@ function TransferPage() {
       return;
     }
 
+    if (Number.isFinite(availableBalance) && Number(values.amount) > availableBalance) {
+      form.setError("amount", { type: "validate", message: "Amount exceeds your available balance" });
+      return;
+    }
+
     initiateTransferMutation.mutate({
       toUserId: recipient.accountIdentifier,
       amount: values.amount.trim(),
@@ -512,7 +522,7 @@ function TransferPage() {
                 placeholder="0.00"
                 error={form.formState.errors.amount?.message}
                 {...form.register("amount")}
-              />
+                  />
                   <Input
                 label="Recipient account"
                 value={selectedBeneficiary?.accountIdentifier ?? ""}
@@ -521,6 +531,9 @@ function TransferPage() {
                 hint="The backend uses the beneficiary destination identifier."
               />
                 </div>
+                <p className="-mt-3 text-xs text-muted-foreground">
+                  Available balance: {balanceQuery.isLoading ? "Loading..." : balanceQuery.isError ? "Unavailable" : formatMoney(availableBalance)}
+                </p>
 
                 <Textarea
               rows={4}

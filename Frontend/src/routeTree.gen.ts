@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedFaceEnrollmentRouteImport } from './routes/_authenticated/face-enrollment'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -46,6 +47,11 @@ const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/register': typeof RegisterRouteWithChildren
   '/unauthorized': typeof UnauthorizedRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/face-enrollment': typeof AuthenticatedFaceEnrollmentRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/register'
     | '/unauthorized'
+    | '/admin'
     | '/dashboard'
     | '/face-enrollment'
     | '/profile'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/'
     | '/register'
     | '/unauthorized'
+    | '/admin'
     | '/dashboard'
     | '/face-enrollment'
     | '/profile'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/register'
     | '/unauthorized'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/face-enrollment'
     | '/_authenticated/profile'
@@ -283,6 +295,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/unauthorized'
       preLoaderRoute: typeof UnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -386,6 +405,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFaceEnrollmentRoute: typeof AuthenticatedFaceEnrollmentRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -396,6 +416,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFaceEnrollmentRoute: AuthenticatedFaceEnrollmentRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,

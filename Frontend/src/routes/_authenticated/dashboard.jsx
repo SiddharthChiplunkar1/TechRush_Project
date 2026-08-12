@@ -28,13 +28,72 @@ const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage
 });
 const methodLabels = { face: "Face ID", otp: "Email OTP", google: "Google OAuth", device: "Trusted device" };
+const historyMethodLabels = {
+  OTP: "otp",
+  GOOGLE_OAUTH: "google",
+  FACE_RECOGNITION: "face",
+  TRUSTED_DEVICE: "device",
+  STEP_UP: "otp"
+};
+
+function normalizeLoginHistory(events) {
+  return events.map((event, index) => ({
+    id: event.loginId ?? `${event.timestamp ?? "event"}-${index}`,
+    method: historyMethodLabels[event.method] ?? "otp",
+    status: event.status === "SUCCESS" ? "success" : "failed",
+    device: event.deviceInfo || "Unknown device",
+    location: event.ipAddress || "Unknown location",
+    at: event.timestamp
+  }));
+}
+
+function buildAnalytics(events) {
+  const now = new Date();
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(now);
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - (6 - index));
+    return date;
+  });
+  const timeline = days.map((day) => ({
+    label: day.toLocaleDateString(undefined, { weekday: "short" }),
+    logins: 0,
+    blocked: 0
+  }));
+
+  const methodCounts = new Map();
+  events.forEach((event) => {
+    const timestamp = new Date(event.timestamp).getTime();
+    const dayIndex = days.findIndex((day, index) => {
+      const nextDay = days[index + 1];
+      return timestamp >= day.getTime() && (!nextDay || timestamp < nextDay.getTime());
+    });
+    if (dayIndex >= 0) {
+      if (event.status === "SUCCESS") timeline[dayIndex].logins += 1;
+      else timeline[dayIndex].blocked += 1;
+    }
+    const method = historyMethodLabels[event.method] ?? "otp";
+    methodCounts.set(method, (methodCounts.get(method) ?? 0) + 1);
+  });
+
+  const total = events.length || 1;
+  const methods = Object.entries(methodLabels)
+    .map(([method, label]) => ({
+      method: label,
+      value: Math.round(((methodCounts.get(method) ?? 0) / total) * 100)
+    }))
+    .filter((entry) => entry.value > 0);
+
+  return { timeline, methods };
+}
+
 function DashboardPage() {
   const { user, logout, expiresAt } = useAuth();
   const fingerprint = useDeviceFingerprint();
   const { formatted, remaining } = useSessionCountdown(expiresAt);
   const history = useQuery({ queryKey: ["login-history"], queryFn: authService.loginHistory });
-  const loginHistory = history.data?.content ?? history.data ?? [];
-  const analytics = { data: null };
+  const loginHistory = normalizeLoginHistory(history.data?.content ?? history.data ?? []);
+  const analytics = history.isLoading ? null : buildAnalytics(history.data?.content ?? history.data ?? []);
   return <AppShell title={`Welcome back, ${user?.name?.split(" ")[0] ?? "there"}`} subtitle="Your live identity posture">
       <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
         <div className="glass-panel gradient-border rounded-[2rem] p-7">
@@ -70,12 +129,12 @@ function DashboardPage() {
         <section className="glass-panel rounded-[2rem] p-6">
           <h3 className="text-base font-semibold">Authentication trend</h3>
           <p className="mt-1 text-xs text-muted-foreground">Successful versus blocked attempts this week</p>
-          <div className="mt-4">{analytics.data ? <AuthTrendChart data={analytics.data.timeline} /> : <CardSkeleton />}</div>
+          <div className="mt-4">{analytics ? <AuthTrendChart data={analytics.timeline} /> : <CardSkeleton />}</div>
         </section>
         <section className="glass-panel rounded-[2rem] p-6">
           <h3 className="text-base font-semibold">Method breakdown</h3>
           <p className="mt-1 text-xs text-muted-foreground">How your account is being accessed</p>
-          <div className="mt-4">{analytics.data ? <MethodBreakdownChart data={analytics.data.methods} /> : <CardSkeleton />}</div>
+          <div className="mt-4">{analytics ? <MethodBreakdownChart data={analytics.methods} /> : <CardSkeleton />}</div>
         </section>
       </div>
 

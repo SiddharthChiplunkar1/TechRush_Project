@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 const unwrap = (response) => response.data?.data ?? response.data;
 
 const bankingService = {
+  getBalance: () => api.get("/api/banking/balance").then(unwrap),
   getBeneficiaries: () => api.get("/api/banking/beneficiaries").then(unwrap),
   initiateTransfer: (payload) => api.post("/api/banking/transfer", payload).then(unwrap),
   confirmTransfer: (payload) => api.post("/api/banking/transfer/confirm", payload).then(unwrap),

@@ -15,13 +15,18 @@ function FaceScanner({ onSubmit, submitLabel, busy = false, succeeded = false })
     };
   }, []);
 
-  const capture = useCallback(() => {
-    const image = webcamRef.current?.getScreenshot();
-    if (image) setShot(image);
+  const capture = useCallback(async () => {
+    const frames = [];
+    for (let index = 0; index < 3; index += 1) {
+      const image = webcamRef.current?.getScreenshot();
+      if (image) frames.push(image);
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+    }
+    if (frames.length > 0) setShot(frames);
   }, []);
   return <div className="flex flex-col items-center gap-6">
       <div className="relative aspect-square w-full max-w-sm overflow-hidden rounded-[2rem] border border-glass-border bg-card/60 shadow-glow">
-        {shot ? <img src={shot} alt="Captured face preview" className="size-full object-cover" /> : cameraError ? <div className="flex size-full flex-col items-center justify-center gap-3 p-8 text-center">
+        {shot ? <img src={shot[0]} alt="Captured face preview" className="size-full object-cover" /> : cameraError ? <div className="flex size-full flex-col items-center justify-center gap-3 p-8 text-center">
             <ScanFace className="size-10 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               Camera unavailable. Allow camera access in your browser to continue.

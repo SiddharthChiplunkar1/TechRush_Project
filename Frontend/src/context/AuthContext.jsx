@@ -131,8 +131,7 @@ function AuthProvider({ children }) {
           return result;
         }
 
-        toast.success(successMessage);
-        return result;
+        throw new Error("Authentication could not be completed. Please try again.");
       } catch (error) {
         const message = error?.message ?? "Authentication failed";
         setState((current) => ({ ...current, error: message }));
@@ -183,7 +182,10 @@ function AuthProvider({ children }) {
         toast.success("Verification code sent");
         return result;
       } catch (error) {
-        const message = error?.message ?? "Unable to send verification code";
+        const message =
+          error?.status === 404
+            ? "No account is registered with that email."
+            : error?.message ?? "Unable to send verification code";
         setState((current) => ({ ...current, error: message }));
         toast.error(message);
         throw error;
@@ -235,9 +237,9 @@ function AuthProvider({ children }) {
   );
 
   const loginWithFace = useCallback(
-    async ({ email, image }) =>
+    async ({ email, image, images }) =>
       run(
-        () => authService.loginWithFace({ email, image }),
+        () => authService.loginWithFace({ email, image, images }),
         "Face matched",
         { authMethod: "face" },
       ),

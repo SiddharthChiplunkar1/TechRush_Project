@@ -34,8 +34,11 @@ function AppShell({ title, subtitle, children }) {
   const { formatted } = useSessionCountdown(expiresAt);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const visibleNavItems = user?.role === "ADMIN"
+    ? [...navItems, { to: "/admin", label: "Admin panel", icon: ShieldCheck }]
+    : navItems;
   const nav = <nav className="space-y-1">
-      {navItems.map((item) => {
+      {visibleNavItems.map((item) => {
     const active = pathname === item.to;
     return <Link
       key={item.to}
