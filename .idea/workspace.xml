@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Frontend + Minor Backend Changes">
+    <list default="true" id="067eb51b-82b8-49f1-b88d-2a2bbed173f5" name="Changes" comment="Backend final fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Frontend/src/routeTree.gen.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/routeTree.gen.ts" afterDir="false" />
     </list>
@@ -14,7 +14,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="528" />
+    <option name="cachedIndexableFilesCount" value="517" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
