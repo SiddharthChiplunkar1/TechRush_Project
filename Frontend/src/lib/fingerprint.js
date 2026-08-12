@@ -11,20 +11,20 @@ async function getDeviceFingerprint() {
   if (cached) return cached;
   if (typeof window === "undefined") {
     return {
-      visitorId: "server",
+      visitorId: null,
       platform: "server",
       browser: "server",
       screen: "-",
       timezone: "UTC",
     };
   }
-  let visitorId = "unavailable";
+  let visitorId = null;
   try {
     const agent = await FingerprintJS.load();
     const result = await agent.get();
     visitorId = result.visitorId;
   } catch {
-    visitorId = `fallback-${Math.abs(hash(navigator.userAgent)).toString(16)}`;
+    // Do not invent an identity value when the trusted fingerprint cannot be read.
   }
   cached = {
     visitorId,
@@ -34,13 +34,5 @@ async function getDeviceFingerprint() {
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
   return cached;
-}
-function hash(value) {
-  let h = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    h = (h << 5) - h + value.charCodeAt(i);
-    h |= 0;
-  }
-  return h;
 }
 export { getDeviceFingerprint };

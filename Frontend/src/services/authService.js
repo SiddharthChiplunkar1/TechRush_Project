@@ -9,13 +9,14 @@ const authService = {
   verifyRegistration: ({ email, code }) =>
     api.post("/api/auth/register/verify", { email, otp: code }).then(unwrap),
   requestLoginOtp: (email) => api.post("/api/auth/login/otp/request", { email }).then(unwrap),
+  getGoogleConfig: () => api.get("/api/auth/google/config").then(unwrap),
   verifyLoginOtp: ({ email, code }) =>
     api.post("/api/auth/login/otp/verify", { loginId: email, otp: code }).then(unwrap),
   verifyLoginStepUp: ({ challengeId, code }) =>
     api.post("/api/auth/login/step-up/verify", { challengeId, otp: code }).then(unwrap),
   loginWithGoogle: (input) => api.post("/api/auth/login/google", input).then(unwrap),
-  loginWithFace: ({ email, image }) =>
-    api.post("/api/auth/login/face", { email, faceImage: image }).then(unwrap),
+  loginWithFace: ({ email, image, images }) =>
+    api.post("/api/auth/login/face", { email, faceImage: image, faceImages: images }).then(unwrap),
   loginWithTrustedDevice: ({ email }) =>
     api.post("/api/auth/login/trusted-device", { email }).then(unwrap),
   refreshSession: () => api.post("/api/auth/refresh", {}).then(unwrap),

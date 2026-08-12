@@ -36,14 +36,14 @@ function FaceLoginPage() {
           submitLabel="Verify face"
           busy={isBusy}
           succeeded={succeeded}
-          onSubmit={async (image) => {
+          onSubmit={async (images) => {
             if (!email.trim()) {
               toast.error("Enter your email before starting face login");
               return;
             }
 
             try {
-              await loginWithFace({ email: email.trim().toLowerCase(), image });
+              await loginWithFace({ email: email.trim().toLowerCase(), image: images[0], images });
               setSucceeded(true);
             } catch {
               setSucceeded(false);

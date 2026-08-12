@@ -5,13 +5,14 @@ function FingerprintVisual({ fingerprint }) {
   if (!fingerprint) {
     return <Skeleton className="h-44 w-full" />;
   }
-  const bits = fingerprint.visitorId.padEnd(32, "0").slice(0, 32).split("").map((char) => parseInt(char, 36) % 5);
+  const visitorId = fingerprint.visitorId ?? "Unavailable";
+  const bits = visitorId.padEnd(32, "0").slice(0, 32).split("").map((char) => (parseInt(char, 36) || 0) % 5);
   return <div className="glass-panel rounded-3xl p-6">
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent">
         <Fingerprint className="size-4" />
         Device fingerprint
       </div>
-      <p className="mt-3 break-all font-mono text-xs text-muted-foreground">{fingerprint.visitorId}</p>
+      <p className="mt-3 break-all font-mono text-xs text-muted-foreground">{visitorId}</p>
       <div className="mt-4 grid gap-1" style={{ gridTemplateColumns: "repeat(16, minmax(0, 1fr))" }}>
         {bits.map((bit, index) => <motion.span
     key={index}

@@ -4,12 +4,13 @@ import { tokenStorage } from "@/lib/tokenStorage";
 const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
-    await bootstrapAuthSession();
+    const session = await bootstrapAuthSession();
     const token = tokenStorage.get();
     if (!token || tokenStorage.isExpired()) {
       tokenStorage.clear();
       throw redirect({ to: "/login" });
     }
+    return { session };
   },
   component: () => <Outlet />
 });
